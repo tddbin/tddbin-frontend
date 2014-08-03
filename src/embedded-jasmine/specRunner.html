@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Spec Runner</title>
+  <!--<link rel="stylesheet" type="text/css" href="../../vendor/jasmine-2.0.0/jasmine.css">-->
+
+  <!--<script type="text/javascript" src="../../vendor/jasmine-2.0.0/jasmine.js"></script>-->
+  <!--<script type="text/javascript" src="../../vendor/jasmine-2.0.0/jasmine-html.js"></script>-->
+  <link rel="stylesheet" type="text/css" href="../../vendor/jasmine-standalone-2.0.1/jasmine.css">
+
+  <script type="text/javascript" src="../../vendor/jasmine-standalone-2.0.1/jasmine.js"></script>
+  <script type="text/javascript" src="../../vendor/jasmine-standalone-2.0.1/jasmine-html.js"></script>
+  <script type="text/javascript" src="jasmine-boot.js"></script>
+
+  <!-- TODO jasmine-matchers don't work with this setup yet :( -->
+  <!--<script type="text/javascript" src="../node_modules/jasmine-matchers/src/toBe.js"></script>-->
+  <!--<script type="text/javascript" src="../node_modules/jasmine-matchers/src/toHave.js"></script>-->
+  <!--<script type="text/javascript" src="../node_modules/jasmine-matchers/src/toContain.js"></script>-->
+  <!--<script type="text/javascript" src="../node_modules/jasmine-matchers/src/toThrow.js"></script>-->
+  <!--<script type="text/javascript" src="../node_modules/jasmine-matchers/src/toStartEndWith.js"></script>-->
+
+  <!--<script type="text/javascript" src="/static/externalJs/vendor/requireJs/require.js"></script>-->
+
+  <script type="text/javascript">
+
+    window.addEventListener('message', consumeMessage, false);
+
+    var jasmine = window.jasmine;
+    var env = jasmine.getEnv();
+
+    function consumeMessage(messageData) {
+      var specCode = messageData.data;
+      eval(specCode);
+      env.execute();
+    }
+
+  </script>
+
+</head>
+
+<body>
+</body>
+</html>

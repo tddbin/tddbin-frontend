@@ -1,0 +1,15 @@
+{
+  "camelcase": true,
+  "curly": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "es3": true,
+  "freeze": true,
+  "latedef": "nofunc",
+  "newcap": false,
+  "nonew": true,
+  "node": true,
+  "strict": true,
+  "undef": true,
+  "unused": true
+}
