@@ -18,6 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "mocha": "^1.21.3",
+    "react": "^0.11.1",
     "referee": "^1.0.3",
     "requirejs": "^2.1.14"
   }

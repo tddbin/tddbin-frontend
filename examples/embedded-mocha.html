@@ -3,6 +3,7 @@
 <head>
   <title></title>
   <meta charset="utf-8">
+  <script src="../node_modules/requirejs/require.js"></script>
 </head>
 <body>
 
@@ -14,9 +15,26 @@
     <button onclick="postManyTests()">Run many tests</button>
   </div>
 
-  <iframe id="embeddedJasmine" src="../src/embedded-mocha/specRunner.html" width="400" height="400"></iframe>
+  <div id="embeddedMocha"></div>
 
   <script type="application/javascript">
+    require.config({
+      baseUrl: '../',
+      paths: {
+        react: 'node_modules/react/dist/react',
+        JSXTransformer: 'vendor/jsx-requirejs-plugin/js/JSXTransformer-0.11.0',
+        jsx: 'vendor/jsx-requirejs-plugin/js/jsx',
+        text: 'vendor/jsx-requirejs-plugin/js/text'
+      }
+    });
+
+    require(['react', 'jsx!src/embedded-mocha/embedded-mocha'], function(React, Mocha) {
+      React.renderComponent(
+        Mocha(),
+        document.getElementById('embeddedMocha')
+      );
+    });
+
     var testSpecs = {
       simplePassing: "describe('test embedded mocha', function() {\
           it('should run', function() {\
@@ -51,8 +69,8 @@
       ].join('\n'));
     }
 
-    var iframe = document.getElementById('embeddedJasmine').contentWindow;
     function _postTestSourceCode(sourceCode) {
+      var iframe = document.getElementById('embeddedJasmine').contentWindow;
       iframe.postMessage(sourceCode, '*');
     }
 
@@ -61,7 +79,6 @@
       var stats = data.data;
       console.log(stats);
     }
-
   </script>
 
 </body>
