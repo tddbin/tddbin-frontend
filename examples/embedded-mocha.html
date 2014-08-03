@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title></title>
+  <meta charset="utf-8">
+</head>
+<body>
+
+  <h1>The embedded jasmine runner</h1>
+
+  <div>
+    <button onclick="postPassingTest()">Run passing test</button>
+    <button onclick="postFailingTest()">Run failing test</button>
+    <button onclick="postManyTests()">Run many tests</button>
+  </div>
+
+  <iframe id="embeddedJasmine" src="../src/embedded-mocha/specRunner.html" width="400" height="400"></iframe>
+
+  <script type="application/javascript">
+    var testSpecs = {
+      simplePassing: "describe('test embedded mocha', function() {\
+          it('should run', function() {\
+            expect(1)\
+              .toBe(1);\
+          });\
+        });",
+      simpleFailing: "describe('test embedded mocha', function() {\
+          it('should fail', function() {\
+            expect(1)\
+              .toBe(2);\
+          });\
+        });"
+    };
+
+    function postPassingTest() {
+      _postTestSourceCode(testSpecs.simplePassing);
+    }
+
+    function postFailingTest() {
+      _postTestSourceCode(testSpecs.simpleFailing);
+    }
+
+    function postManyTests() {
+      _postTestSourceCode([
+        testSpecs.simplePassing,
+        testSpecs.simplePassing,
+        testSpecs.simplePassing,
+        testSpecs.simpleFailing,
+        testSpecs.simpleFailing,
+        testSpecs.simplePassing
+      ].join('\n'));
+    }
+
+    function _postTestSourceCode(sourceCode) {
+      var iframe = document.getElementById('embeddedJasmine').contentWindow;
+      iframe.postMessage(sourceCode, '*');
+    }
+  </script>
+
+</body>
+</html>
+

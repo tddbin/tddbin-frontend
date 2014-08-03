@@ -15,5 +15,10 @@
     "javascript"
   ],
   "author": "uxebu",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "mocha": "^1.21.3",
+    "referee": "^1.0.3",
+    "requirejs": "^2.1.14"
+  }
 }

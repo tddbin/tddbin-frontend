@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+</head>
+<body>
+  <div id="mocha"></div>
+  <script src="../../node_modules/requirejs/require.js"></script>
+  <script>
+
+    requirejs({
+      baseUrl: '../../node_modules/',
+      paths: {
+        mocha: 'mocha/mocha',
+        referee: 'referee/lib/referee',
+        'referee/expect': 'referee/lib/expect',
+        lodash: 'referee/node_modules/lodash/dist/lodash.min',
+        samsam: 'referee/node_modules/samsam/lib/samsam',
+        bane: 'referee/node_modules/bane/lib/bane'
+      }
+    });
+    var expect;
+    var Mocha;
+    require(['mocha', 'referee/expect'], function(_, importedExpect) {
+      expect = importedExpect;
+    });
+
+    window.addEventListener('message', consumeMessage, false);
+
+    function consumeMessage(messageData) {
+      var specCode = messageData.data;
+
+      document.getElementById('mocha').innerHTML = '';
+      var mocha = new Mocha({reporter: 'html', ui: 'bdd'});
+      mocha.suite.emit('pre-require', this, null, this);
+
+      eval(specCode);
+      mocha.checkLeaks();
+      mocha.run();
+    }
+
+
+  </script>
+</body>
+</html>
