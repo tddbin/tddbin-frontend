@@ -30,6 +30,7 @@
     window.addEventListener('message', consumeMessage, false);
 
     function consumeMessage(messageData) {
+      var sender = messageData.source;
       var specCode = messageData.data;
 
       document.getElementById('mocha').innerHTML = '';
@@ -38,7 +39,12 @@
 
       eval(specCode);
       mocha.checkLeaks();
-      mocha.run();
+      var runner = mocha.run();
+      runner.on('end', onRan);
+      function onRan() {
+        var stats = runner.stats;
+        sender.postMessage(stats, '*');
+      }
     }
 
 

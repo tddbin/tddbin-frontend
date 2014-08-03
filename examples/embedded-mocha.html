@@ -51,10 +51,17 @@
       ].join('\n'));
     }
 
+    var iframe = document.getElementById('embeddedJasmine').contentWindow;
     function _postTestSourceCode(sourceCode) {
-      var iframe = document.getElementById('embeddedJasmine').contentWindow;
       iframe.postMessage(sourceCode, '*');
     }
+
+    window.addEventListener('message', receiveRunnerData, false);
+    function receiveRunnerData(data) {
+      var stats = data.data;
+      console.log(stats);
+    }
+
   </script>
 
 </body>
