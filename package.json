@@ -23,5 +23,9 @@
     "referee": "^1.0.3",
     "requirejs": "^2.1.14",
     "should": "^4.0.4"
+  },
+  "devDependencies": {
+    "amdefine": "^0.1.0",
+    "jasmine-node": "^1.14.5"
   }
 }
