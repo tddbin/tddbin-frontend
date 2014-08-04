@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TDDbin standalone</title>
+  <meta charset="utf-8">
+  <script src="../node_modules/es5-shim/es5-shim.js"></script>
+  <script src="../node_modules/requirejs/require.js"></script>
+  <script type="text/javascript" src="../vendor/ace/src-noconflict/ace.js" charset="utf-8"></script>
+</head>
+<body>
+
+  <h1>Editor example</h1>
+  <button id="runTestsButton">Run tests</button>
+  <div>
+    <div id="editorNode" style="width: 49%; height: 500px; float: left;"></div>
+    <div id="embeddedMocha" style="width: 49%; height: 500px; float: right;"></div>
+  </div>
+
+  <script type="application/javascript">
+
+    var initialTestCode = "\
+describe('test', function(){\n\
+  it('should work', function(){\n\
+    expect(1).toBe(1);\n\
+  })\n\
+});";
+
+    require.config({
+      baseUrl: '../',
+      paths: {
+        react: 'node_modules/react/dist/react',
+        JSXTransformer: 'vendor/jsx-requirejs-plugin/js/JSXTransformer-0.11.0',
+        jsx: 'vendor/jsx-requirejs-plugin/js/jsx',
+        text: 'vendor/jsx-requirejs-plugin/js/text'
+      }
+    });
+
+    require([
+      'src/test-runner/mocha/runner',
+      'src/editor/Editor'
+    ], function(
+      MochaRunner,
+      Editor
+    ){
+      var editor = new Editor('editorNode');
+      editor.init();
+      editor.setContent(initialTestCode);
+
+      var domNode = document.getElementById('embeddedMocha');
+      var runner = new MochaRunner(domNode);
+      var iframeSrc = '../src/test-runner/mocha/spec-runner.html';
+      runner.render(iframeSrc);
+
+      document.getElementById('runTestsButton').addEventListener('click', function() {
+        runner.send(editor.getContent());
+      });
+    });
+  </script>
+</body>
+</html>
+
