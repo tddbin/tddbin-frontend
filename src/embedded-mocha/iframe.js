@@ -4,9 +4,13 @@ define(['react'], function(React) {
 
   var Iframe = React.createClass({
 
+    getIframeRef: function() {
+      return this.refs.iframe.getDOMNode();
+    },
+
     render: function() {
       return (
-        <iframe id="embeddedJasmine" src="../src/embedded-mocha/specRunner.html" width="400" height="400"></iframe>
+        <iframe ref="iframe" src="../src/embedded-mocha/specRunner.html" width="100%" height="400"></iframe>
       );
     }
 
