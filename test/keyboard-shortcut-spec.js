@@ -6,7 +6,13 @@
 
 if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
-define(function() {
+define([
+  '../src/editor/shortcut-manager',
+  '../src/editor/keyboard-util'
+],function(
+  ShortcutManager,
+  keyboardUtil
+) {
 
   describe('tests suite', function() {
     it('should execute', function() {
@@ -30,75 +36,38 @@ define(function() {
       expect(callback).toHaveBeenCalled();
     });
   });
-  
-});
 
-function ShortcutManager() {
-  keyboardUtil.addKeyDownListener(this._keyDown.bind(this));
-  keyboardUtil.addKeyUpListener(this._keyUp.bind(this));
-}
-ShortcutManager.prototype = {
-  _pressedKeys: [],
-  _registeredShortcuts: [],
-  registerShortcut: function(shortcut, callback) {
-    this._registeredShortcuts.push([shortcut, callback]);
-  },
+  // test utils
 
-  _keyDown: function(key) {
-    this._pressedKeys.push(key);
-  },
-
-  _keyUp: function(keyName) {
-    if (keyName != 'Meta') {
-      return;
-    }
-    var pressedKeys = this._pressedKeys;
-    var found = this._registeredShortcuts.filter(function(shortcut) {
-      return shortcut[0].join('+') == pressedKeys.join('+');
+  function mapShortcuts(shortcuts) {
+    var manager = new ShortcutManager();
+    shortcuts.forEach(function(shortcut) {
+      manager.registerShortcut(shortcut[0], shortcut[1]);
     });
-    if (found.length) {
-      // Use the first shortcut map found.
-      var firstShortcut = found[0];
-      firstShortcut[1]();
-    }
-    this._pressedKeys = [];
   }
-};
 
-var keyboardUtil = {
-  addKeyDownListener: function() {},
-  addKeyUpListener: function() {}
-};
-
-// test utils
-
-function mapShortcuts(shortcuts) {
-  var manager = new ShortcutManager();
-  shortcuts.forEach(function(shortcut) {
-    manager.registerShortcut(shortcut[0], shortcut[1]);
+  var keyDownListeners = [];
+  var keyUpListeners = [];
+  spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
+    keyDownListeners.push(fn);
   });
-}
-
-var keyDownListeners = [];
-var keyUpListeners = [];
-spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
-  keyDownListeners.push(fn);
-});
-spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
-  keyUpListeners.push(fn);
-});
-function pressKeysAndKeyUp(keys) {
-  // The first key is (normally) the Meta key, don't fire keyUp yet,
-  // fire it only at the end of it all.
-  var metaKey = keys[0];
-  keyDownListeners[0](metaKey);
-
-  // Fire all keyDowns and keyUps.
-  keys.slice(1).forEach(function(key) {
-    keyDownListeners[0](key);
-    keyUpListeners[0](key);
+  spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
+    keyUpListeners.push(fn);
   });
+  function pressKeysAndKeyUp(keys) {
+    // The first key is (normally) the Meta key, don't fire keyUp yet,
+    // fire it only at the end of it all.
+    var metaKey = keys[0];
+    keyDownListeners[0](metaKey);
 
-  // The final keyUp (of the Meta key).
-  keyUpListeners[0](metaKey);
-}
+    // Fire all keyDowns and keyUps.
+    keys.slice(1).forEach(function(key) {
+      keyDownListeners[0](key);
+      keyUpListeners[0](key);
+    });
+
+    // The final keyUp (of the Meta key).
+    keyUpListeners[0](metaKey);
+  }
+
+});
