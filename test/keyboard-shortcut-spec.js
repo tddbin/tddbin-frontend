@@ -46,8 +46,15 @@ define([
     });
   }
 
-  var keyDownListeners = [];
-  var keyUpListeners = [];
+  var keyDownListeners;
+  var keyUpListeners;
+
+  beforeEach(function() {
+    // Initialize for each test.
+    keyDownListeners = [];
+    keyUpListeners = [];
+  });
+
   spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
     keyDownListeners.push(fn);
   });
