@@ -14,13 +14,14 @@ complies to the API that a test runner has to provide.
 It is in this repo, but is not finished.
 Due to jasmine's stubborn architecture that doesn't allow to reinstanciate it for a new test run
 as it would be needed for a single page app I just left it ... it's basically unusable :(.
-To try what it currently can do run the examples/embedded-jasmine.html in your browser.
+To try what it currently can do run the examples/test-runner/jasmine.html in your browser.
 
 ## Mocha Runner
 The mocha runner is integrated and will most probably become the default runner.
 It is enhanced with [referee](https://github.com/busterjs/referee), which provides jasmine-style expect methods.
 The tests can be written the same way as with jasmine (for the biggest part) - at least
 all standard matchers are available, for details see [the docs](http://docs.busterjs.org/en/latest/modules/referee/#expectations).
+For an example navigate in your browser to the examples/test-runner directory.
 
 ## Custom runner
 This architecture allows to add any kind of runner now.
