@@ -62,19 +62,19 @@ ShortcutManager.prototype = {
   }
 };
 
-function mapShortcuts(shortcuts) {
-  var manager = new ShortcutManager();
-  shortcuts.forEach(function(shortcut) {
-    manager.registerShortcut(shortcut[0], shortcut[1]);
-  });
-}
-
 var keyboardUtil = {
   addKeyDownListener: function() {},
   addKeyUpListener: function() {}
 };
 
 // test utils
+
+function mapShortcuts(shortcuts) {
+  var manager = new ShortcutManager();
+  shortcuts.forEach(function(shortcut) {
+    manager.registerShortcut(shortcut[0], shortcut[1]);
+  });
+}
 
 var keyDownListeners = [];
 var keyUpListeners = [];
