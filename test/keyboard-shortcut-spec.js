@@ -20,7 +20,7 @@ define([
     });
   });
 
-  describe('simple keyboard shortcut', function() {
+  describe('keyboard shortcut', function() {
     it('with one key should call according callback', function() {
       var callback = jasmine.createSpy('callback');
       var shortcut = ['Meta', 'S'];
@@ -35,7 +35,20 @@ define([
       pressKeysAndKeyUp(shortcut);
       expect(callback).toHaveBeenCalled();
     });
+    it('multiple registered shortcuts shold work too', function() {
+      var callback = jasmine.createSpy('callback');
+      var shortcut = ['Meta', 'I', 'I'];
+      mapShortcuts([
+        [['Meta', 'S'], function() {}],
+        [shortcut, callback]
+      ]);
+      pressKeysAndKeyUp(shortcut);
+      expect(callback).toHaveBeenCalled();
+    });
   });
+
+
+
 
   // test utils
 
