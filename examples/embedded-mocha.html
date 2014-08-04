@@ -54,56 +54,23 @@
       }
     });
 
-    require(['src/embedded-mocha/mocha-runner'], function(MochaRunner) {
+    require([
+      'src/embedded-mocha/mocha-runner',
+      'examples/test-runner/mocha-controls'
+    ], function(
+      MochaRunner,
+      MochaControls
+    ){
       var domNode = document.getElementById('embeddedMocha');
       var runner = new MochaRunner(domNode);
       runner.render();
+
+      var controls = new MochaControls(runner);
+      controls.connectButtons('passingTestsButton', 'failingTestsButton', 'manyTestsButton');
+      runner.onStats(function(stats) {
+        document.getElementById('stats').innerHTML = JSON.stringify(stats, null, 2);
+      });
     });
-
-    var testSpecs = {
-      simplePassing: "describe('test embedded mocha', function() {\
-          it('should run', function() {\
-            expect(1)\
-              .toBe(1);\
-          });\
-        });",
-      simpleFailing: "describe('test embedded mocha', function() {\
-          it('should fail', function() {\
-            expect(1)\
-              .toBe(2);\
-          });\
-        });"
-    };
-
-    function postPassingTest() {
-      _postTestSourceCode(testSpecs.simplePassing);
-    }
-
-    function postFailingTest() {
-      _postTestSourceCode(testSpecs.simpleFailing);
-    }
-
-    function postManyTests() {
-      _postTestSourceCode([
-        testSpecs.simplePassing,
-        testSpecs.simplePassing,
-        testSpecs.simplePassing,
-        testSpecs.simpleFailing,
-        testSpecs.simpleFailing,
-        testSpecs.simplePassing
-      ].join('\n'));
-    }
-
-    function _postTestSourceCode(sourceCode) {
-      var iframe = document.getElementById('embeddedJasmine').contentWindow;
-      iframe.postMessage(sourceCode, '*');
-    }
-
-    window.addEventListener('message', receiveRunnerData, false);
-    function receiveRunnerData(data) {
-      var stats = data.data;
-      console.log(stats);
-    }
   </script>
 
 </body>
