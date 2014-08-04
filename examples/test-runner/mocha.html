@@ -3,8 +3,8 @@
 <head>
   <title></title>
   <meta charset="utf-8">
-  <script src="../node_modules/es5-shim/es5-shim.js"></script>
-  <script src="../node_modules/requirejs/require.js"></script>
+  <script src="../../node_modules/es5-shim/es5-shim.js"></script>
+  <script src="../../node_modules/requirejs/require.js"></script>
 </head>
 <body>
 
@@ -46,7 +46,7 @@
 
   <script type="application/javascript">
     require.config({
-      baseUrl: '../',
+      baseUrl: '../../',
       paths: {
         react: 'node_modules/react/dist/react',
         JSXTransformer: 'vendor/jsx-requirejs-plugin/js/JSXTransformer-0.11.0',
@@ -56,7 +56,7 @@
     });
 
     require([
-      'src/embedded-mocha/mocha-runner',
+      'src/test-runner/mocha/runner',
       'examples/test-runner/mocha-controls'
     ], function(
       MochaRunner,
@@ -64,7 +64,7 @@
     ){
       var domNode = document.getElementById('embeddedMocha');
       var runner = new MochaRunner(domNode);
-      var iframeSrc = '../src/embedded-mocha/specRunner.html';
+      var iframeSrc = '../../src/test-runner/mocha/spec-runner.html';
       runner.render(iframeSrc);
 
       var controls = new MochaControls(runner);
