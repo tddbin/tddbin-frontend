@@ -28,11 +28,10 @@
       }
     });
 
-    require(['react', 'jsx!src/embedded-mocha/embedded-mocha'], function(React, Mocha) {
-      React.renderComponent(
-        Mocha(),
-        document.getElementById('embeddedMocha')
-      );
+    require(['src/embedded-mocha/mocha-runner'], function(MochaRunner) {
+      var domNode = document.getElementById('embeddedMocha');
+      var runner = new MochaRunner(domNode);
+      runner.render();
     });
 
     var testSpecs = {

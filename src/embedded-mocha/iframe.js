@@ -1,7 +1,8 @@
 /** @jsx React.DOM */
 
 define(['react'], function(React) {
-  var Mocha = React.createClass({
+
+  var Iframe = React.createClass({
 
     render: function() {
       return (
@@ -11,5 +12,6 @@ define(['react'], function(React) {
 
   });
 
-  return Mocha;
+  return Iframe;
+
 });
