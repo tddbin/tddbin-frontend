@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Editor</title>
+  <meta charset="utf-8">
+  <script src="../node_modules/es5-shim/es5-shim.js"></script>
+  <script src="../node_modules/requirejs/require.js"></script>
+  <script type="text/javascript" src="../vendor/ace/src-noconflict/ace.js" charset="utf-8"></script>
+</head>
+<body>
+
+  <h1>Editor example</h1>
+  <div id="editorNode" style="width: 90%; height: 500px;"></div>
+
+  <script type="application/javascript">
+
+    require.config({
+      baseUrl: '../'
+    });
+
+    require(['src/editor/Editor'], function(Editor) {
+      var editor = new Editor('editorNode');
+      editor.init();
+      editor.setContent('//buh');
+
+      document.addEventListener('keyup', function () {
+        document.getElementById('keyboard-shortcut-help').style.display = 'none';
+//        shortcut.keyUp();
+      });
+      document.addEventListener('keydown', function (evt) {
+//        shortcut.keyPress(evt.keyIdentifier);
+        if (shortcut.isRegisteredAction()) {
+          evt.preventDefault();
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
+
