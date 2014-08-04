@@ -7,13 +7,15 @@ define([
 ) {
 
   function ShortcutManager() {
+    this._pressedKeys = [];
+    this._registeredShortcuts = [];
     keyboardUtil.addKeyDownListener(this._keyDown.bind(this));
     keyboardUtil.addKeyUpListener(this._keyUp.bind(this));
   }
   ShortcutManager.prototype = {
 
-    _pressedKeys: [],
-    _registeredShortcuts: [],
+    _pressedKeys: null,
+    _registeredShortcuts: null,
 
     registerShortcut: function(shortcut, callback) {
       this._registeredShortcuts.push([shortcut, callback]);
