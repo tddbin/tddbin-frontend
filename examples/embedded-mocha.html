@@ -26,6 +26,7 @@
         <br>
         <button id="manyTestsButton">Run many tests</button>
       </div>
+
       <h2>Return values</h2>
       <pre id="stats"></pre>
     </div>
@@ -63,7 +64,8 @@
     ){
       var domNode = document.getElementById('embeddedMocha');
       var runner = new MochaRunner(domNode);
-      runner.render();
+      var iframeSrc = '../src/embedded-mocha/specRunner.html';
+      runner.render(iframeSrc);
 
       var controls = new MochaControls(runner);
       controls.connectButtons('passingTestsButton', 'failingTestsButton', 'manyTestsButton');

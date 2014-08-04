@@ -13,8 +13,8 @@ define([
 
   MochaRunner.prototype = {
 
-    render: function() {
-      var iframe = React.renderComponent(Iframe(), this._domNode);
+    render: function(iframeSrc) {
+      var iframe = React.renderComponent(Iframe({iframeSrc: iframeSrc}), this._domNode);
       this._iframeRef = iframe.getIframeRef();
     },
 
