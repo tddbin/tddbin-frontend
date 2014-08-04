@@ -48,7 +48,10 @@ ShortcutManager.prototype = {
     this._pressedKeys.push(key);
   },
 
-  _keyUp: function() {
+  _keyUp: function(keyName) {
+    if (keyName != 'Meta') {
+      return;
+    }
     var pressedKeys = this._pressedKeys;
     var found = this._registeredShortcuts.filter(function(shortcut) {
       return shortcut[0].join('+') == pressedKeys.join('+');
@@ -87,7 +90,8 @@ spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
 function pressKeysAndKeyUp(keys) {
   // The first key is (normally) the Meta key, don't fire keyUp yet,
   // fire it only at the end of it all.
-  keyDownListeners[0](keys[0]);
+  var metaKey = keys[0];
+  keyDownListeners[0](metaKey);
 
   // Fire all keyDowns and keyUps.
   keys.slice(1).forEach(function(key) {
@@ -96,5 +100,5 @@ function pressKeysAndKeyUp(keys) {
   });
 
   // The final keyUp (of the Meta key).
-  keyUpListeners[0]();
+  keyUpListeners[0](metaKey);
 }
