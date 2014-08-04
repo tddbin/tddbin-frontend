@@ -85,8 +85,16 @@ spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
   keyUpListeners.push(fn);
 });
 function pressKeysAndKeyUp(keys) {
-  keys.forEach(function(key) {
+  // The first key is (normally) the Meta key, don't fire keyUp yet,
+  // fire it only at the end of it all.
+  keyDownListeners[0](keys[0]);
+
+  // Fire all keyDowns and keyUps.
+  keys.slice(1).forEach(function(key) {
     keyDownListeners[0](key);
+    keyUpListeners[0](key);
   });
-  keyUpListeners[0] && keyUpListeners[0]();
+
+  // The final keyUp (of the Meta key).
+  keyUpListeners[0]();
 }
