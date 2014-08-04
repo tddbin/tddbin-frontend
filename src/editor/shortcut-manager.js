@@ -11,8 +11,10 @@ define([
     keyboardUtil.addKeyUpListener(this._keyUp.bind(this));
   }
   ShortcutManager.prototype = {
+
     _pressedKeys: [],
     _registeredShortcuts: [],
+
     registerShortcut: function(shortcut, callback) {
       this._registeredShortcuts.push([shortcut, callback]);
     },
@@ -25,16 +27,21 @@ define([
       if (keyName != 'Meta') {
         return;
       }
-      var pressedKeys = this._pressedKeys;
+      var callback = this._getCallbackForPressedKeys(this._pressedKeys);
+      callback && callback();
+      this._pressedKeys = [];
+    },
+
+    _getCallbackForPressedKeys: function(pressedKeys) {
       var found = this._registeredShortcuts.filter(function(shortcut) {
         return shortcut[0].join('+') == pressedKeys.join('+');
       });
       if (found.length) {
         // Use the first shortcut map found.
         var firstShortcut = found[0];
-        firstShortcut[1]();
+        return firstShortcut[1];
       }
-      this._pressedKeys = [];
+      return null;
     }
   };
 
