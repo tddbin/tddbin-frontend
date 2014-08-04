@@ -2,10 +2,12 @@ define(function () {
 
   function Editor (domNodeId) {
     this._domNodeId = domNodeId;
+    this._init();
   }
 
   Editor.prototype = {
-    init: function  () {
+
+    _init: function  () {
       var editor = ace.edit(this._domNodeId);
       editor.getSession().setMode('ace/mode/javascript');
       editor.getSession().setTabSize(2);
