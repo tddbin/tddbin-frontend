@@ -1,4 +1,4 @@
-# TDDbin UI
+# TDDbin frontend
 
 This project contains all the UI stuff for TDDbin, it should be runnable separately
 without any backend and aims to provide all components modularly.
