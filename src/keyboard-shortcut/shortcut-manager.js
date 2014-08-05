@@ -31,7 +31,8 @@ define([
 
     _pressedKeys: null,
     _registeredShortcuts: null,
-    _firstKeys: null,
+    _firstKeys: null, // all possible sortcut starter keys
+    _shortcutStartKeyName: null, // the key that started the current shortcut
 
     registerShortcut: function(shortcut, callback) {
       this._registeredShortcuts.push([shortcut, callback]);
@@ -50,6 +51,7 @@ define([
       var isStartOfShortcut = this._pressedKeys.length == 0;
       if (isAFirstKey && isStartOfShortcut) {
         this._pressedKeys = [keyName];
+        this._shortcutStartKeyName = keyName;
       } else {
         var hasShortcutStartedAlready = this._pressedKeys.length > 0;
         if (hasShortcutStartedAlready) {
@@ -61,7 +63,11 @@ define([
       }
     },
 
-    _keyUp: function() {
+    _keyUp: function(keyCode) {
+      var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
+      if (keyName != this._shortcutStartKeyName) {
+        return;
+      }
       var callback = this._getCallbackForPressedKeys(this._pressedKeys);
       if (callback) {
         callback();
