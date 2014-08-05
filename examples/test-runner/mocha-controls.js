@@ -2,9 +2,12 @@ define(function() {
 
   var testSpecs = {
     simplePassing: "describe('test embedded mocha', function() {\
-        it('should run', function() {\
+        it('should run jasmine-style tests', function() {\
           expect(1)\
             .toBe(1);\
+        });\
+        it('should run should-style tests', function() {\
+          should(1).ok;\
         });\
       });",
     simpleFailing: "describe('test embedded mocha', function() {\
