@@ -20,19 +20,31 @@ define([
     });
   });
 
+  var keyCodeMap = ShortcutManager.keyCodeToReadableKeyMap;
+  function toKeyCodes(shortcut) {
+    function fromKeyToKeyCode(key) {
+      for (var keyCode in keyCodeMap) {
+        if (key == keyCodeMap[keyCode]) {
+          return keyCode;
+        }
+      }
+    }
+    return shortcut.map(fromKeyToKeyCode);
+  }
+
   describe('keyboard shortcut', function() {
     it('with one key should call according callback', function() {
       var callback = jasmine.createSpy('callback');
       var shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
-      pressKeysAndKeyUp(shortcut);
+      pressKeysAndKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
     it('with two keys should call according callback', function() {
       var callback = jasmine.createSpy('callback');
       var shortcut = ['Meta', 'I', 'I'];
       mapShortcuts([[shortcut, callback]]);
-      pressKeysAndKeyUp(shortcut);
+      pressKeysAndKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
     it('multiple registered shortcuts shold work too', function() {
@@ -42,7 +54,7 @@ define([
         [['Meta', 'S'], function() {}],
         [shortcut, callback]
       ]);
-      pressKeysAndKeyUp(shortcut);
+      pressKeysAndKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
   });
