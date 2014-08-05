@@ -10,9 +10,10 @@
 <body>
 
   <h1>Editor example</h1>
-  <button id="runTestsButton">Run tests</button>
+  <button id="runTestsButton" style="font-size: large; margin-bottom: 1em;">Run tests (Meta+S or Ctrl+S)</button>
+  &lt;=== Press this button (or use the shortcut) to run your test code!
   <div>
-    <div id="editorNode" style="width: 49%; height: 500px; float: left;"></div>
+    <div id="editorNode" style="width: 49%; height: 500px; float: left; background-color: lightyellow;"></div>
     <div id="embeddedMocha" style="width: 49%; height: 500px; float: right;"></div>
   </div>
 
@@ -20,9 +21,12 @@
 
     var initialTestCode = "\
 describe('test', function(){\n\
-  it('should work', function(){\n\
+  it('jasmine style', function(){\n\
     expect(1).toBe(1);\n\
-  })\n\
+  });\n\
+  it('should style', function(){\n\
+    should(1).ok;\n\
+  });\n\
 });";
 
     require.config({
@@ -37,13 +41,14 @@ describe('test', function(){\n\
 
     require([
       'src/test-runner/mocha/runner',
-      'src/editor/Editor'
+      'src/editor/editor',
+      'src/keyboard-shortcut/shortcut-manager'
     ], function(
       MochaRunner,
-      Editor
+      Editor,
+      ShortcutManager
     ){
       var editor = new Editor('editorNode');
-      editor.init();
       editor.setContent(initialTestCode);
 
       var domNode = document.getElementById('embeddedMocha');
@@ -51,9 +56,14 @@ describe('test', function(){\n\
       var iframeSrc = '../src/test-runner/mocha/spec-runner.html';
       runner.render(iframeSrc);
 
-      document.getElementById('runTestsButton').addEventListener('click', function() {
+      var executeTestCode = function() {
         runner.send(editor.getContent());
-      });
+      };
+      document.getElementById('runTestsButton').addEventListener('click', executeTestCode);
+
+      var manager = new ShortcutManager();
+      manager.registerShortcut(['Meta', 'S'], executeTestCode);
+      manager.registerShortcut(['Ctrl', 'S'], executeTestCode);
     });
   </script>
 </body>
