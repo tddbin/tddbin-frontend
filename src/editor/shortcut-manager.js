@@ -12,6 +12,13 @@ define([
     keyboardUtil.addKeyDownListener(this._keyDown.bind(this));
     keyboardUtil.addKeyUpListener(this._keyUp.bind(this));
   }
+
+  ShortcutManager.keyCodeToReadableKeyMap = {
+    91: 'Meta',
+    83: String.fromCharCode(83),
+    73: String.fromCharCode(73)
+  };
+
   ShortcutManager.prototype = {
 
     _pressedKeys: null,
@@ -21,11 +28,13 @@ define([
       this._registeredShortcuts.push([shortcut, callback]);
     },
 
-    _keyDown: function(key) {
-      this._pressedKeys.push(key);
+    _keyDown: function(keyCode) {
+      var keyMap = ShortcutManager.keyCodeToReadableKeyMap;
+      this._pressedKeys.push(keyMap[keyCode]);
     },
 
-    _keyUp: function(keyName) {
+    _keyUp: function(keyCode) {
+      var keyName = ShortcutManager.keyCodeToReadableKeyMap[keyCode];
       if (keyName != 'Meta') {
         return;
       }
