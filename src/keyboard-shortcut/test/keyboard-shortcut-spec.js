@@ -7,8 +7,8 @@
 if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
-  '../src/editor/shortcut-manager',
-  '../src/editor/keyboard-util'
+  '../shortcut-manager',
+  '../keyboard-util'
 ],function(
   ShortcutManager,
   keyboardUtil
