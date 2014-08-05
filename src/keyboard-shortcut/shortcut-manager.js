@@ -9,7 +9,7 @@ define([
   function ShortcutManager() {
     this._pressedKeys = [];
     this._registeredShortcuts = [];
-    this._firstKeys = ['Meta', 'Ctrl'];
+    this._firstKeys = [];
     keyboardUtil.addKeyDownListener(this._keyDown.bind(this));
     keyboardUtil.addKeyUpListener(this._keyUp.bind(this));
   }
@@ -30,6 +30,12 @@ define([
 
     registerShortcut: function(shortcut, callback) {
       this._registeredShortcuts.push([shortcut, callback]);
+      this._rememberFirstKey(shortcut[0]);
+    },
+    _rememberFirstKey: function(keyName) {
+      if (this._firstKeys.indexOf(keyName) == -1) {
+        this._firstKeys.push(keyName);
+      }
     },
 
     _keyDown: function(keyCode) {
