@@ -20,11 +20,21 @@
         // referee can find them :(. #requirejsMadness
         lodash: 'referee/node_modules/lodash/dist/lodash.min',
         samsam: 'referee/node_modules/samsam/lib/samsam',
-        bane: 'referee/node_modules/bane/lib/bane'
+        bane: 'referee/node_modules/bane/lib/bane',
+        should: 'should/should.min'
       }
     });
-    require(['mocha', 'referee/expect'], function(_, importedExpect) {
+    require([
+      'mocha',
+      'referee/expect',
+      'should'
+    ], function(
+      _,
+      importedExpect,
+      importedShould
+    ) {
       var expect = importedExpect; // Is used by the tests, that get eval'ed.
+      var should = importedShould;
 
       window.addEventListener('message', consumeMessage, false);
 
