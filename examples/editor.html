@@ -18,19 +18,19 @@
       baseUrl: '../'
     });
 
-    require(['src/editor/Editor'], function(Editor) {
+    require([
+      'src/editor/editor',
+      'src/editor/shortcut-manager'
+    ], function(
+      Editor,
+      ShortcutManager
+    ) {
       var editor = new Editor('editorNode');
       editor.setContent('// comment');
 
-      document.addEventListener('keyup', function () {
-        document.getElementById('keyboard-shortcut-help').style.display = 'none';
-//        shortcut.keyUp();
-      });
-      document.addEventListener('keydown', function (evt) {
-//        shortcut.keyPress(evt.keyIdentifier);
-        if (shortcut.isRegisteredAction()) {
-          evt.preventDefault();
-        }
+      var manager = new ShortcutManager();
+      manager.registerShortcut(['Meta', 'S'], function() {
+        console.log('save it');
       });
     });
 
