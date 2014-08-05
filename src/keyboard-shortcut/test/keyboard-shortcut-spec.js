@@ -52,6 +52,13 @@ define([
       pressKeys(toKeyCodes(shortcut));
       expect(callback).not.toHaveBeenCalled();
     });
+    it('press shortcut twice', function() {
+      var shortcut = ['Meta', 'S'];
+      mapShortcuts([[shortcut, callback]]);
+      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+      expect(callback.callCount).toBe(2);
+    });
 
     it('NOT starting with `Meta`', function() {
       var shortcut = ['Ctrl', 'S'];

@@ -71,6 +71,7 @@ define([
       var callback = this._getCallbackForPressedKeys(this._pressedKeys);
       if (callback) {
         callback();
+        this._pressedKeys = [];
       }
     },
 
