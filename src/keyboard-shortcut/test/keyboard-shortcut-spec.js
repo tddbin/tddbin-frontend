@@ -61,10 +61,17 @@ define([
       pressKeysAndKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
+
+    it('invalid shortcut followed by valid shortcut, should fire callback', function() {
+      var shortcut = ['Meta', 'I', 'I'];
+      mapShortcuts([[shortcut, callback]]);
+      pressKeysAndKeyUp(toKeyCodes(['A']));
+      pressKeysAndKeyUp(toKeyCodes(shortcut));
+      expect(callback).toHaveBeenCalled();
+    });
   });
 
-
-
+  
 
   // test utils
 

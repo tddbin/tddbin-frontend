@@ -29,18 +29,19 @@ define([
     },
 
     _keyDown: function(keyCode) {
+      var keyName = ShortcutManager.keyCodeToReadableKeyMap[keyCode];
+      if (keyName == 'Meta') {
+        this._pressedKeys = [];
+      }
       var keyMap = ShortcutManager.keyCodeToReadableKeyMap;
       this._pressedKeys.push(keyMap[keyCode]);
     },
 
-    _keyUp: function(keyCode) {
-      var keyName = ShortcutManager.keyCodeToReadableKeyMap[keyCode];
-      if (keyName != 'Meta') {
-        return;
-      }
+    _keyUp: function() {
       var callback = this._getCallbackForPressedKeys(this._pressedKeys);
-      callback && callback();
-      this._pressedKeys = [];
+      if (callback) {
+        callback();
+      }
     },
 
     _getCallbackForPressedKeys: function(pressedKeys) {
