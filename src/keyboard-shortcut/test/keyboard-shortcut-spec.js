@@ -84,14 +84,6 @@ define([
     });
   });
 
-  describe('DOM event handling', function() {
-    it('should prevent default when shortcut is `overridden`', function() {
-
-    });
-  });
-
-  
-
   // test utils
 
   function mapShortcuts(shortcuts) {

@@ -19,7 +19,6 @@ define([
     return shortcut.map(fromKeyToKeyCode);
   }
 
-
   return {
     toKeyCodes: toKeyCodes
   }
