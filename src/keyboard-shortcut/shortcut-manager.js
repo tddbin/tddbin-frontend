@@ -44,7 +44,7 @@ define([
       }
     },
 
-    _keyDown: function(keyCode) {
+    _keyDown: function(keyCode, eventObject) {
       var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
       var isAFirstKey = this._firstKeys.indexOf(keyName) > -1;
       var isStartOfShortcut = this._pressedKeys.length == 0;
@@ -54,6 +54,9 @@ define([
         var hasShortcutStartedAlready = this._pressedKeys.length > 0;
         if (hasShortcutStartedAlready) {
           this._pressedKeys.push(keyName);
+        }
+        if (this._isRegisteredShortcut(this._pressedKeys)) {
+          eventObject.preventDefault();
         }
       }
     },
@@ -75,6 +78,10 @@ define([
         return firstShortcut[1];
       }
       return null;
+    },
+
+    _isRegisteredShortcut: function(pressedKeys) {
+      return this._getCallbackForPressedKeys(pressedKeys) != null;
     }
   };
 

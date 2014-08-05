@@ -5,8 +5,7 @@ define(function() {
   var keyboardUtil = {
     addKeyDownListener: function(fn) {
       document.addEventListener('keydown', function(evt) {
-        fn(evt.keyCode);
-//        evt.preventDefault();
+        fn(evt.keyCode, evt);
       });
     },
 

@@ -108,15 +108,16 @@ define([
   spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
     keyUpListeners.push(fn);
   });
+  var eventObjectMock = {preventDefault: noop};
   function pressKeysAndKeyUp(keys) {
     // The first key is (normally) the Meta key, don't fire keyUp yet,
     // fire it only at the end of it all.
     var metaKey = keys[0];
-    keyDownListeners[0](metaKey);
+    keyDownListeners[0](metaKey, eventObjectMock);
 
     // Fire all keyDowns and keyUps.
     keys.slice(1).forEach(function(key) {
-      keyDownListeners[0](key);
+      keyDownListeners[0](key, eventObjectMock);
       keyUpListeners[0](key);
     });
 
