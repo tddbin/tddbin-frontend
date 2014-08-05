@@ -35,6 +35,7 @@ define([
 
     _keyUp: function(keyCode) {
       var keyName = ShortcutManager.keyCodeToReadableKeyMap[keyCode];
+console.log('keyup', this._pressedKeys);
       if (keyName != 'Meta') {
         return;
       }
