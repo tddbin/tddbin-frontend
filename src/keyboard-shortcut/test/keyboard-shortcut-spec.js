@@ -2,32 +2,22 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
   '../shortcut-manager',
-  '../keyboard-util'
+  '../keyboard-util',
+  './util'
 ],function(
   ShortcutManager,
-  keyboardUtil
+  keyboardUtil,
+  util
 ) {
 
   var noop = function() {};
+  var toKeyCodes = util.toKeyCodes;
 
   describe('tests suite', function() {
     it('should execute', function() {
       expect(true).toBe(true);
     });
   });
-
-  var keyCodeMap = ShortcutManager.keyCodeToReadableKeyMap;
-  function toKeyCodes(shortcut) {
-    function fromKeyToKeyCode(key) {
-      for (var keyCode in keyCodeMap) {
-        if (key == keyCodeMap[keyCode]) {
-          return keyCode;
-        }
-      }
-      return (''+key).charCodeAt(0);
-    }
-    return shortcut.map(fromKeyToKeyCode);
-  }
 
   describe('keyboard shortcut', function() {
     var callback;
