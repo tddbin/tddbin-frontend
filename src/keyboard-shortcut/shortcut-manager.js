@@ -46,9 +46,9 @@ define([
 
     _keyDown: function(keyCode) {
       var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
-      var isPossibleFirstKey = this._firstKeys.indexOf(keyName) > -1;
+      var isAFirstKey = this._firstKeys.indexOf(keyName) > -1;
       var isStartOfShortcut = this._pressedKeys.length == 0;
-      if (isPossibleFirstKey && isStartOfShortcut) {
+      if (isAFirstKey && isStartOfShortcut) {
         this._pressedKeys = [keyName];
       } else {
         var hasShortcutStartedAlready = this._pressedKeys.length > 0;
