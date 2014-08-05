@@ -37,6 +37,7 @@ define([
       this._registeredShortcuts.push([shortcut, callback]);
       this._rememberFirstKey(shortcut[0]);
     },
+
     _rememberFirstKey: function(keyName) {
       if (this._firstKeys.indexOf(keyName) == -1) {
         this._firstKeys.push(keyName);
