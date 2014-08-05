@@ -16,6 +16,7 @@
     <div id="editorNode" style="width: 49%; height: 500px; float: left; background-color: lightyellow;"></div>
     <div id="embeddedMocha" style="width: 49%; height: 500px; float: right;"></div>
   </div>
+  <div id="keyboard-shortcut-overlay"></div>
 
   <script type="application/javascript">
 
@@ -42,16 +43,19 @@ describe('test', function(){\n\
     require([
       'src/test-runner/mocha/runner',
       'src/editor/editor',
-      'src/keyboard-shortcut/shortcut-manager'
+      'src/keyboard-shortcut/shortcut-manager',
+      'src/keyboard-shortcut-overlay/overlay'
     ], function(
       MochaRunner,
       Editor,
-      ShortcutManager
+      ShortcutManager,
+      ShortcutOverlay
     ){
+      var $ = document.getElementById.bind(document);
       var editor = new Editor('editorNode');
       editor.setContent(initialTestCode);
 
-      var domNode = document.getElementById('embeddedMocha');
+      var domNode = $('embeddedMocha');
       var runner = new MochaRunner(domNode);
       var iframeSrc = '../src/test-runner/mocha/spec-runner.html';
       runner.render(iframeSrc);
@@ -64,6 +68,9 @@ describe('test', function(){\n\
       var manager = new ShortcutManager();
       manager.registerShortcut(['Meta', 'S'], executeTestCode);
       manager.registerShortcut(['Ctrl', 'S'], executeTestCode);
+
+      var overlay = new ShortcutOverlay($('keyboard-shortcut-overlay'));
+      overlay.render();
     });
   </script>
 </body>
