@@ -17,11 +17,14 @@ define([
   ShortcutManager.keyCodeToReadableKeyMap = {
     17: 'Ctrl',
     18: 'Alt',
-    91: 'Meta',
-    65: String.fromCharCode(65), // A
-    66: String.fromCharCode(66), // B
-    83: String.fromCharCode(83), // S
-    73: String.fromCharCode(73) // I
+    91: 'Meta'
+  };
+  ShortcutManager.mapKeyCodeToReadable = function(keyCode) {
+    var keyCodeMap = ShortcutManager.keyCodeToReadableKeyMap;
+    if (keyCode in keyCodeMap) {
+      return keyCodeMap[keyCode];
+    }
+    return String.fromCharCode(keyCode);
   };
 
   ShortcutManager.prototype = {
@@ -41,7 +44,7 @@ define([
     },
 
     _keyDown: function(keyCode) {
-      var keyName = ShortcutManager.keyCodeToReadableKeyMap[keyCode];
+      var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
       var isPossibleFirstKey = this._firstKeys.indexOf(keyName) > -1;
       var isStartOfShortcut = this._pressedKeys.length == 0;
       if (isPossibleFirstKey && isStartOfShortcut) {
