@@ -30,6 +30,7 @@ define([
           return keyCode;
         }
       }
+      return (''+key).charCodeAt(0);
     }
     return shortcut.map(fromKeyToKeyCode);
   }
