@@ -1,11 +1,9 @@
 if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
-  '../shortcut-manager',
-  '../keyboard-util'
+  '../shortcut-manager'
 ],function(
-  ShortcutManager,
-  keyboardUtil
+  ShortcutManager
 ) {
 
   var keyCodeMap = ShortcutManager.keyCodeToReadableKeyMap;
