@@ -62,6 +62,13 @@ define([
       expect(callback).toHaveBeenCalled();
     });
 
+    it('NOT starting with `Meta`', function() {
+      var shortcut = ['Ctrl', 'S'];
+      mapShortcuts([[shortcut, callback]]);
+      pressKeysAndKeyUp(toKeyCodes(shortcut));
+      expect(callback).toHaveBeenCalled();
+    });
+
     it('invalid shortcut followed by valid shortcut, should fire callback', function() {
       var shortcut = ['Meta', 'I', 'I'];
       mapShortcuts([[shortcut, callback]]);

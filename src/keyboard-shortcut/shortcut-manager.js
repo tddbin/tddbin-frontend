@@ -9,11 +9,14 @@ define([
   function ShortcutManager() {
     this._pressedKeys = [];
     this._registeredShortcuts = [];
+    this._firstKeys = ['Meta', 'Ctrl'];
     keyboardUtil.addKeyDownListener(this._keyDown.bind(this));
     keyboardUtil.addKeyUpListener(this._keyUp.bind(this));
   }
 
   ShortcutManager.keyCodeToReadableKeyMap = {
+    17: 'Ctrl',
+    18: 'Alt',
     91: 'Meta',
     83: String.fromCharCode(83),
     73: String.fromCharCode(73)
@@ -23,6 +26,7 @@ define([
 
     _pressedKeys: null,
     _registeredShortcuts: null,
+    _firstKeys: null,
 
     registerShortcut: function(shortcut, callback) {
       this._registeredShortcuts.push([shortcut, callback]);
@@ -30,7 +34,7 @@ define([
 
     _keyDown: function(keyCode) {
       var keyName = ShortcutManager.keyCodeToReadableKeyMap[keyCode];
-      if (keyName == 'Meta') {
+      if (this._firstKeys.indexOf(keyName) > -1) {
         this._pressedKeys = [];
       }
       var keyMap = ShortcutManager.keyCodeToReadableKeyMap;
