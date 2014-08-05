@@ -14,6 +14,8 @@ define([
   keyboardUtil
 ) {
 
+  var noop = function() {};
+
   describe('tests suite', function() {
     it('should execute', function() {
       expect(true).toBe(true);
@@ -33,25 +35,27 @@ define([
   }
 
   describe('keyboard shortcut', function() {
+    var callback;
+    beforeEach(function() {
+      callback = jasmine.createSpy('callback');
+    });
     it('with one key should call according callback', function() {
-      var callback = jasmine.createSpy('callback');
       var shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
     it('with two keys should call according callback', function() {
-      var callback = jasmine.createSpy('callback');
       var shortcut = ['Meta', 'I', 'I'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
-    it('multiple registered shortcuts shold work too', function() {
-      var callback = jasmine.createSpy('callback');
+    it('multiple registered shortcuts should fire the right one', function() {
       var shortcut = ['Meta', 'I', 'I'];
+      var unusedShortcut = ['Meta', 'S'];
       mapShortcuts([
-        [['Meta', 'S'], function() {}],
+        [unusedShortcut, noop],
         [shortcut, callback]
       ]);
       pressKeysAndKeyUp(toKeyCodes(shortcut));
