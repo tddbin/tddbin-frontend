@@ -1,9 +1,3 @@
-/*
- * - key combo Meta+S should fire on keyup
- * - key combo Meta+I+I should fire on keyup
- *
- **/
-
 if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
