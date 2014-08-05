@@ -68,6 +68,27 @@ define([
       pressKeysAndKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
+    it('overlapping shortcuts', function() {
+      var shortcut = ['Meta', 'Ctrl', 'S'];
+      var shortcut1 = ['Ctrl', 'S'];
+      mapShortcuts([
+        [shortcut, callback],
+        [shortcut1, noop]
+      ]);
+      pressKeysAndKeyUp(toKeyCodes(shortcut));
+      expect(callback).toHaveBeenCalled();
+    });
+    it('overlapping shortcuts and invalid keys before', function() {
+      var shortcut = ['Meta', 'Ctrl', 'S'];
+      var shortcut1 = ['Ctrl', 'S'];
+      mapShortcuts([
+        [shortcut, callback],
+        [shortcut1, noop]
+      ]);
+      pressKeysAndKeyUp(toKeyCodes(['A', 'B']));
+      pressKeysAndKeyUp(toKeyCodes(shortcut));
+      expect(callback).toHaveBeenCalled();
+    });
 
     it('invalid shortcut followed by valid shortcut, should fire callback', function() {
       var shortcut = ['Meta', 'I', 'I'];

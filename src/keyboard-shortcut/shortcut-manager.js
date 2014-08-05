@@ -18,8 +18,10 @@ define([
     17: 'Ctrl',
     18: 'Alt',
     91: 'Meta',
-    83: String.fromCharCode(83),
-    73: String.fromCharCode(73)
+    65: String.fromCharCode(65), // A
+    66: String.fromCharCode(66), // B
+    83: String.fromCharCode(83), // S
+    73: String.fromCharCode(73) // I
   };
 
   ShortcutManager.prototype = {
@@ -40,11 +42,16 @@ define([
 
     _keyDown: function(keyCode) {
       var keyName = ShortcutManager.keyCodeToReadableKeyMap[keyCode];
-      if (this._firstKeys.indexOf(keyName) > -1) {
-        this._pressedKeys = [];
+      var isPossibleFirstKey = this._firstKeys.indexOf(keyName) > -1;
+      var isStartOfShortcut = this._pressedKeys.length == 0;
+      if (isPossibleFirstKey && isStartOfShortcut) {
+        this._pressedKeys = [keyName];
+      } else {
+        var hasShortcutStartedAlready = this._pressedKeys.length > 0;
+        if (hasShortcutStartedAlready) {
+          this._pressedKeys.push(keyName);
+        }
       }
-      var keyMap = ShortcutManager.keyCodeToReadableKeyMap;
-      this._pressedKeys.push(keyMap[keyCode]);
     },
 
     _keyUp: function() {
