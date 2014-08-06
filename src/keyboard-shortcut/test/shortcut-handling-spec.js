@@ -11,7 +11,6 @@ define([
 ) {
 
   var noop = function() {};
-  var toKeyCodes = util.toKeyCodes;
 
   describe('tests suite', function() {
     it('should execute', function() {
