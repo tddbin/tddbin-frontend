@@ -101,11 +101,19 @@ define([
       });
     });
 
-    it('dont fire before Meta-keyUp', function() {
-      var shortcut = ['Meta', 'S'];
-      mapShortcuts([[shortcut, callback]]);
-      pressKeys(toKeyCodes(shortcut));
-      expect(callback).not.toHaveBeenCalled();
+    describe('shoud NOT fire', function() {
+      it('before Meta-keyUp', function() {
+        var shortcut = ['Meta', 'S'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeys(toKeyCodes(shortcut));
+        expect(callback).not.toHaveBeenCalled();
+      });
+      it('for shortcut+extra key was pressed', function() {
+        var shortcut = ['Meta', 'S'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut.concat(shortcut[1])));
+        expect(callback).not.toHaveBeenCalled();
+      });
     });
 
     // test utils
