@@ -2,6 +2,8 @@
 =================
 - added ROADMAP.md and LICENSE
 - make shortcut overlay work
+- add badges (travis, codacy, etc.)
+- when browser looses focus trigger hiding of shortcut overlay
 
 0.0.1  2014-08-06
 =================
