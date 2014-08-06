@@ -85,9 +85,9 @@ define([
       var callback = this._getCallbackForPressedKeys(this._pressedKeys);
       if (callback) {
         callback();
-        this._onShortcutEndCallback && this._onShortcutEndCallback();
       }
       this._pressedKeys = [];
+      this._onShortcutEndCallback && this._onShortcutEndCallback();
     },
 
     _getCallbackForPressedKeys: function(pressedKeys) {

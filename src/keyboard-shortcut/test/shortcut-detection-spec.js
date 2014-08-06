@@ -58,10 +58,17 @@ define([
         expect(callback).toHaveBeenCalled();
       });
 
-      it('DONT fire if its just the first key', function() {
+      it('when just first key of shortcut was pressed', function() {
         var callback = jasmine.createSpy('callback');
         manager.onShortcutEnd(callback);
         keyPressEmulation.pressByKeyNames([shortcut[0]]);
+        expect(callback).toHaveBeenCalled();
+      });
+
+      it('DONT fire if its just the first key', function() {
+        var callback = jasmine.createSpy('callback');
+        manager.onShortcutEnd(callback);
+        keyPressEmulation.keyDownByKeyName(shortcut[0]);
         expect(callback).not.toHaveBeenCalled();
       });
 
