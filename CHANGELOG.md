@@ -1,3 +1,7 @@
+0.0.2  2014-08-??
+=================
+- added ROADMAP.md
+
 0.0.1  2014-08-06
 =================
 - added half-working jasmine test-runner
