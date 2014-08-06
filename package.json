@@ -4,7 +4,7 @@
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node src/"
+    "test": "jasmine-node src/"
   },
   "keywords": [
     "tddbin",
