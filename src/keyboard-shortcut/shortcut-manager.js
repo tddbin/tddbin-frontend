@@ -44,6 +44,11 @@ define([
       this._onPossibleShortcutCallback = callback;
     },
 
+    _onShortcutEndCallback: null,
+    onShortcutEnd: function(callback) {
+      this._onShortcutEndCallback = callback;
+    },
+
     _rememberFirstKey: function(keyName) {
       if (this._firstKeys.indexOf(keyName) == -1) {
         this._firstKeys.push(keyName);
@@ -78,6 +83,7 @@ define([
       var callback = this._getCallbackForPressedKeys(this._pressedKeys);
       if (callback) {
         callback();
+        this._onShortcutEndCallback && this._onShortcutEndCallback();
       }
       this._pressedKeys = [];
     },

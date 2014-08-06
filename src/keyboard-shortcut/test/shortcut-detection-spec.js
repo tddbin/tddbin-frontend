@@ -38,6 +38,24 @@ define([
       keyPressEmulation.pressByKeyNames(shortcut);
       expect(callback.callCount).toBe(shortcut.length);
     });
+
+    describe('fire callback given to onShortcutEnd', function(){
+
+      it('when the shortcut is done', function() {
+        var callback = jasmine.createSpy('callback');
+        manager.onShortcutEnd(callback);
+        keyPressEmulation.pressByKeyNames(shortcut);
+        expect(callback).toHaveBeenCalled();
+      });
+
+      it('DONT fire if its just the first key', function() {
+        var callback = jasmine.createSpy('callback');
+        manager.onShortcutEnd(callback);
+        keyPressEmulation.pressByKeyNames([shortcut[0]]);
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+    });
   });
 
 });
