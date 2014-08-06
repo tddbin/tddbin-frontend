@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/uxebu/tddbin-frontend.svg)](https://travis-ci.org/uxebu/tddbin-frontend)
+![Dependencies Status](https://david-dm.org/uxebu/tddbin-frontend.png)
+
 
 # TDDbin frontend
 
