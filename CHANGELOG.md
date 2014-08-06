@@ -1,6 +1,6 @@
 0.0.2  2014-08-??
 =================
-- added ROADMAP.md
+- added ROADMAP.md and LICENSE
 
 0.0.1  2014-08-06
 =================
