@@ -2,11 +2,11 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
   '../shortcut-manager',
-  '../keyboard-util',
+  '../keyboard-event-util',
   './util'
 ],function(
   ShortcutManager,
-  keyboardUtil,
+  keyboardEventUtil,
   util
 ) {
 
@@ -19,10 +19,10 @@ define([
     beforeEach(function() {
       keyDownListeners = [];
       keyUpListeners = [];
-      spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
+      spyOn(keyboardEventUtil, 'addKeyDownListener').andCallFake(function(fn) {
         keyDownListeners.push(fn);
       });
-      spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
+      spyOn(keyboardEventUtil, 'addKeyUpListener').andCallFake(function(fn) {
         keyUpListeners.push(fn);
       });
     });
@@ -35,7 +35,7 @@ define([
 
       var lastKeyDownReturnValue = pressKeys(shortcut);
 
-      expect(lastKeyDownReturnValue).toBe(keyboardUtil.PREVENT_DEFAULT_ACTION);
+      expect(lastKeyDownReturnValue).toBe(keyboardEventUtil.PREVENT_DEFAULT_ACTION);
     });
 
     function pressKeys(shortcut) {

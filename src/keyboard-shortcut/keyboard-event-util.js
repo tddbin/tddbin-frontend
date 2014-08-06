@@ -2,14 +2,14 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define(function() {
 
-  var keyboardUtil = {
+  var keyboardEventUtil = {
 
     PREVENT_DEFAULT_ACTION: 'preventDefault',
 
     addKeyDownListener: function(fn) {
       document.addEventListener('keydown', function(evt) {
         var whatToDo = fn(evt.keyCode);
-        if (whatToDo == keyboardUtil.PREVENT_DEFAULT_ACTION) {
+        if (whatToDo == keyboardEventUtil.PREVENT_DEFAULT_ACTION) {
           evt.preventDefault();
         }
       });
@@ -22,5 +22,5 @@ define(function() {
     }
   };
 
-  return keyboardUtil;
+  return keyboardEventUtil;
 });

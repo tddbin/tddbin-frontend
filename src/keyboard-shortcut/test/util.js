@@ -21,14 +21,14 @@ define([
     return keyNames.map(fromKeyNameToKeyCode);
   }
 
-  function KeyPressEmulation(keyboardUtil) {
+  function KeyPressEmulation(keyboardEventUtil) {
     this._keyDownListeners = [];
     this._keyUpListeners = [];
     var self = this;
-    spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
+    spyOn(keyboardEventUtil, 'addKeyDownListener').andCallFake(function(fn) {
       self._keyDownListeners.push(fn);
     });
-    spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
+    spyOn(keyboardEventUtil, 'addKeyUpListener').andCallFake(function(fn) {
       self._keyUpListeners.push(fn);
     });
   }

@@ -1,17 +1,17 @@
 if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
-  './keyboard-util'
+  './keyboard-event-util'
 ], function(
-  keyboardUtil
+  keyboardEventUtil
 ) {
 
   function ShortcutManager() {
     this._pressedKeys = [];
     this._registeredShortcuts = [];
     this._firstKeys = [];
-    keyboardUtil.addKeyDownListener(this._keyDown.bind(this));
-    keyboardUtil.addKeyUpListener(this._keyUp.bind(this));
+    keyboardEventUtil.addKeyDownListener(this._keyDown.bind(this));
+    keyboardEventUtil.addKeyUpListener(this._keyUp.bind(this));
   }
 
   ShortcutManager.keyCodeToReadableKeyMap = {
@@ -70,7 +70,7 @@ define([
           this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
         }
         if (this._isRegisteredShortcut(this._pressedKeys)) {
-          return keyboardUtil.PREVENT_DEFAULT_ACTION;
+          return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
         } else {
           if (this._pressedKeys.length > 0) {
             this._onShortcutEndCallback && this._onShortcutEndCallback();

@@ -2,11 +2,11 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
   '../shortcut-manager',
-  '../keyboard-util',
+  '../keyboard-event-util',
   './util'
 ],function(
   ShortcutManager,
-  keyboardUtil,
+  keyboardEventUtil,
   util
 ) {
 
@@ -22,7 +22,7 @@ define([
     var callback;
     var keyPressEmulation;
     beforeEach(function() {
-      keyPressEmulation = new util.KeyPressEmulation(keyboardUtil);
+      keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil);
       callback = jasmine.createSpy('callback');
     });
     function pressKeysAndFinalKeyUp(keyNames) {
