@@ -14,35 +14,38 @@ define([
 
   describe('DOM event handling', function() {
 
-    it('should prevent default when shortcut is `overridden`', function() {
-      var callback = jasmine.createSpy('callback');
-      var keyDownListeners = [];
-      var keyUpListeners = [];
+    var keyDownListeners;
+    var keyUpListeners;
+    beforeEach(function() {
+      keyDownListeners = [];
+      keyUpListeners = [];
       spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
         keyDownListeners.push(fn);
       });
       spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
         keyUpListeners.push(fn);
       });
+    });
 
+    it('should prevent default when shortcut is `overridden`', function() {
       var shortcut = ['Meta', 'S'];
-      mapShortcuts([[shortcut, callback]]);
 
-      keyDownListeners[0](toKeyCodes(['Meta']));
-      var returnValue = keyDownListeners[0](toKeyCodes(['S']));
-      keyUpListeners[0](toKeyCodes(['S']));
-      keyUpListeners[0](toKeyCodes(['Meta']));
+      var manager = new ShortcutManager();
+      manager.registerShortcut(shortcut, function() {});
 
-      expect(returnValue).toBe(keyboardUtil.PREVENT_DEFAULT_ACTION);
+      var lastKeyDownReturnValue = pressKeys(shortcut);
 
+      expect(lastKeyDownReturnValue).toBe(keyboardUtil.PREVENT_DEFAULT_ACTION);
     });
+
+    function pressKeys(shortcut) {
+      keyDownListeners[0](toKeyCodes([shortcut[0]]));
+      var lastKeyDownReturnValue = keyDownListeners[0](toKeyCodes([shortcut[1]]));
+
+      keyUpListeners[0](toKeyCodes([shortcut[1]]));
+      keyUpListeners[0](toKeyCodes([shortcut[0]]));
+      return lastKeyDownReturnValue;
+    }
   });
-
-  function mapShortcuts(shortcuts) {
-    var manager = new ShortcutManager();
-    shortcuts.forEach(function(shortcut) {
-      manager.registerShortcut(shortcut[0], shortcut[1]);
-    });
-  }
 
 });
