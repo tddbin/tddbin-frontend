@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/uxebu/tddbin-frontend.svg)](https://travis-ci.org/uxebu/tddbin-frontend)
+
 # TDDbin frontend
 
 This project contains all the UI stuff for TDDbin, it should be runnable separately
