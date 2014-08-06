@@ -102,55 +102,56 @@ define([
       pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
       expect(callback).toHaveBeenCalled();
     });
-  });
 
-  // test utils
+    // test utils
 
-  function mapShortcuts(shortcuts) {
-    var manager = new ShortcutManager();
-    shortcuts.forEach(function(shortcut) {
-      manager.registerShortcut(shortcut[0], shortcut[1]);
+    function mapShortcuts(shortcuts) {
+      var manager = new ShortcutManager();
+      shortcuts.forEach(function(shortcut) {
+        manager.registerShortcut(shortcut[0], shortcut[1]);
+      });
+    }
+
+    var keyDownListeners;
+    var keyUpListeners;
+
+    beforeEach(function() {
+      // Initialize for each test.
+      keyDownListeners = [];
+      keyUpListeners = [];
+
+      spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
+        keyDownListeners.push(fn);
+      });
+      spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
+        keyUpListeners.push(fn);
+      });
     });
-  }
 
-  var keyDownListeners;
-  var keyUpListeners;
+    function pressKeys(keys) {
+      // The first key is (normally) the Meta key, don't fire keyUp yet,
+      // fire it only at the end of it all.
+      var firstKey = keys[0];
+      keyDownListeners[0](firstKey);
 
-  beforeEach(function() {
-    // Initialize for each test.
-    keyDownListeners = [];
-    keyUpListeners = [];
+      // Fire all keyDowns and keyUps.
+      keys.slice(1).forEach(function(key) {
+        keyDownListeners[0](key);
+        keyUpListeners[0](key);
+      });
+      return firstKey;
+    }
+
+    function finalKeyUp(metaKey) {
+      // The final keyUp (of the Meta key).
+      keyUpListeners[0](metaKey);
+    }
+
+    function pressKeysAndFinalKeyUp(keys) {
+      var firstKey = pressKeys(keys);
+      finalKeyUp(firstKey);
+    }
+
   });
-
-  spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
-    keyDownListeners.push(fn);
-  });
-  spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
-    keyUpListeners.push(fn);
-  });
-
-  function pressKeys(keys) {
-    // The first key is (normally) the Meta key, don't fire keyUp yet,
-    // fire it only at the end of it all.
-    var firstKey = keys[0];
-    keyDownListeners[0](firstKey);
-
-    // Fire all keyDowns and keyUps.
-    keys.slice(1).forEach(function(key) {
-      keyDownListeners[0](key);
-      keyUpListeners[0](key);
-    });
-    return firstKey;
-  }
-
-  function finalKeyUp(metaKey) {
-    // The final keyUp (of the Meta key).
-    keyUpListeners[0](metaKey);
-  }
-
-  function pressKeysAndFinalKeyUp(keys) {
-    var firstKey = pressKeys(keys);
-    finalKeyUp(firstKey);
-  }
 
 });
