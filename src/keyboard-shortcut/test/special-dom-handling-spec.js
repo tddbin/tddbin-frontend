@@ -28,16 +28,12 @@ define([
       var shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
 
-      var eventObjectMock = {
-        preventDefault: jasmine.createSpy('preventDefault()')
-      };
-
       keyDownListeners[0](toKeyCodes(['Meta']));
-      keyDownListeners[0](toKeyCodes(['S']), eventObjectMock);
+      var returnValue = keyDownListeners[0](toKeyCodes(['S']));
       keyUpListeners[0](toKeyCodes(['S']));
       keyUpListeners[0](toKeyCodes(['Meta']));
 
-      expect(eventObjectMock.preventDefault).toHaveBeenCalled();
+      expect(returnValue).toBe(keyboardUtil.PREVENT_DEFAULT_ACTION);
 
     });
   });
