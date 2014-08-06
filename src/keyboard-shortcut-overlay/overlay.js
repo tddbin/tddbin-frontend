@@ -12,8 +12,18 @@ define([
 
   Overlay.prototype = {
 
+    _component: null,
+
     render: function() {
-      React.renderComponent(OverlayComponent(), this._domNode);
+      this._component = React.renderComponent(OverlayComponent(), this._domNode);
+    },
+
+    show: function() {
+      this._component.show();
+    },
+
+    hide: function() {
+      this._component.hide();
     }
 
   };

@@ -72,6 +72,9 @@ describe('test', function(){\n\
 
       var overlay = new ShortcutOverlay($('keyboard-shortcut-overlay'));
       overlay.render();
+
+      manager.onPossibleShortcut(overlay.show.bind(overlay));
+      manager.onShortcutEnd(overlay.hide.bind(overlay));
     });
   </script>
 </body>

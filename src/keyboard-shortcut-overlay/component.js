@@ -4,6 +4,14 @@ define(['react'], function(React) {
 
   var Overlay = React.createClass({
 
+    show: function() {
+      this.getDOMNode().style.display = 'block';
+    },
+
+    hide: function() {
+      this.getDOMNode().style.display = 'none';
+    },
+
     render: function() {
       return (
         <div className="keyboard-shortcut-overlay">
