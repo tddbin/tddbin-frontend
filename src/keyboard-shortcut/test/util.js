@@ -21,7 +21,25 @@ define([
     return keyNames.map(fromKeyNameToKeyCode);
   }
 
+  function KeyPressEmulation(keyboardUtil) {
+    this._keyDownListeners = [];
+    this._keyUpListeners = [];
+    var self = this;
+    spyOn(keyboardUtil, 'addKeyDownListener').andCallFake(function(fn) {
+      self._keyDownListeners.push(fn);
+    });
+    spyOn(keyboardUtil, 'addKeyUpListener').andCallFake(function(fn) {
+      self._keyUpListeners.push(fn);
+    });
+  }
+  KeyPressEmulation.prototype = {
+    keyDownByKeyName: function(keyName) {
+      this._keyDownListeners[0](fromKeyNameToKeyCode(keyName));
+    }
+  };
+
   return {
-    toKeyCodes: toKeyCodes
+    toKeyCodes: toKeyCodes,
+    KeyPressEmulation: KeyPressEmulation
   }
 });

@@ -39,6 +39,11 @@ define([
       this._rememberFirstKey(shortcut[0]);
     },
 
+    _onPossibleShortcutCallback: null,
+    onPossibleShortcut: function(callback) {
+      this._onPossibleShortcutCallback = callback;
+    },
+
     _rememberFirstKey: function(keyName) {
       if (this._firstKeys.indexOf(keyName) == -1) {
         this._firstKeys.push(keyName);
@@ -60,6 +65,10 @@ define([
         if (this._isRegisteredShortcut(this._pressedKeys)) {
           return keyboardUtil.PREVENT_DEFAULT_ACTION;
         }
+      }
+
+      if (this._pressedKeys.length > 0) {
+        this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
       }
     },
 
