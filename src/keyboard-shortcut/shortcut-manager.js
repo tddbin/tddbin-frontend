@@ -45,7 +45,7 @@ define([
       }
     },
 
-    _keyDown: function(keyCode, eventObject) {
+    _keyDown: function(keyCode) {
       var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
       var isAFirstKey = this._firstKeys.indexOf(keyName) > -1;
       var isStartOfShortcut = this._pressedKeys.length == 0;
@@ -58,7 +58,7 @@ define([
           this._pressedKeys.push(keyName);
         }
         if (this._isRegisteredShortcut(this._pressedKeys)) {
-          eventObject.preventDefault();
+          return keyboardUtil.PREVENT_DEFAULT_ACTION;
         }
       }
     },
