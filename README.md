@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/uxebu/tddbin-frontend.svg)](https://travis-ci.org/uxebu/tddbin-frontend)
 ![Dependencies Status](https://david-dm.org/uxebu/tddbin-frontend.png)
-[![Codacy Badge](https://www.codacy.com/project/badge/857e4f48b2704d3bb3742bc5d78f8c40)](https://www.codacy.com)
+[![Codacy Badge](https://www.codacy.com/project/badge/857e4f48b2704d3bb3742bc5d78f8c40)](https://www.codacy.com/public/uxebu/tddbin-frontend.git)
 
 
 # TDDbin frontend
