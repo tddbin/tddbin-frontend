@@ -3,10 +3,12 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 define([
   '../shortcut-manager',
   '../keyboard-event-util',
+  '../browser-event-util',
   './util'
 ],function(
   ShortcutManager,
   keyboardEventUtil,
+  browserEventUtil,
   util
 ) {
 
@@ -19,8 +21,16 @@ define([
     var manager;
     var shortcut = ['Meta', 'S'];
     var keyPressEmulation;
+    var blurCallbacks;
     beforeEach(function() {
+      // move this out into util.js
+      blurCallbacks = [];
+      spyOn(browserEventUtil, 'onWindowBlur').andCallFake(function(fn) {
+        blurCallbacks.push(fn);
+      });
+
       keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil);
+
       manager = new ShortcutManager();
       manager.registerShortcut(shortcut, noop);
     });
@@ -62,6 +72,13 @@ define([
         var callback = jasmine.createSpy('callback');
         manager.onShortcutEnd(callback);
         keyPressEmulation.pressByKeyNames([shortcut[0]]);
+        expect(callback).toHaveBeenCalled();
+      });
+
+      it('when browser window looses focus', function() {
+        var callback = jasmine.createSpy('callback');
+        manager.onShortcutEnd(callback);
+        blurCallbacks[0]();
         expect(callback).toHaveBeenCalled();
       });
 

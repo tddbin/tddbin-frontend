@@ -3,10 +3,12 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 define([
   '../shortcut-manager',
   '../keyboard-event-util',
+  '../browser-event-util',
   './util'
 ],function(
   ShortcutManager,
   keyboardEventUtil,
+  browserEventUtil,
   util
 ) {
 
@@ -22,6 +24,7 @@ define([
     var callback;
     var keyPressEmulation;
     beforeEach(function() {
+      spyOn(browserEventUtil, 'onWindowBlur');
       keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil);
       callback = jasmine.createSpy('callback');
     });

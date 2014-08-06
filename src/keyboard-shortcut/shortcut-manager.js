@@ -1,9 +1,11 @@
 if (typeof define !== 'function') { var define = require('amdefine')(module) }
 
 define([
-  './keyboard-event-util'
+  './keyboard-event-util',
+  './browser-event-util'
 ], function(
-  keyboardEventUtil
+  keyboardEventUtil,
+  browserEventUtil
 ) {
 
   function ShortcutManager() {
@@ -12,6 +14,10 @@ define([
     this._firstKeys = [];
     keyboardEventUtil.addKeyDownListener(this._keyDown.bind(this));
     keyboardEventUtil.addKeyUpListener(this._keyUp.bind(this));
+    var self = this;
+    browserEventUtil.onWindowBlur(function() {
+      self._onShortcutEndCallback && self._onShortcutEndCallback();
+    });
   }
 
   ShortcutManager.keyCodeToReadableKeyMap = {

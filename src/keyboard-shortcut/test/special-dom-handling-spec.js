@@ -3,10 +3,12 @@ if (typeof define !== 'function') { var define = require('amdefine')(module) }
 define([
   '../shortcut-manager',
   '../keyboard-event-util',
+  '../browser-event-util',
   './util'
 ],function(
   ShortcutManager,
   keyboardEventUtil,
+  browserEventUtil,
   util
 ) {
 
@@ -25,6 +27,7 @@ define([
       spyOn(keyboardEventUtil, 'addKeyUpListener').andCallFake(function(fn) {
         keyUpListeners.push(fn);
       });
+      spyOn(browserEventUtil, 'onWindowBlur');
     });
 
     it('should prevent default when shortcut is `overridden`', function() {
