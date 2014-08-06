@@ -18,10 +18,20 @@ To try what it currently can do run the examples/test-runner/jasmine.html in you
 
 ## Mocha Runner
 The mocha runner is integrated and will most probably become the default runner.
+For an example navigate in your browser to the examples/test-runner directory.
+
+### Assertion APIs
+Mocha is assertion API agnostic, it brings it's own assert() function by default, that can be used.
+By adding plugins various other styles can be provided. See below which ones come with it.
+ 
+#### Jasmine-style
 It is enhanced with [referee](https://github.com/busterjs/referee), which provides jasmine-style expect methods.
 The tests can be written the same way as with jasmine (for the biggest part) - at least
 all standard matchers are available, for details see [the docs](http://docs.busterjs.org/en/latest/modules/referee/#expectations).
-For an example navigate in your browser to the examples/test-runner directory.
+
+#### Should-style
+Also should-style assertions can be used. Thanks to [Roman Liutikov](https://twitter.com/roman01la/status/496720629555798016)
+pointing that out, it was added. On how to use them see the [should.js documentation](https://github.com/visionmedia/should.js#assertions).
 
 ## Custom runner
 This architecture allows to add any kind of runner now.
