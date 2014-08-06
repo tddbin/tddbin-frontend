@@ -24,83 +24,88 @@ define([
     beforeEach(function() {
       callback = jasmine.createSpy('callback');
     });
-    it('with one key should call according callback', function() {
-      var shortcut = ['Meta', 'S'];
-      mapShortcuts([[shortcut, callback]]);
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
+
+    describe('should fire', function() {
+      it('for a two key combo', function() {
+        var shortcut = ['Meta', 'S'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        expect(callback).toHaveBeenCalled();
+      });
+      it('for a three key combo', function() {
+        var shortcut = ['Meta', 'I', 'I'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        expect(callback).toHaveBeenCalled();
+      });
+      it('also when many are registered', function() {
+        var shortcut = ['Meta', 'I', 'I'];
+        var unusedShortcut = ['Meta', 'S'];
+        mapShortcuts([
+          [unusedShortcut, noop],
+          [shortcut, callback]
+        ]);
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        expect(callback).toHaveBeenCalled();
+      });
+      it('twice when shortcut is pressed twice', function() {
+        var shortcut = ['Meta', 'S'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        expect(callback.callCount).toBe(2);
+      });
+      it('when part of a shortcut is pressed and full shortcut afterwards', function() {
+        var shortcut = ['Meta', 'S'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeysAndFinalKeyUp(toKeyCodes([shortcut[0]]));
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        expect(callback).toHaveBeenCalled();
+      });
+      it('when shortcut starts not with `Meta`', function() {
+        var shortcut = ['Ctrl', 'S'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        expect(callback).toHaveBeenCalled();
+      });
+      it('when invalid shortcut pressed followed by valid shortcut', function() {
+        var shortcut = ['Meta', 'I', 'I'];
+        mapShortcuts([[shortcut, callback]]);
+        pressKeysAndFinalKeyUp(toKeyCodes(['A']));
+        pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+        expect(callback).toHaveBeenCalled();
+      });
+
+      describe('when overlapping shortcuts', function() {
+        it('are registered', function() {
+          var shortcut = ['Meta', 'Ctrl', 'S'];
+          var shortcut1 = ['Ctrl', 'S'];
+          mapShortcuts([
+            [shortcut, callback],
+            [shortcut1, noop]
+          ]);
+          pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+          expect(callback).toHaveBeenCalled();
+        });
+        it('and invalid keys had been pressed before', function() {
+          var shortcut = ['Meta', 'Ctrl', 'S'];
+          var shortcut1 = ['Ctrl', 'S'];
+          mapShortcuts([
+            [shortcut, callback],
+            [shortcut1, noop]
+          ]);
+          pressKeysAndFinalKeyUp(toKeyCodes(['A', 'B']));
+          pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
+          expect(callback).toHaveBeenCalled();
+        });
+      });
     });
-    it('with two keys should call according callback', function() {
-      var shortcut = ['Meta', 'I', 'I'];
-      mapShortcuts([[shortcut, callback]]);
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
-    });
-    it('multiple registered shortcuts should fire the right one', function() {
-      var shortcut = ['Meta', 'I', 'I'];
-      var unusedShortcut = ['Meta', 'S'];
-      mapShortcuts([
-        [unusedShortcut, noop],
-        [shortcut, callback]
-      ]);
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
-    });
+
     it('dont fire before Meta-keyUp', function() {
       var shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeys(toKeyCodes(shortcut));
       expect(callback).not.toHaveBeenCalled();
-    });
-    it('press shortcut twice', function() {
-      var shortcut = ['Meta', 'S'];
-      mapShortcuts([[shortcut, callback]]);
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback.callCount).toBe(2);
-    });
-    it('press part of a shortcut and a shortcut afterwards', function() {
-      var shortcut = ['Meta', 'S'];
-      mapShortcuts([[shortcut, callback]]);
-      pressKeysAndFinalKeyUp(toKeyCodes([shortcut[0]]));
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
-    });
-
-    it('NOT starting with `Meta`', function() {
-      var shortcut = ['Ctrl', 'S'];
-      mapShortcuts([[shortcut, callback]]);
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
-    });
-    it('overlapping shortcuts', function() {
-      var shortcut = ['Meta', 'Ctrl', 'S'];
-      var shortcut1 = ['Ctrl', 'S'];
-      mapShortcuts([
-        [shortcut, callback],
-        [shortcut1, noop]
-      ]);
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
-    });
-    it('overlapping shortcuts and invalid keys before', function() {
-      var shortcut = ['Meta', 'Ctrl', 'S'];
-      var shortcut1 = ['Ctrl', 'S'];
-      mapShortcuts([
-        [shortcut, callback],
-        [shortcut1, noop]
-      ]);
-      pressKeysAndFinalKeyUp(toKeyCodes(['A', 'B']));
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
-    });
-
-    it('invalid shortcut followed by valid shortcut, should fire callback', function() {
-      var shortcut = ['Meta', 'I', 'I'];
-      mapShortcuts([[shortcut, callback]]);
-      pressKeysAndFinalKeyUp(toKeyCodes(['A']));
-      pressKeysAndFinalKeyUp(toKeyCodes(shortcut));
-      expect(callback).toHaveBeenCalled();
     });
 
     // test utils
