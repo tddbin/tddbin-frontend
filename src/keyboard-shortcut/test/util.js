@@ -35,7 +35,31 @@ define([
   KeyPressEmulation.prototype = {
     keyDownByKeyName: function(keyName) {
       this._keyDownListeners[0](fromKeyNameToKeyCode(keyName));
+    },
+
+    pressByKeyNames: function(keyNames) {
+      var keyCodes = toKeyCodes(keyNames);
+
+      // The first key is (normally) the Meta key, don't fire keyUp yet,
+      // fire it only at the end of it all.
+      var firstKeyCode = keyCodes[0];
+      this._keyDownListeners[0](firstKeyCode);
+
+      // Fire all keyDowns and keyUps.
+      var self = this;
+      keyCodes.slice(1).forEach(function(key) {
+        self._keyDownListeners[0](key);
+        self._keyUpListeners[0](key);
+      });
+
+      this.firstKeyUp(firstKeyCode);
+    },
+
+    firstKeyUp: function(firstKeyCode) {
+      // The final keyUp (normally the `Meta` key).
+      this._keyUpListeners[0](firstKeyCode);
     }
+
   };
 
   return {

@@ -57,18 +57,16 @@ define([
       if (isAFirstKey && isStartOfShortcut) {
         this._pressedKeys = [keyName];
         this._shortcutStartKeyName = keyName;
+        this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
       } else {
         var hasShortcutStartedAlready = this._pressedKeys.length > 0;
         if (hasShortcutStartedAlready) {
           this._pressedKeys.push(keyName);
+          this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
         }
         if (this._isRegisteredShortcut(this._pressedKeys)) {
           return keyboardUtil.PREVENT_DEFAULT_ACTION;
         }
-      }
-
-      if (this._pressedKeys.length > 0) {
-        this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
       }
     },
 

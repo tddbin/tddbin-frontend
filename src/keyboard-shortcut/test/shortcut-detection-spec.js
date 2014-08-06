@@ -31,6 +31,13 @@ define([
       keyPressEmulation.keyDownByKeyName(shortcut[0]);
       expect(callback).toHaveBeenCalled();
     });
+
+    it('complete shortcut pressed: the callback shall be called the number of keys in the shortcut', function() {
+      var callback = jasmine.createSpy('callback');
+      manager.onPossibleShortcut(callback);
+      keyPressEmulation.pressByKeyNames(shortcut);
+      expect(callback.callCount).toBe(shortcut.length);
+    });
   });
 
 });
