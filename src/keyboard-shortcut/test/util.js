@@ -10,7 +10,7 @@ define([
 
   function fromKeyNameToKeyCode(keyName) {
     for (var keyCode in keyCodeMap) {
-      if (keyName == keyCodeMap[keyCode]) {
+      if (keyName === keyCodeMap[keyCode]) {
         return keyCode;
       }
     }

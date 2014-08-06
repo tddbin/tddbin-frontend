@@ -56,7 +56,7 @@ define([
     },
 
     _rememberFirstKey: function(keyName) {
-      if (this._firstKeys.indexOf(keyName) == -1) {
+      if (this._firstKeys.indexOf(keyName) === -1) {
         this._firstKeys.push(keyName);
       }
     },
@@ -64,7 +64,7 @@ define([
     _keyDown: function(keyCode) {
       var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
       var isAFirstKey = this._firstKeys.indexOf(keyName) > -1;
-      var isStartOfShortcut = this._pressedKeys.length == 0;
+      var isStartOfShortcut = this._pressedKeys.length === 0;
       if (isAFirstKey && isStartOfShortcut) {
         this._pressedKeys = [keyName];
         this._shortcutStartKeyName = keyName;
@@ -87,7 +87,7 @@ define([
 
     _keyUp: function(keyCode) {
       var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
-      if (keyName != this._shortcutStartKeyName) {
+      if (keyName !== this._shortcutStartKeyName) {
         return;
       }
       var callback = this._getCallbackForPressedKeys(this._pressedKeys);
@@ -100,7 +100,7 @@ define([
 
     _getCallbackForPressedKeys: function(pressedKeys) {
       var found = this._registeredShortcuts.filter(function(shortcut) {
-        return shortcut[0].join('+') == pressedKeys.join('+');
+        return shortcut[0].join('+') === pressedKeys.join('+');
       });
       if (found.length) {
         // Use the first shortcut map found.
@@ -111,7 +111,7 @@ define([
     },
 
     _isRegisteredShortcut: function(pressedKeys) {
-      return this._getCallbackForPressedKeys(pressedKeys) != null;
+      return this._getCallbackForPressedKeys(pressedKeys) !== null;
     }
   };
 
