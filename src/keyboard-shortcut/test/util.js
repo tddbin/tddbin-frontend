@@ -7,16 +7,18 @@ define([
 ) {
 
   var keyCodeMap = ShortcutManager.keyCodeToReadableKeyMap;
-  function toKeyCodes(shortcut) {
-    function fromKeyToKeyCode(key) {
-      for (var keyCode in keyCodeMap) {
-        if (key == keyCodeMap[keyCode]) {
-          return keyCode;
-        }
+
+  function fromKeyNameToKeyCode(keyName) {
+    for (var keyCode in keyCodeMap) {
+      if (keyName == keyCodeMap[keyCode]) {
+        return keyCode;
       }
-      return (''+key).charCodeAt(0);
     }
-    return shortcut.map(fromKeyToKeyCode);
+    return (''+keyName).charCodeAt(0);
+  }
+
+  function toKeyCodes(keyNames) {
+    return keyNames.map(fromKeyNameToKeyCode);
   }
 
   return {
