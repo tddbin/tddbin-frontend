@@ -37,6 +37,10 @@ define([
       this._keyDownListeners[0](fromKeyNameToKeyCode(keyName));
     },
 
+    keyDownByKeyNames: function(keyNames) {
+      keyNames.forEach(this.keyDownByKeyName.bind(this));
+    },
+
     pressByKeyNames: function(keyNames) {
       var keyCodes = toKeyCodes(keyNames);
 
