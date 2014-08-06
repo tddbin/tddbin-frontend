@@ -39,12 +39,22 @@ define([
       expect(callback.callCount).toBe(shortcut.length);
     });
 
-    describe('fire callback given to onShortcutEnd', function(){
+    describe('fire onShortcutEnd() callback', function(){
 
       it('when the shortcut is done', function() {
         var callback = jasmine.createSpy('callback');
         manager.onShortcutEnd(callback);
         keyPressEmulation.pressByKeyNames(shortcut);
+        expect(callback).toHaveBeenCalled();
+      });
+
+      it('also when shortcut + some other key was pressed (an unregistered shortcut)', function() {
+        // e.g. Meta+S is a valid shortcut
+        // but  Meta+S+S is pressed, it should fire since the shortcut turned invalid
+        var callback = jasmine.createSpy('callback');
+        manager.onShortcutEnd(callback);
+        var lastKeyName = shortcut[shortcut.length-1];
+        keyPressEmulation.pressByKeyNames(shortcut.concat(lastKeyName));
         expect(callback).toHaveBeenCalled();
       });
 

@@ -71,6 +71,8 @@ define([
         }
         if (this._isRegisteredShortcut(this._pressedKeys)) {
           return keyboardUtil.PREVENT_DEFAULT_ACTION;
+        } else {
+          this._onShortcutEndCallback && this._onShortcutEndCallback();
         }
       }
     },
