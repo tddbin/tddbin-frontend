@@ -1,6 +1,7 @@
 0.0.2  2014-08-??
 =================
 - added ROADMAP.md and LICENSE
+- make shortcut overlay work
 
 0.0.1  2014-08-06
 =================

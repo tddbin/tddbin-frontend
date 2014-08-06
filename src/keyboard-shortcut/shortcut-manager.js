@@ -39,6 +39,16 @@ define([
       this._rememberFirstKey(shortcut[0]);
     },
 
+    _onPossibleShortcutCallback: null,
+    onPossibleShortcut: function(callback) {
+      this._onPossibleShortcutCallback = callback;
+    },
+
+    _onShortcutEndCallback: null,
+    onShortcutEnd: function(callback) {
+      this._onShortcutEndCallback = callback;
+    },
+
     _rememberFirstKey: function(keyName) {
       if (this._firstKeys.indexOf(keyName) == -1) {
         this._firstKeys.push(keyName);
@@ -52,13 +62,19 @@ define([
       if (isAFirstKey && isStartOfShortcut) {
         this._pressedKeys = [keyName];
         this._shortcutStartKeyName = keyName;
+        this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
       } else {
         var hasShortcutStartedAlready = this._pressedKeys.length > 0;
         if (hasShortcutStartedAlready) {
           this._pressedKeys.push(keyName);
+          this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
         }
         if (this._isRegisteredShortcut(this._pressedKeys)) {
           return keyboardUtil.PREVENT_DEFAULT_ACTION;
+        } else {
+          if (this._pressedKeys.length > 0) {
+            this._onShortcutEndCallback && this._onShortcutEndCallback();
+          }
         }
       }
     },
@@ -73,6 +89,7 @@ define([
         callback();
       }
       this._pressedKeys = [];
+      this._onShortcutEndCallback && this._onShortcutEndCallback();
     },
 
     _getCallbackForPressedKeys: function(pressedKeys) {
