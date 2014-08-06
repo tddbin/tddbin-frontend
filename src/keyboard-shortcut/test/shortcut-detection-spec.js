@@ -65,11 +65,20 @@ define([
         expect(callback).toHaveBeenCalled();
       });
 
-      it('DONT fire if its just the first key', function() {
-        var callback = jasmine.createSpy('callback');
-        manager.onShortcutEnd(callback);
-        keyPressEmulation.keyDownByKeyName(shortcut[0]);
-        expect(callback).not.toHaveBeenCalled();
+      describe('DONT fire', function() {
+        it('if its just the first key', function() {
+          var callback = jasmine.createSpy('callback');
+          manager.onShortcutEnd(callback);
+          keyPressEmulation.keyDownByKeyName(shortcut[0]);
+          expect(callback).not.toHaveBeenCalled();
+        });
+
+        it('if a non-registered shortcut is started', function() {
+          var callback = jasmine.createSpy('callback');
+          manager.onShortcutEnd(callback);
+          keyPressEmulation.pressByKeyNames(['Alt']);
+          expect(callback).not.toHaveBeenCalled();
+        });
       });
 
     });
