@@ -45,6 +45,13 @@ define([
       this._rememberFirstKey(shortcut[0]);
     },
 
+    registerShortcuts: function(shortcuts) {
+      var self = this;
+      shortcuts.forEach(function(shortcutData) {
+        self.registerShortcut(shortcutData[0], shortcutData[1]);
+      });
+    },
+
     _onPossibleShortcutCallback: null,
     onPossibleShortcut: function(callback) {
       this._onPossibleShortcutCallback = callback;
