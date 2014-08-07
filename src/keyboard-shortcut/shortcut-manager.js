@@ -115,9 +115,10 @@ define([
     },
 
     _getCallbackForPressedKeys: function(pressedKeys) {
-      var found = this._registeredShortcuts.filter(function(shortcut) {
+      function isShortcutSameAsPressedKeys(shortcut) {
         return shortcut[0].join('+') === pressedKeys.join('+');
-      });
+      }
+      var found = this._registeredShortcuts.filter(isShortcutSameAsPressedKeys);
       if (found.length) {
         // Use the first shortcut map found.
         var firstShortcut = found[0];
