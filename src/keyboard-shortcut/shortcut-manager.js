@@ -14,10 +14,7 @@ define([
     this._firstKeys = [];
     keyboardEventUtil.addKeyDownListener(this._keyDown.bind(this));
     keyboardEventUtil.addKeyUpListener(this._keyUp.bind(this));
-    var self = this;
-    browserEventUtil.onWindowBlur(function() {
-      self._onShortcutEndCallback && self._onShortcutEndCallback();
-    });
+    browserEventUtil.onWindowBlur(this._fireOnShortcutEndCallback.bind(this));
   }
 
   ShortcutManager.keyCodeToReadableKeyMap = {
@@ -62,6 +59,12 @@ define([
       this._onShortcutEndCallback = callback;
     },
 
+    _fireOnShortcutEndCallback: function() {
+      if (this._onShortcutEndCallback) {
+        this._onShortcutEndCallback();
+      }
+    },
+
     _rememberFirstKey: function(keyName) {
       if (this._firstKeys.indexOf(keyName) === -1) {
         this._firstKeys.push(keyName);
@@ -86,7 +89,7 @@ define([
           return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
         } else {
           if (this._pressedKeys.length > 0) {
-            this._onShortcutEndCallback && this._onShortcutEndCallback();
+            this._fireOnShortcutEndCallback();
           }
         }
       }
@@ -102,7 +105,7 @@ define([
         callback();
       }
       this._pressedKeys = [];
-      this._onShortcutEndCallback && this._onShortcutEndCallback();
+      this._fireOnShortcutEndCallback();
     },
 
     _getCallbackForPressedKeys: function(pressedKeys) {
