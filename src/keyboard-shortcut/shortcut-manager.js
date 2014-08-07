@@ -11,7 +11,7 @@ define([
   function ShortcutManager() {
     this._pressedKeys = [];
     this._registeredShortcuts = [];
-    this._firstKeys = [];
+    this._allPossibleShortcutStarterKeys = [];
     keyboardEventUtil.addKeyDownListener(this._keyDown.bind(this));
     keyboardEventUtil.addKeyUpListener(this._keyUp.bind(this));
     browserEventUtil.onWindowBlur(this._fireOnShortcutEndCallback.bind(this));
@@ -34,8 +34,10 @@ define([
 
     _pressedKeys: null,
     _registeredShortcuts: null,
-    _firstKeys: null, // all possible sortcut starter keys
-    _shortcutStartKeyName: null, // the key that started the current shortcut
+    _allPossibleShortcutStarterKeys: null, // all possible sortcut starter keys
+    _firstKeyOfCurrentShortcut: null,
+    _onPossibleShortcutCallback: null,
+    _onShortcutEndCallback: null,
 
     registerShortcut: function(shortcut, callback) {
       this._registeredShortcuts.push([shortcut, callback]);
@@ -49,14 +51,18 @@ define([
       });
     },
 
-    _onPossibleShortcutCallback: null,
     onPossibleShortcut: function(callback) {
       this._onPossibleShortcutCallback = callback;
     },
 
-    _onShortcutEndCallback: null,
     onShortcutEnd: function(callback) {
       this._onShortcutEndCallback = callback;
+    },
+
+    _fireOnPossibleShortcutCallback: function() {
+      if (this._onPossibleShortcutCallback) {
+        this._onPossibleShortcutCallback();
+      }
     },
 
     _fireOnShortcutEndCallback: function() {
@@ -66,8 +72,8 @@ define([
     },
 
     _rememberFirstKey: function(keyName) {
-      if (this._firstKeys.indexOf(keyName) === -1) {
-        this._firstKeys.push(keyName);
+      if (this._allPossibleShortcutStarterKeys.indexOf(keyName) === -1) {
+        this._allPossibleShortcutStarterKeys.push(keyName);
       }
     },
 
@@ -97,7 +103,7 @@ define([
 
     _keyUp: function(keyCode) {
       var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
-      if (keyName !== this._shortcutStartKeyName) {
+      if (keyName !== this._firstKeyOfCurrentShortcut) {
         return;
       }
       var callback = this._getCallbackForPressedKeys(this._pressedKeys);
