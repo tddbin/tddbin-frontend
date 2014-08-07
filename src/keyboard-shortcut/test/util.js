@@ -20,6 +20,10 @@ define([
       this._keyDownListeners[0](keyName);
     },
 
+    keyUpByKeyName: function(keyName) {
+      this._keyUpListeners[0](keyName);
+    },
+
     keyDownByKeyNames: function(keyNames) {
       keyNames.forEach(this.keyDownByKeyName.bind(this));
     },
@@ -37,12 +41,7 @@ define([
         self._keyUpListeners[0](key);
       });
 
-      this.firstKeyUp(firstKeyName);
-    },
-
-    firstKeyUp: function(firstKeyName) {
-      // The final keyUp (normally the `Meta` key).
-      this._keyUpListeners[0](firstKeyName);
+      this.keyUpByKeyName(firstKeyName);
     }
 
   };
