@@ -9,7 +9,7 @@ define(function() {
     _keyCodeToReadableKeyMap: {
       17: 'Control',
       18: 'Alt',
-      91: 'Meta'
+      91: 'Meta' // Seems not to be correct in FF, but FF supports evt.key
     },
 
     _mapKeyCodeToReadable: function(keyCode) {
@@ -20,10 +20,19 @@ define(function() {
       return String.fromCharCode(keyCode);
     },
 
+    _getKeyNameFromEvent: function(evt) {
+      if (evt.key) {
+        if (evt.key.length === 1) { // Ctrl+S in FF reports evt.key='s' (which makes sense) but we handle all just in upper case.
+          return evt.key.toUpperCase();
+        }
+        return evt.key;
+      }
+      return keyboardEventUtil._mapKeyCodeToReadable(evt.keyCode);
+    },
+
     addKeyDownListener: function(fn) {
       document.addEventListener('keydown', function(evt) {
-        var keyName = keyboardEventUtil._mapKeyCodeToReadable(evt.keyCode);
-        var whatToDo = fn(keyName);
+        var whatToDo = fn(keyboardEventUtil._getKeyNameFromEvent(evt));
         if (whatToDo === keyboardEventUtil.PREVENT_DEFAULT_ACTION) {
           evt.preventDefault();
         }
@@ -32,8 +41,7 @@ define(function() {
 
     addKeyUpListener: function(fn) {
       document.addEventListener('keyup', function(evt) {
-        var keyName = keyboardEventUtil._mapKeyCodeToReadable(evt.keyCode);
-        fn(keyName);
+        fn(keyboardEventUtil._getKeyNameFromEvent(evt));
       });
     }
   };
