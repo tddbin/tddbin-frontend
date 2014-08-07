@@ -66,12 +66,19 @@ describe('test', function(){\n\
       };
       document.getElementById('runTestsButton').addEventListener('click', executeTestCode);
 
-      var manager = new ShortcutManager();
-      manager.registerShortcut(['Meta', 'S'], executeTestCode);
-      manager.registerShortcut(['Ctrl', 'S'], executeTestCode);
+      var shortcuts = [
+        [['Meta', 'S'], executeTestCode, 'Save+Run'],
+        [['Ctrl', 'S'], executeTestCode, 'Save+Run']
+      ];
 
+      var manager = new ShortcutManager();
+      manager.registerShortcuts(shortcuts);
+
+      var shortcutsAndHints = shortcuts.map(function(shortcut) {
+        return {keys: shortcut[0], helpText: shortcut[2]};
+      });
       var overlay = new ShortcutOverlay($('keyboard-shortcut-overlay'));
-      overlay.render();
+      overlay.render(shortcutsAndHints);
 
       manager.onPossibleShortcut(overlay.show.bind(overlay));
       manager.onShortcutEnd(overlay.hide.bind(overlay));

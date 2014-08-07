@@ -14,8 +14,8 @@ define([
 
     _component: null,
 
-    render: function() {
-      this._component = React.renderComponent(OverlayComponent(), this._domNode);
+    render: function(shortcuts) {
+      this._component = React.renderComponent(OverlayComponent({shortcuts: shortcuts}), this._domNode);
     },
 
     show: function() {
