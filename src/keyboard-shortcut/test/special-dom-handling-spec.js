@@ -8,11 +8,8 @@ define([
 ],function(
   ShortcutManager,
   keyboardEventUtil,
-  browserEventUtil,
-  util
+  browserEventUtil
 ) {
-
-  var toKeyCodes = util.toKeyCodes;
 
   describe('DOM event handling', function() {
 
@@ -42,11 +39,11 @@ define([
     });
 
     function pressKeys(shortcut) {
-      keyDownListeners[0](toKeyCodes([shortcut[0]]));
-      var lastKeyDownReturnValue = keyDownListeners[0](toKeyCodes([shortcut[1]]));
+      keyDownListeners[0](shortcut[0]);
+      var lastKeyDownReturnValue = keyDownListeners[0](shortcut[1]);
 
-      keyUpListeners[0](toKeyCodes([shortcut[1]]));
-      keyUpListeners[0](toKeyCodes([shortcut[0]]));
+      keyUpListeners[0](shortcut[1]);
+      keyUpListeners[0](shortcut[0]);
       return lastKeyDownReturnValue;
     }
   });

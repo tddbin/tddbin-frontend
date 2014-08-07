@@ -17,19 +17,6 @@ define([
     browserEventUtil.onWindowBlur(this._fireOnShortcutEndCallback.bind(this));
   }
 
-  ShortcutManager.keyCodeToReadableKeyMap = {
-    17: 'Ctrl',
-    18: 'Alt',
-    91: 'Meta'
-  };
-  ShortcutManager.mapKeyCodeToReadable = function(keyCode) {
-    var keyCodeMap = ShortcutManager.keyCodeToReadableKeyMap;
-    if (keyCode in keyCodeMap) {
-      return keyCodeMap[keyCode];
-    }
-    return String.fromCharCode(keyCode);
-  };
-
   ShortcutManager.prototype = {
 
     _pressedKeys: null,
@@ -77,8 +64,7 @@ define([
       }
     },
 
-    _keyDown: function(keyCode) {
-      var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
+    _keyDown: function(keyName) {
       var isStartOfShortcut = this._pressedKeys.length === 0;
       if (isStartOfShortcut) {
         return this._handlePossibleShortcutStart(keyName);
@@ -105,16 +91,15 @@ define([
       this._fireOnShortcutEndCallback();
     },
 
-    _keyUp: function(keyCode) {
-      if (this._isEndOfCurrentShortcut(keyCode)) {
+    _keyUp: function(keyName) {
+      if (this._isEndOfCurrentShortcut(keyName)) {
         this._fireCallbackForShortcut(this._pressedKeys);
         this._fireOnShortcutEndCallback();
         this._pressedKeys = [];
       }
     },
 
-    _isEndOfCurrentShortcut: function(keyCode) {
-      var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
+    _isEndOfCurrentShortcut: function(keyName) {
       return keyName === this._firstKeyOfCurrentShortcut;
     },
 
