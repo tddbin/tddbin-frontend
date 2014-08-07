@@ -79,26 +79,30 @@ define([
 
     _keyDown: function(keyCode) {
       var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
-      var isAFirstKey = this._firstKeys.indexOf(keyName) > -1;
       var isStartOfShortcut = this._pressedKeys.length === 0;
-      if (isAFirstKey && isStartOfShortcut) {
-        this._pressedKeys = [keyName];
-        this._shortcutStartKeyName = keyName;
-        this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
-      } else {
-        var hasShortcutStartedAlready = this._pressedKeys.length > 0;
-        if (hasShortcutStartedAlready) {
-          this._pressedKeys.push(keyName);
-          this._onPossibleShortcutCallback && this._onPossibleShortcutCallback();
-        }
-        if (this._isRegisteredShortcut(this._pressedKeys)) {
-          return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
-        } else {
-          if (this._pressedKeys.length > 0) {
-            this._fireOnShortcutEndCallback();
-          }
-        }
+      if (isStartOfShortcut) {
+        return this._handlePossibleShortcutStart(keyName);
       }
+      return this._handleConsecutiveKey(keyName);
+    },
+
+    _handlePossibleShortcutStart: function(keyName) {
+      var isFirstKeyOfRegisteredShortcut = this._allPossibleShortcutStarterKeys.indexOf(keyName) > -1;
+      if (isFirstKeyOfRegisteredShortcut) {
+        this._pressedKeys = [keyName];
+        this._firstKeyOfCurrentShortcut = keyName;
+        this._fireOnPossibleShortcutCallback();
+      }
+    },
+
+    _handleConsecutiveKey: function(keyName) {
+      this._pressedKeys.push(keyName);
+      this._fireOnPossibleShortcutCallback();
+
+      if (this._isRegisteredShortcut(this._pressedKeys)) {
+        return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
+      }
+      this._fireOnShortcutEndCallback();
     },
 
     _keyUp: function(keyCode) {
