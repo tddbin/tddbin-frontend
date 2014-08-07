@@ -106,16 +106,23 @@ define([
     },
 
     _keyUp: function(keyCode) {
-      var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
-      if (keyName !== this._firstKeyOfCurrentShortcut) {
-        return;
+      if (this._isEndOfCurrentShortcut(keyCode)) {
+        this._fireCallbackForShortcut(this._pressedKeys);
+        this._fireOnShortcutEndCallback();
+        this._pressedKeys = [];
       }
-      var callback = this._getCallbackForPressedKeys(this._pressedKeys);
+    },
+
+    _isEndOfCurrentShortcut: function(keyCode) {
+      var keyName = ShortcutManager.mapKeyCodeToReadable(keyCode);
+      return keyName === this._firstKeyOfCurrentShortcut;
+    },
+
+    _fireCallbackForShortcut: function(pressedKeys) {
+      var callback = this._getCallbackForPressedKeys(pressedKeys);
       if (callback) {
         callback();
       }
-      this._pressedKeys = [];
-      this._fireOnShortcutEndCallback();
     },
 
     _getCallbackForPressedKeys: function(pressedKeys) {
