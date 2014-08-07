@@ -7,7 +7,7 @@ define(function() {
     PREVENT_DEFAULT_ACTION: 'preventDefault',
 
     _keyCodeToReadableKeyMap: {
-      17: 'Ctrl',
+      17: 'Control',
       18: 'Alt',
       91: 'Meta'
     },
