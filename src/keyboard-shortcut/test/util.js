@@ -28,6 +28,10 @@ define([
       keyNames.forEach(this.keyDownByKeyName.bind(this));
     },
 
+    keyUpByKeyNames: function(keyNames) {
+      keyNames.forEach(this.keyUpByKeyName.bind(this));
+    },
+
     pressByKeyNames: function(keyNames) {
       // The first key is (normally) the Meta key, don't fire keyUp yet,
       // fire it only at the end of it all.

@@ -69,6 +69,9 @@ define([
       if (isStartOfShortcut) {
         return this._handlePossibleShortcutStart(keyName);
       }
+      if (this._pressedKeys.length == 1 && this._pressedKeys[0] === keyName) {
+        return;
+      }
       return this._handleConsecutiveKey(keyName);
     },
 
