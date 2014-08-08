@@ -1,3 +1,6 @@
+# Things came up while developing
+- the approach to detecting shortcuts is completely overdone, use shiftKey, controlKey, metaKey properties of event object (will be much simpler!!!!)
+
 # Code Editor
 - write more efficient code using shortcuts, useful refactoring, etc.
 - push changes automatically to github on red/green state change
