@@ -66,9 +66,13 @@ describe('test', function(){\n\
       };
       document.getElementById('runTestsButton').addEventListener('click', executeTestCode);
 
+      var isMac = navigator.platform.indexOf('Mac') === 0;
+      var noop = function() {};
+      var metaKey = isMac ? 'Meta' : 'Control';
       var shortcuts = [
-        [['Meta', 'S'], executeTestCode, 'Save+Run'],
-        [['Control', 'S'], executeTestCode, 'Save+Run']
+        [[metaKey, 'S'], executeTestCode, 'Save+Run'],
+        [[metaKey, 'D'], noop(), 'Delete line'],
+        [[metaKey, 'Shift', 'D'], noop(), 'Duplicate line']
       ];
 
       var manager = new ShortcutManager();
