@@ -7,6 +7,7 @@ define(function() {
     PREVENT_DEFAULT_ACTION: 'preventDefault',
 
     _keyCodeToReadableKeyMap: {
+      16: 'Shift',
       17: 'Control',
       18: 'Alt',
       91: 'Meta' // Seems not to be correct in FF, but FF supports evt.key
