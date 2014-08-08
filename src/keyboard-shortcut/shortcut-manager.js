@@ -93,7 +93,19 @@ define([
       if (this._isRegisteredShortcut(this._pressedKeys)) {
         return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
       }
-      this._fireOnShortcutEndCallback();
+      if (!this._isPossibleShortcut(this._pressedKeys)) {
+        this._fireOnShortcutEndCallback();
+      }
+    },
+
+    _isPossibleShortcut: function(keys) {
+      var numPossibleShortcuts = this._registeredShortcuts.length;
+      for (var i=0; i<numPossibleShortcuts; i++) {
+        if ((this._registeredShortcuts[i][0]+'').indexOf(keys+'') === 0) {
+          return true;
+        }
+      }
+      return false;
     },
 
     _keyUp: function(keyName) {

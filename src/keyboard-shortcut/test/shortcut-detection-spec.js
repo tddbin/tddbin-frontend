@@ -109,6 +109,17 @@ define([
           keyPressEmulation.pressByKeyNames(['Alt']);
           expect(callback).not.toHaveBeenCalled();
         });
+
+        it('for a three-keys shortcut after ONLY the first 2 keys were pressed', function() {
+          var manager = new ShortcutManager();
+          shortcut = ['Meta', 'Shift', 'S'];
+          manager.registerShortcut(shortcut, noop);
+          var callback = jasmine.createSpy('callback');
+
+          manager.onShortcutEnd(callback);
+          keyPressEmulation.keyDownByKeyNames(shortcut.slice(0, 2));
+          expect(callback).not.toHaveBeenCalled();
+        });
       });
 
     });
