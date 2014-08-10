@@ -19,3 +19,4 @@
 - create a kata-log, where katas can be chosen and be programmed
 - maybe 1st paste kata descriptions into editor as comments
 - categorize katas by levels (beginner, intermediate, refactoring, ...)
+- allow users to add kata and persist them and distribute them to a coderetreat audience
