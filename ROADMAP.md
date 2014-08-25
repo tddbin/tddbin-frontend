@@ -20,3 +20,7 @@
 - maybe 1st paste kata descriptions into editor as comments
 - categorize katas by levels (beginner, intermediate, refactoring, ...)
 - allow users to add kata and persist them and distribute them to a coderetreat audience
+
+# Marketing features
+- provide a system of badges (or better a system of earning badges) while coding with TDDbin (e.g. http://www.openbadges.org/)
+- provide a way to share the earned badges of the user. possible chanals: twitter/facebook/anySocialMedia
