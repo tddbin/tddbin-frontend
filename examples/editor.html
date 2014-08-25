@@ -3,8 +3,6 @@
 <head>
   <title>Editor</title>
   <meta charset="utf-8">
-  <script src="../node_modules/es5-shim/es5-shim.js"></script>
-  <script src="../node_modules/requirejs/require.js"></script>
   <script type="text/javascript" src="../vendor/ace/src-noconflict/ace.js" charset="utf-8"></script>
 </head>
 <body>
@@ -12,29 +10,7 @@
   <h1>Editor example</h1>
   <div id="editorNode" style="width: 90%; height: 500px;"></div>
 
-  <script type="application/javascript">
-
-    require.config({
-      baseUrl: '../'
-    });
-
-    require([
-      'src/editor/editor',
-      'src/keyboard-shortcut/shortcut-manager'
-    ], function(
-      Editor,
-      ShortcutManager
-    ) {
-      var editor = new Editor('editorNode');
-      editor.setContent('// comment');
-
-      var manager = new ShortcutManager();
-      manager.registerShortcut(['Meta', 'S'], function() {
-        console.log('save it');
-      });
-    });
-
-  </script>
+  <script src="../dist/examples-editor.js" type="application/javascript"></script>
 </body>
 </html>
 

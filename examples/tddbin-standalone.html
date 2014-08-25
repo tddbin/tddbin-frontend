@@ -3,8 +3,6 @@
 <head>
   <title>TDDbin standalone</title>
   <meta charset="utf-8">
-  <script src="../node_modules/es5-shim/es5-shim.js"></script>
-  <script src="../node_modules/requirejs/require.js"></script>
   <script type="text/javascript" src="../vendor/ace/src-noconflict/ace.js" charset="utf-8"></script>
   <link href="../src/keyboard-shortcut-overlay/overlay.css" rel="stylesheet"/>
 </head>
@@ -19,75 +17,7 @@
   </div>
   <div id="keyboard-shortcut-overlay"></div>
 
-  <script type="application/javascript">
-
-    var initialTestCode = "\
-describe('test', function(){\n\
-  it('jasmine style', function(){\n\
-    expect(1).toBe(1);\n\
-  });\n\
-  it('should style', function(){\n\
-    should(1).ok;\n\
-  });\n\
-});";
-
-    require.config({
-      baseUrl: '../',
-      paths: {
-        react: 'node_modules/react/dist/react',
-        JSXTransformer: 'vendor/jsx-requirejs-plugin/js/JSXTransformer-0.11.0',
-        jsx: 'vendor/jsx-requirejs-plugin/js/jsx',
-        text: 'vendor/jsx-requirejs-plugin/js/text'
-      }
-    });
-
-    require([
-      'src/test-runner/mocha/runner',
-      'src/editor/editor',
-      'src/keyboard-shortcut/shortcut-manager',
-      'src/keyboard-shortcut-overlay/overlay'
-    ], function(
-      MochaRunner,
-      Editor,
-      ShortcutManager,
-      ShortcutOverlay
-    ){
-      var $ = document.getElementById.bind(document);
-      var editor = new Editor('editorNode');
-      editor.setContent(initialTestCode);
-
-      var domNode = $('embeddedMocha');
-      var runner = new MochaRunner(domNode);
-      var iframeSrc = '../src/test-runner/mocha/spec-runner.html';
-      runner.render(iframeSrc);
-
-      var executeTestCode = function() {
-        runner.send(editor.getContent());
-      };
-      document.getElementById('runTestsButton').addEventListener('click', executeTestCode);
-
-      var isMac = navigator.platform.indexOf('Mac') === 0;
-      var noop = function() {};
-      var metaKey = isMac ? 'Meta' : 'Control';
-      var shortcuts = [
-        [[metaKey, 'S'], executeTestCode, 'Save+Run'],
-        [[metaKey, 'D'], noop(), 'Delete line'],
-        [[metaKey, 'Shift', 'D'], noop(), 'Duplicate line']
-      ];
-
-      var manager = new ShortcutManager();
-      manager.registerShortcuts(shortcuts);
-
-      var shortcutsAndHints = shortcuts.map(function(shortcut) {
-        return {keys: shortcut[0], helpText: shortcut[2]};
-      });
-      var overlay = new ShortcutOverlay($('keyboard-shortcut-overlay'));
-      overlay.render(shortcutsAndHints);
-
-      manager.onPossibleShortcut(overlay.show.bind(overlay));
-      manager.onShortcutEnd(overlay.hide.bind(overlay));
-    });
-  </script>
+  <script src="../dist/examples-tddbin-standalone.js" type="application/javascript"></script>
 </body>
 </html>
 
