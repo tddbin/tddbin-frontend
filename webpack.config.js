@@ -2,7 +2,10 @@ var path = require('path');
 
 module.exports = {
   entry: {
-    'mocha-runner': './src/test-runner/mocha/runner.js',
+    // Put all entry modules that are also required by another entry module into an array
+    // see https://github.com/webpack/webpack/issues/300
+    'mocha-runner': ['./src/test-runner/mocha/runner.js'],
+
     'examples-test-runner-mocha': './examples/test-runner/mocha.js'
   },
   output: {
