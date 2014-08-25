@@ -1,11 +1,12 @@
 {
-  "name": "tddbin-ui",
+  "name": "tddbin-frontend",
   "version": "0.0.1",
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
   "scripts": {
     "test": "jasmine-node src",
     "build": "webpack",
+    "production-build": "webpack -p",
     "start": "webpack-dev-server"
   },
   "keywords": [
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",
+    "jsx-loader": "^0.11.0",
     "webpack": "^1.3.6",
     "webpack-dev-server": "^1.5.0"
   }
