@@ -15,8 +15,10 @@ In order to run this project locally do the following:
 - `cd tddbin-frontend` go into the directory where the project was cloned into
 - `npm install` installs all dependencies into the `node_modules` directory
 - `npm test` runs all the tests of the project
+
 Now you can 
 - `npm start` starts webpack-dev-server
+
 and you can 
 - at [http://localhost:8080](http://localhost:8080)
   or [http://localhost:8080/webpack-dev-server/](http://localhost:8080/webpack-dev-server/)
