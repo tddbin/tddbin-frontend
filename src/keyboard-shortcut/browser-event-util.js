@@ -1,13 +1,8 @@
-if (typeof define !== 'function') { var define = require('amdefine')(module) }
+var browserEventUtil = {
 
-define(function() {
+  onWindowBlur: function(fn) {
+    window.addEventListener('blur', fn);
+  }
+};
 
-  var browserEventUtil = {
-
-    onWindowBlur: function(fn) {
-      window.addEventListener('blur', fn);
-    }
-  };
-
-  return browserEventUtil;
-});
+module.exports = browserEventUtil;
