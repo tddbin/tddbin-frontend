@@ -5,12 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "jasmine-node src",
+    "build": "webpack",
+    "start": "webpack-dev-server"
   },
   "keywords": [
     "tddbin",
     "tdd",
     "javascript"
   ],
+  "bugs": {
+    "url": "https://github.com/uxebu/tddbin-frontend/issues"
+  },
   "author": "uxebu",
   "license": "MIT",
   "dependencies": {
@@ -22,7 +27,8 @@
     "should": "^4.0.4"
   },
   "devDependencies": {
-    "amdefine": "^0.1.0",
-    "jasmine-node": "^1.14.5"
+    "jasmine-node": "^1.14.5",
+    "webpack": "^1.3.6",
+    "webpack-dev-server": "^1.5.0"
   }
 }
