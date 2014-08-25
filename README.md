@@ -5,7 +5,7 @@
 
 # TDDbin Frontend
 
-This project contains all the UI stuff for TDDbin, it should be runnable separately
+This project contains all the UI stuff for [TDDbin](http://tddbin.com), it should be runnable separately
 without any backend and aims to provide all components modularly.
 
 # Development
@@ -17,7 +17,7 @@ In order to run this project locally do the following:
 - `npm test` runs all the tests of the project
 
 Now you can 
-- `npm start` starts webpack-dev-server
+- `npm start` starts [webpack-dev-server](https://github.com/webpack/webpack-dev-server)
 
 and you can 
 - at [http://localhost:8080](http://localhost:8080)
