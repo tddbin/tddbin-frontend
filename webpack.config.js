@@ -8,7 +8,8 @@ module.exports = {
     'src-test-runner-mocha-spec-runner': './src/test-runner/mocha/spec-runner.js',
 
     'examples-test-runner-mocha': './examples/test-runner/mocha.js',
-    'examples-editor': './examples/editor.js'
+    'examples-editor': './examples/editor.js',
+    'examples-tddbin-standalone': './examples/tddbin-standalone.js',
   },
   output: {
     path: path.join(__dirname, 'dist'),
