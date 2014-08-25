@@ -3,10 +3,28 @@
 [![Codacy Badge](https://www.codacy.com/project/badge/857e4f48b2704d3bb3742bc5d78f8c40)](https://www.codacy.com/public/uxebu/tddbin-frontend.git)
 
 
-# TDDbin frontend
+# TDDbin Frontend
 
 This project contains all the UI stuff for TDDbin, it should be runnable separately
 without any backend and aims to provide all components modularly.
+
+# Development
+
+In order to run this project locally do the following:
+- `git clone git@github.com:uxebu/tddbin-frontend.git` clone the repo on your machine
+- `cd tddbin-frontend` go into the directory where the project was cloned into
+- `npm install` installs all dependencies into the `node_modules` directory
+- `npm test` runs all the tests of the project
+Now you can 
+- `npm start` starts webpack-dev-server
+and you can 
+- at [http://localhost:8080](http://localhost:8080)
+  or [http://localhost:8080/webpack-dev-server/](http://localhost:8080/webpack-dev-server/)
+  get a directory listing where you can go into the `examples` folder and run any of them
+- or go directly to any of
+  - [http://localhost:8080/examples/editor.html](http://localhost:8080/examples/editor.html) a simple editor demo
+  - [http://localhost:8080/examples/tddbin-standalone.html](http://localhost:8080/examples/tddbin-standalone.html) a simple TDDbin demo
+  - [http://localhost:8080/examples/test-runner/mocha.html](http://localhost:8080/examples/test-runner/mocha.html) demo mocha runner demo
 
 # Test runners
 
