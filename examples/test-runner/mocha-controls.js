@@ -1,20 +1,4 @@
-var testSpecs = {
-  simplePassing: "describe('test embedded mocha', function() {\
-      it('should run jasmine-style tests', function() {\
-        expect(1)\
-          .toBe(1);\
-      });\
-      it('should run should-style tests', function() {\
-        should(1).ok;\
-      });\
-    });",
-  simpleFailing: "describe('test embedded mocha', function() {\
-      it('should fail', function() {\
-        expect(1)\
-          .toBe(2);\
-      });\
-    });"
-};
+var exampleTests = require('../example-tests');
 
 function Controls(mochaRunner) {
   this._mochaRunner = mochaRunner;
@@ -30,19 +14,19 @@ Controls.prototype = {
     connect(manyButtonId, this._postManyTests.bind(this));
   },
   _postPassingTest: function() {
-    this._postTestSourceCode(testSpecs.simplePassing);
+    this._postTestSourceCode(exampleTests.simplePassingTestCode);
   },
   _postFailingTest: function() {
-    this._postTestSourceCode(testSpecs.simpleFailing);
+    this._postTestSourceCode(exampleTests.simplePassingTestCode);
   },
   _postManyTests: function() {
     this._postTestSourceCode([
-      testSpecs.simplePassing,
-      testSpecs.simplePassing,
-      testSpecs.simplePassing,
-      testSpecs.simpleFailing,
-      testSpecs.simpleFailing,
-      testSpecs.simplePassing
+      exampleTests.simplePassingTestCode,
+      exampleTests.simplePassingTestCode,
+      exampleTests.simplePassingTestCode,
+      exampleTests.simpleFailingTestCode,
+      exampleTests.simpleFailingTestCode,
+      exampleTests.simplePassingTestCode
     ].join('\n'));
   },
   _postTestSourceCode: function(sourceCode) {

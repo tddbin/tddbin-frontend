@@ -1,12 +1,4 @@
-var initialTestCode = "\
-describe('test', function(){\n\
-  it('jasmine style', function(){\n\
-    expect(1).toBe(1);\n\
-  });\n\
-  it('should style', function(){\n\
-    should(1).ok;\n\
-  });\n\
-});";
+var exampleTests = require('./example-tests');
 
 var MochaRunner = require('../src/test-runner/mocha/runner');
 var Editor = require('../src/editor/editor');
@@ -15,7 +7,7 @@ var ShortcutOverlay = require('../src/keyboard-shortcut-overlay/overlay');
 
 var $ = document.getElementById.bind(document);
 var editor = new Editor('editorNode');
-editor.setContent(initialTestCode);
+editor.setContent(exampleTests.simplePassingTestCode);
 
 var domNode = $('embeddedMocha');
 var runner = new MochaRunner(domNode);
