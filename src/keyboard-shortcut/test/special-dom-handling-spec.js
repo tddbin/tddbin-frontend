@@ -1,7 +1,6 @@
 var ShortcutManager = require('../shortcut-manager');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
-var util = require('./util');
 
 describe('DOM event handling', function() {
 
