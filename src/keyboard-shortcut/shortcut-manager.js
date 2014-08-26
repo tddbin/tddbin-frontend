@@ -75,7 +75,7 @@ ShortcutManager.prototype = {
   },
 
   _handleConsecutiveKey: function(keyName) {
-    var isFirstKeyRepition = this._pressedKeys.length == 1 && this._pressedKeys[0] === keyName;
+    var isFirstKeyRepition = this._pressedKeys.length === 1 && this._pressedKeys[0] === keyName;
     if (isFirstKeyRepition) {
       return;
     }
