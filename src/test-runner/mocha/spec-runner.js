@@ -2,8 +2,6 @@ require('mocha');
 var expect = require('referee/lib/expect');
 var should = require('should');
 
-window.addEventListener('message', consumeMessage, false);
-
 function consumeMessage(messageData) {
   var sender = messageData.source;
   var specCode = messageData.data;
@@ -20,9 +18,11 @@ function consumeMessage(messageData) {
   // Let mocha run and report the stats back to the actual sender.
   mocha.checkLeaks();
   var runner = mocha.run();
-  runner.on('end', onRan);
   function onRan() {
     var stats = runner.stats;
     sender.postMessage(stats, '*');
   }
+  runner.on('end', onRan);
 }
+
+window.addEventListener('message', consumeMessage, false);
