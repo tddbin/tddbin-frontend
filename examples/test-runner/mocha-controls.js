@@ -19,7 +19,7 @@ Controls.prototype = {
     this._postTestSourceCode(exampleTests.simplePassingTestCode);
   },
   _postFailingTest: function() {
-    this._postTestSourceCode(exampleTests.simplePassingTestCode);
+    this._postTestSourceCode(exampleTests.simpleFailingTestCode);
   },
   _postManyTests: function() {
     this._postTestSourceCode([
