@@ -1,3 +1,5 @@
+"use strict";
+
 var keyboardEventUtil = {
 
   PREVENT_DEFAULT_ACTION: 'preventDefault',

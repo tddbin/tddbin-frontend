@@ -1,3 +1,5 @@
+"use strict";
+
 var keyboardEventUtil = require('./keyboard-event-util');
 var browserEventUtil = require('./browser-event-util');
 

@@ -1,3 +1,5 @@
+"use strict";
+
 function simplePassing() {
   describe('test embedded mocha', function() {
     it('should run jasmine-style tests', function() {

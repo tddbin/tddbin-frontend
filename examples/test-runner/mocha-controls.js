@@ -1,3 +1,5 @@
+"use strict";
+
 var exampleTests = require('../example-tests');
 
 function Controls(mochaRunner) {

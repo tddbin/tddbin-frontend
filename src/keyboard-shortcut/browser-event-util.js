@@ -1,3 +1,5 @@
+"use strict";
+
 var browserEventUtil = {
 
   onWindowBlur: function(fn) {
