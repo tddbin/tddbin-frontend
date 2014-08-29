@@ -20,12 +20,12 @@ var executeTestCode = function() {
 document.getElementById('runTestsButton').addEventListener('click', executeTestCode);
 
 var isMac = navigator.platform.indexOf('Mac') === 0;
-var noop = function() {};
+var providedByAceEditor = function() {/* noop() */};
 var metaKey = isMac ? 'Meta' : 'Control';
 var shortcuts = [
   [[metaKey, 'S'], executeTestCode, 'Save+Run'],
-  [[metaKey, 'D'], noop(), 'Delete line'],
-  [[metaKey, 'Shift', 'D'], noop(), 'Duplicate line']
+  [[metaKey, 'D'], providedByAceEditor(), 'Delete line'],
+  [[metaKey, 'Shift', 'D'], providedByAceEditor(), 'Duplicate line']
 ];
 
 var manager = new ShortcutManager();
