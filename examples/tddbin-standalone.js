@@ -1,9 +1,12 @@
 var exampleTests = require('./example-tests');
 var EditorAndRunner = require('../src/editor-and-runner/controller');
+var NavigationBar = require('../src/navigation-bar/controller');
 var ShortcutManager = require('../src/keyboard-shortcut/shortcut-manager');
 var ShortcutOverlay = require('../src/keyboard-shortcut-overlay/overlay');
 
 var $ = document.getElementById.bind(document);
+
+new NavigationBar($('navigation-bar'));
 
 var editorAndRunner;
 var executeTestCode = function() {
