@@ -8,6 +8,8 @@
 - collabrative editing, so everyone can use his own computer but collaborate
 - time counter that shows "your tests are already RED for 23mins"
 - "pair programming feauture" toggle actor icons to identify changing the driver and navigator role
+- allow to use a table for simply inputting input+output data and specify the function to call, which generate test cases
+  behind the scenes (e.g. for teaching (kids) how to simply program without need to learn jasmine or alikes)
 
 # Complexity/Analysis
 - show code complexity using TPP
