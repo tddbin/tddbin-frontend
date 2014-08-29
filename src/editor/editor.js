@@ -12,6 +12,7 @@ define(function () {
       editor.getSession().setMode('ace/mode/javascript');
       editor.getSession().setTabSize(2);
       document.getElementById(this._domNodeId).style.fontSize='12px';
+      document.getElementById(this._domNodeId).style.backgroundColor='white';
       this._editor = editor;
     },
 
