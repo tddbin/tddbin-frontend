@@ -5,19 +5,16 @@ var ShortcutManager = require('../src/keyboard-shortcut/shortcut-manager');
 var ShortcutOverlay = require('../src/keyboard-shortcut-overlay/overlay');
 
 var $ = document.getElementById.bind(document);
-
-new NavigationBar($('navigation-bar'));
-
 var editorAndRunner;
+
 var executeTestCode = function() {
   editorAndRunner.runEditorContent();
 };
+
+new NavigationBar($('navigation-bar'), executeTestCode);
+
 editorAndRunner = new EditorAndRunner($('editor-and-runner'), '../src/test-runner/mocha/spec-runner.html');
 editorAndRunner.setEditorContent(exampleTests.simplePassingTestCode);
-
-document.getElementById('runTestsButton').addEventListener('click', executeTestCode);
-
-
 
 
 // shortcut stuff
