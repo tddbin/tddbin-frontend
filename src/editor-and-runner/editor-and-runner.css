@@ -1,0 +1,14 @@
+.editor-and-runner .editor {
+  width: 50%;
+  height: 500px;
+  float: left;
+  background-color: lightyellow;
+  border: none;
+}
+
+.editor-and-runner .runner {
+  width: 49%;
+  height: 500px;
+  float: right;
+  border: none;
+}

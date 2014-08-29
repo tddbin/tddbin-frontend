@@ -4,6 +4,7 @@
   <title>TDDbin standalone</title>
   <meta charset="utf-8">
   <script type="text/javascript" src="../vendor/ace/src-noconflict/ace.js" charset="utf-8"></script>
+  <link href="../src/editor-and-runner/editor-and-runner.css" rel="stylesheet"/>
   <link href="../src/keyboard-shortcut-overlay/overlay.css" rel="stylesheet"/>
 </head>
 <body>
@@ -11,10 +12,8 @@
   <h1>Editor example</h1>
   <button id="runTestsButton" style="font-size: large; margin-bottom: 1em;">Run tests (Meta+S or Ctrl+S)</button>
   &lt;=== Press this button (or use the shortcut) to run your test code!
-  <div>
-    <div id="editorNode" style="width: 49%; height: 500px; float: left; background-color: lightyellow;"></div>
-    <div id="embeddedMocha" style="width: 49%; height: 500px; float: right;"></div>
-  </div>
+
+  <div id="editor-and-runner"></div>
   <div id="keyboard-shortcut-overlay"></div>
 
   <script src="./tddbin-standalone.js" type="application/javascript"></script>

@@ -1,23 +1,23 @@
 var exampleTests = require('./example-tests');
-
-var MochaRunner = require('../src/test-runner/mocha/runner');
-var Editor = require('../src/editor/editor');
+var EditorAndRunner = require('../src/editor-and-runner/controller');
 var ShortcutManager = require('../src/keyboard-shortcut/shortcut-manager');
 var ShortcutOverlay = require('../src/keyboard-shortcut-overlay/overlay');
 
 var $ = document.getElementById.bind(document);
-var editor = new Editor('editorNode');
-editor.setContent(exampleTests.simplePassingTestCode);
 
-var domNode = $('embeddedMocha');
-var runner = new MochaRunner(domNode);
-var iframeSrc = '../src/test-runner/mocha/spec-runner.html';
-runner.render(iframeSrc);
-
+var editorAndRunner;
 var executeTestCode = function() {
-  runner.send(editor.getContent());
+  editorAndRunner.runEditorContent();
 };
+editorAndRunner = new EditorAndRunner($('editor-and-runner'), '../src/test-runner/mocha/spec-runner.html');
+editorAndRunner.setEditorContent(exampleTests.simplePassingTestCode);
+
 document.getElementById('runTestsButton').addEventListener('click', executeTestCode);
+
+
+
+
+// shortcut stuff
 
 var isMac = navigator.platform.indexOf('Mac') === 0;
 var providedByAceEditor = function() {/* noop() */};
