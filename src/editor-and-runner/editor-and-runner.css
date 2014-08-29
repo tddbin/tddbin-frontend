@@ -10,5 +10,9 @@
   width: 49%;
   height: 500px;
   float: right;
+  background-color: #D3D3D3;
+}
+
+.editor-and-runner .runner iframe {
   border: none;
 }
