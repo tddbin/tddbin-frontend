@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Editor</title>
-  <meta charset="utf-8">
-  <script type="text/javascript" src="../vendor/ace/src-noconflict/ace.js" charset="utf-8"></script>
+    <title>Editor</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="../vendor/ace/src-noconflict/ace.js" charset="utf-8"></script>
+    <!-- esrefactor depends on these libraries -->
+    <script src="../node_modules/esrefactor/node_modules/esprima/esprima.js"></script>
+    <script src="../node_modules/esrefactor/node_modules/estraverse/estraverse.js"></script>
+    <script src="../node_modules/esrefactor/node_modules/escope/escope.js"></script>
+    <script src="../node_modules/esrefactor/lib/esrefactor.js"></script>
 </head>
 <body>
 
-  <h1>Editor example</h1>
-  <div id="editorNode" style="width: 90%; height: 500px;"></div>
+<h1>Editor example</h1>
 
-  <script src="./editor.js" type="application/javascript"></script>
+<div id="editorNode" style="width: 90%; height: 500px;"></div>
+
+<script src="./editor.js" type="application/javascript"></script>
 </body>
 </html>
 
