@@ -4,7 +4,7 @@
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine-node src",
+    "test": "npm run lint && jasmine-node src",
     "lint": "jsxcs --preset google src",
     "build": "webpack -p",
     "watch": "webpack --watch",
