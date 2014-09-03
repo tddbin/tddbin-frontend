@@ -1,5 +1,3 @@
-define(function () {
-
   function Editor (domNodeId) {
     this._domNodeId = domNodeId;
     this._init();
@@ -30,5 +28,4 @@ define(function () {
     }
   };
 
-  return Editor;
-});
+  module.exports = Editor;
