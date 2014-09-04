@@ -10,7 +10,13 @@ Editor.prototype = {
   _init: function () {
     document.getElementById(this._domNodeId).style.fontSize = '12px';
     document.getElementById(this._domNodeId).style.backgroundColor = 'white';
-    this._editor = editor.orion.editor.edit({parent: this._domNodeId});
+
+    var options = {
+      parent: this._domNodeId,
+      lang: 'js'
+    }
+
+    this._editor = editor.orion.editor.edit(options);
   },
 
   setContent: function (content) {
@@ -19,7 +25,6 @@ Editor.prototype = {
 
   getContent: function () {
     return this._editor.getText();
-  },
   }
 };
 
