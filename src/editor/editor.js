@@ -20,9 +20,6 @@ Editor.prototype = {
   getContent: function () {
     return this._editor.getText();
   },
-
-  insertAtCursorPosition: function (s) {
-//      this._editor.insert(s);
   }
 };
 
