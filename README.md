@@ -28,6 +28,18 @@ and you can
   - [http://localhost:8080/examples/tddbin-standalone.html](http://localhost:8080/examples/tddbin-standalone.html) a simple TDDbin demo
   - [http://localhost:8080/examples/test-runner/mocha.html](http://localhost:8080/examples/test-runner/mocha.html) demo mocha runner demo
 
+## Coding style
+
+The coding style is checked by running `npm run lint` using [jsxcs](https://github.com/orktes/node-jsxcs) a JSX-enabled fork of 
+[jscs](https://github.com/jscs-dev/node-jscs).
+The applied style derives from the [google coding style](https://github.com/jscs-dev/node-jscs/blob/master/presets/google.json)
+as contained also in the [jscs project](https://github.com/jscs-dev/node-jscs).
+
+## How to contribute
+
+In order to contribute please provide a pull request, add a description to what your code does and how it is useful.
+It will be commented, discussed, maybe you need to adapt things and then it might be merged.
+
 # Test runners
 
 The execution of tests takes place in a separate component, which can be hooked in
