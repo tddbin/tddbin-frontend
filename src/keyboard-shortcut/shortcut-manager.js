@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var keyboardEventUtil = require('./keyboard-event-util');
 var browserEventUtil = require('./browser-event-util');
@@ -95,8 +95,8 @@ ShortcutManager.prototype = {
 
   _isPossibleShortcut: function(keys) {
     var numPossibleShortcuts = this._registeredShortcuts.length;
-    for (var i=0; i<numPossibleShortcuts; i++) {
-      if ((this._registeredShortcuts[i][0]+'').indexOf(keys+'') === 0) {
+    for (var i = 0; i < numPossibleShortcuts; i++) {
+      if ((this._registeredShortcuts[i][0] + '').indexOf(keys + '') === 0) {
         return true;
       }
     }

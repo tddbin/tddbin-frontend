@@ -17,7 +17,9 @@ Controller.prototype = {
   _render: function() {
     var editorDomNodeId = 'editorId';
     var runnerDomNodeId = 'runnerId';
-    this._component = React.renderComponent(ViewComponent({editorId: editorDomNodeId, runnerId: runnerDomNodeId}), this._domNode);
+    this._component = React.renderComponent(ViewComponent({
+      editorId: editorDomNodeId, runnerId: runnerDomNodeId
+    }), this._domNode);
     this._editor = new Editor(editorDomNodeId);
     this._runner = new MochaRunner(document.getElementById(runnerDomNodeId));
     this._runner.render(this._iframeSrcUrl);

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var keyboardEventUtil = {
 
@@ -21,7 +21,8 @@ var keyboardEventUtil = {
 
   _getKeyNameFromEvent: function(evt) {
     if (evt.key) {
-      if (evt.key.length === 1) { // Ctrl+S in FF reports evt.key='s' (which makes sense) but we handle all just in upper case.
+      // Ctrl+S in FF reports evt.key='s' (which makes sense) but we handle all just in upper case.
+      if (evt.key.length === 1) {
         return evt.key.toUpperCase();
       }
       return evt.key;

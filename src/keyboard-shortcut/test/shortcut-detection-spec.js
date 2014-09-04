@@ -53,7 +53,7 @@ describe('a shortcut', function() {
     });
   });
 
-  describe('fire onShortcutEnd() callback', function(){
+  describe('fire onShortcutEnd() callback', function() {
 
     it('when the shortcut is done', function() {
       var callback = jasmine.createSpy('callback');
@@ -67,7 +67,7 @@ describe('a shortcut', function() {
       // but  Meta+S+S is pressed, it should fire since the shortcut turned invalid
       var callback = jasmine.createSpy('callback');
       manager.onShortcutEnd(callback);
-      var lastKeyName = shortcut[shortcut.length-1];
+      var lastKeyName = shortcut[shortcut.length - 1];
       keyPressEmulation.pressByKeyNames(shortcut.concat(lastKeyName));
       expect(callback).toHaveBeenCalled();
     });
