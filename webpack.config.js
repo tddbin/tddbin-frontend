@@ -10,6 +10,7 @@ module.exports = {
     'examples/test-runner/mocha': './examples/test-runner/mocha.js',
     'examples/editor': './examples/editor.js',
     'examples/tddbin-standalone': './examples/tddbin-standalone.js',
+    'examples/tddbin-with-backend': './examples/tddbin-with-backend.js',
   },
   output: {
     path: path.join(__dirname, 'dist'),
