@@ -1,4 +1,4 @@
-var editor = require('../../vendor/orion/built-editor-5.0.js');
+var editor = require('../../vendor/orion/built-editor-6.0.js');
 
 function Editor(domNodeId) {
   this._domNodeId = domNodeId;
