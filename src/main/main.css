@@ -1,0 +1,9 @@
+@import "../navigation-bar/navigation-bar.css";
+@import "../editor-and-runner/editor-and-runner.css";
+@import "../keyboard-shortcut-overlay/overlay.css";
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
