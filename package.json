@@ -25,7 +25,9 @@
     "react": "^0.11.1",
     "referee": "^1.0.3",
     "should": "^4.0.4",
-    "ace-with-plugins": "git://github.com/uxebu/ace-with-plugins.git"
+    "ace-with-plugins": "git://github.com/uxebu/ace-with-plugins.git",
+    "reqwest": "^1.1.2",
+    "should": "^4.0.4"
   },
   "devDependencies": {
     "jasmine-matchers": "^0.2.3",
