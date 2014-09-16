@@ -37,7 +37,7 @@ Controller.prototype = {
     this._editor.setContent(sourceCode);
   },
 
-  _runEditorContent: function() {
+  runEditorContent: function() {
     this._runner.send(this._editor.getContent());
   },
 
