@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
-var NavigationBar = require('../navigation-bar/component');
-var EditorAndRunner = require('../editor-and-runner/component');
-var KeyboardShortcutOverlay = require('../keyboard-shortcut-overlay/component');
+var NavigationBar = require('../navigation-bar/navigation-bar-view');
+var EditorAndRunner = require('../editor-and-runner/editor-and-runner-view');
+var KeyboardShortcutOverlay = require('../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view');
 
 var React = require('react');
 

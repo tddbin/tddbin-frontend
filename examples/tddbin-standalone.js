@@ -1,6 +1,6 @@
 var $ = document.getElementById.bind(document);
 var exampleTests = require('./example-tests');
-var Main = require('../src/main/controller');
+var Main = require('../src/main/main-controller');
 
 var providedByAceEditor = function() {/* noop() */};
 var isMac = navigator.platform.indexOf('Mac') === 0;

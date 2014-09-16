@@ -1,6 +1,6 @@
 @import "../navigation-bar/navigation-bar.css";
 @import "../editor-and-runner/editor-and-runner.css";
-@import "../keyboard-shortcut-overlay/overlay.css";
+@import "../keyboard-shortcut-overlay/keyboard-shortcut-overlay.css";
 
 body {
   margin: 0;

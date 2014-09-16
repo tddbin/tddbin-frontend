@@ -1,5 +1,5 @@
 var React = require('react');
-var ViewComponent = require('./component');
+var ViewComponent = require('./main-view');
 var Editor = require('../editor/editor');
 var MochaRunner = require('../test-runner/mocha/runner');
 
