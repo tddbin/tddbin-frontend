@@ -4,14 +4,6 @@ var React = require('react');
 
 var Overlay = React.createClass({
 
-  show: function() {
-    this.getDOMNode().style.display = 'block';
-  },
-
-  hide: function() {
-    this.getDOMNode().style.display = 'none';
-  },
-
   _renderShortcut: function(shortcut) {
     return (
       <div>
@@ -26,9 +18,10 @@ var Overlay = React.createClass({
   },
 
   render: function() {
+    var styleProps = {display: this.props.isVisible ? 'block' : 'none'};
     var shortcuts = this.props.shortcuts;
     return (
-      <div className="keyboard-shortcut-overlay">
+      <div className="keyboard-shortcut-overlay" style={styleProps}>
         {this._renderShortcuts(shortcuts)}
         <div className="hint">
           Note: All keyboard shortcuts fire <b>when you release the  meta_key ""</b>  key.<br/>
