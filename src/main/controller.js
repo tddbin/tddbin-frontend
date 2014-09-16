@@ -22,8 +22,9 @@ Controller.prototype = {
       metaKeySymbol: '⌘',
       editorId: editorDomNodeId,
       runnerId: runnerDomNodeId,
-      onSave: this._runEditorContent.bind(this),
-      shortcuts: this._getShortcutsForComponent(this._config.shortcuts)
+      onSave: this.runEditorContent.bind(this),
+      shortcuts: this._getShortcutsForComponent(this._config.shortcuts),
+      shortcutOverlay: {isVisible: false}
     };
     this._component = React.renderComponent(ViewComponent(props), this._domNode);
     this._editor = new Editor(editorDomNodeId);
@@ -50,9 +51,17 @@ Controller.prototype = {
   _registerShortcuts: function(shortcuts) {
     var manager = new ShortcutManager();
     manager.registerShortcuts(shortcuts);
-//
-//    manager.onPossibleShortcut(overlay.show.bind(overlay));
-//    manager.onShortcutEnd(overlay.hide.bind(overlay));
+
+    var component = this._component;
+    function showShortCutOverlay() {
+      component.setProps({shortcutOverlay: {isVisible: true}});
+    }
+    function hideShortCutOverlay() {
+      component.setProps({shortcutOverlay: {isVisible: false}});
+    }
+
+    manager.onPossibleShortcut(showShortCutOverlay);
+    manager.onShortcutEnd(hideShortCutOverlay);
   }
 
 };
