@@ -8,11 +8,12 @@ var React = require('react');
 var View = React.createClass({
 
   render: function() {
+    var props = this.props;
     return (
       <div>
-        <NavigationBar metaKeySymbol={this.props.metaKeySymbol} onSave={this.props.onSave}/>
-        <EditorAndRunner editorId={this.props.editorId} runnerId={this.props.runnerId}/>
-        <KeyboardShortcutOverlay shortcuts={this.props.shortcuts}/>
+        <NavigationBar metaKeySymbol={props.metaKeySymbol} onSave={props.onSave}/>
+        <EditorAndRunner editorId={props.editorId} runnerId={props.runnerId}/>
+        <KeyboardShortcutOverlay shortcuts={props.shortcuts} isVisible={props.shortcutOverlay.isVisible}/>
       </div>
     );
   }
