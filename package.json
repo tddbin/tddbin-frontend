@@ -24,7 +24,8 @@
     "mocha": "^1.21.3",
     "react": "^0.11.1",
     "referee": "^1.0.3",
-    "should": "^4.0.4"
+    "should": "^4.0.4",
+    "ace-with-plugins": "git@github.com:uxebu/ace-with-plugins.git"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",

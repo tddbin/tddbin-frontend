@@ -1,6 +1,6 @@
 var React = require('react');
 var ViewComponent = require('./main-view');
-var Editor = require('../editor/editor');
+var editor = require('ace-with-plugins');
 var MochaRunner = require('../test-runner/mocha/runner');
 
 var ShortcutManager = require('../keyboard-shortcut/shortcut-manager');
@@ -27,7 +27,7 @@ Controller.prototype = {
       shortcutOverlay: {isVisible: false}
     };
     this._component = React.renderComponent(ViewComponent(props), this._domNode);
-    this._editor = new Editor(editorDomNodeId);
+    this._editor = editor(editorDomNodeId);
     this._runner = new MochaRunner(document.getElementById(runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
     this._setEditorContent(this._config.initialContent);
