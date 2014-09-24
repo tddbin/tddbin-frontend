@@ -12,30 +12,19 @@
  */
 
 function shallComponentBeVisible(registeredShortcuts, pressedPartialShortcut) {
-  var key = pressedPartialShortcut[0];
-  var isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][0] == key });
-  if (!isStartOfRegisteredShortcut) {
+  if (pressedPartialShortcut.length == 0) {
     return false;
   }
-  if (pressedPartialShortcut.length > 1) {
-    var key = pressedPartialShortcut[1];
-    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][1] == key });
+  var chars = 0;
+  while (pressedPartialShortcut.length > chars) {
+    var key = pressedPartialShortcut[chars];
+    var isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][chars] == key });
+    if (!isStartOfRegisteredShortcut) {
+      return false;
+    }
+    chars++;
   }
-  if (!isStartOfRegisteredShortcut) {
-    return false;
-  }
-  if (pressedPartialShortcut.length > 2) {
-    var key = pressedPartialShortcut[2];
-    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][2] == key });
-  }
-  if (!isStartOfRegisteredShortcut) {
-    return false;
-  }
-  if (pressedPartialShortcut.length > 3) {
-    var key = pressedPartialShortcut[3];
-    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][3] == key });
-  }
-  return isStartOfRegisteredShortcut;
+  return true;
 }
 
 function registerShortcuts(shortcuts) {
