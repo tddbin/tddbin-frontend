@@ -4,11 +4,7 @@
   - visible shall be false
 
 - when a VALID key combo is pressed
-  - show all shortcuts filtered by the keycombo
   - set visible=true
-
-  - pre-process shortcuts into ui-shortcuts (or alike) where 'Meta' is replace by '⌘' etc.
-
  */
 
 function shallComponentBeVisible(registeredShortcuts, pressedPartialShortcut) {
