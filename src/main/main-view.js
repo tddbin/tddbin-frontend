@@ -11,9 +11,19 @@ var View = React.createClass({
     var props = this.props;
     return (
       <div>
-        <NavigationBar metaKeySymbol={props.metaKeySymbol} onSave={props.onSave}/>
-        <EditorAndRunner editorId={props.editorId} runnerId={props.runnerId}/>
-        <KeyboardShortcutOverlay shortcuts={props.shortcuts} isVisible={props.shortcutOverlay.isVisible}/>
+        <NavigationBar
+          metaKeySymbol={props.metaKeySymbol}
+          onSave={props.onSave}
+        />
+        <EditorAndRunner
+          editorId={props.editorId}
+          runnerId={props.runnerId}
+        />
+        <KeyboardShortcutOverlay
+          metaKeySymbol={props.metaKeySymbol}
+          shortcuts={props.shortcuts}
+          isVisible={props.shortcutOverlay.isVisible}
+        />
       </div>
     );
   }

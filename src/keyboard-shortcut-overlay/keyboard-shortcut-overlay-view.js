@@ -7,7 +7,7 @@ var Overlay = React.createClass({
   _renderShortcut: function(shortcut) {
     return (
       <div>
-        <span className="shortcut"> meta_key "{shortcut.keys.join('+')}" </span>
+        <span className="shortcut">{shortcut.keys.join('+')} </span>
         {shortcut.helpText}
       </div>
     );
@@ -20,12 +20,13 @@ var Overlay = React.createClass({
   render: function() {
     var styleProps = {display: this.props.isVisible ? 'block' : 'none'};
     var shortcuts = this.props.shortcuts;
+    var metaKeySymbol = this.props.metaKeySymbol;
     return (
       <div className="keyboard-shortcut-overlay" style={styleProps}>
         {this._renderShortcuts(shortcuts)}
         <div className="hint">
-          Note: All keyboard shortcuts fire <b>when you release the  meta_key ""</b>  key.<br/>
-          This allows for combinations such as  meta_key "IE"  and  meta_key "IEE" , and way more<br/>
+          Note: All keyboard shortcuts fire <b>when you release the {metaKeySymbol}</b>  key.<br/>
+          This allows for combinations such as  {metaKeySymbol}+I+E  and  {metaKeySymbol}+I+E+E , and way more<br/>
           combinations for faster working with your code.
         </div>
       </div>
