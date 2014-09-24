@@ -16,6 +16,9 @@ function shallComponentBeVisible(registeredShortcuts, pressedPartialShortcut) {
     if (pressedPartialShortcut[0] == registeredShortcuts[0][0][0]) {
       return true;
     }
+    if (pressedPartialShortcut[0] == registeredShortcuts[2][0][0]) {
+      return true;
+    }
   }
   return false;
 }
@@ -43,6 +46,11 @@ describe('VALID first key of key combo is pressed', function() {
     it('first registered shortcut matches', function() {
       registerShortcuts([['Meta', 'S']]);
       var isVisible = shallComponentBeVisible(registeredShortcuts, ['Meta']);
+      expect(isVisible).toBe(true);
+    });
+    it('some registered shortcut matches', function() {
+      registerShortcuts([['useless'], ['irrelevant'], ['Shift', 'F6']]);
+      var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift']);
       expect(isVisible).toBe(true);
     });
   });
