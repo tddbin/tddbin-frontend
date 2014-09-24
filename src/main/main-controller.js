@@ -42,6 +42,10 @@ Controller.prototype = {
     this._runner.send(this._editor.getContent());
   },
 
+  placeCursorsForRenaming: function() {
+    this._editor.placeCursorsForRenaming();
+  },
+
   _getShortcutsForComponent: function(shortcuts) {
     return shortcuts.map(function(shortcut) {
       return {keys: shortcut[0], helpText: shortcut[2]};

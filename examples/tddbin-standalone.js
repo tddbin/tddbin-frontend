@@ -8,7 +8,8 @@ var metaKey = isMac ? 'Meta' : 'Control';
 var shortcuts = [
   [[metaKey, 'S'], executeTestCode, 'Save+Run'],
   [[metaKey, 'D'], providedByAceEditor(), 'Delete line'],
-  [[metaKey, 'Shift', 'D'], providedByAceEditor(), 'Duplicate line']
+  [[metaKey, 'Shift', 'D'], providedByAceEditor(), 'Duplicate line'],
+  [['Shift', 'F6'], refactoringRename, 'Rename (refactoring)']
 ];
 
 var main = new Main($('tddbin'), {
@@ -19,4 +20,7 @@ var main = new Main($('tddbin'), {
 
 function executeTestCode() {
   main.runEditorContent();
+}
+function refactoringRename() {
+  main.placeCursorsForRenaming();
 }
