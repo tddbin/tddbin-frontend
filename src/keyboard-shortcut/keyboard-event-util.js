@@ -8,7 +8,8 @@ var keyboardEventUtil = {
     16: 'Shift',
     17: 'Control',
     18: 'Alt',
-    91: 'Meta' // Seems not to be correct in FF, but FF supports evt.key
+    91: 'Meta', // Seems not to be correct in FF, but FF supports evt.key
+    117: 'F6'
   },
 
   _mapKeyCodeToReadable: function(keyCode) {
