@@ -13,7 +13,16 @@
 
 function shallComponentBeVisible(registeredShortcuts, pressedPartialShortcut) {
   var firstPressedKey = pressedPartialShortcut[0];
-  return registeredShortcuts.some(function(shortcut) { return shortcut[0][0] == firstPressedKey });
+  var isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][0] == firstPressedKey });
+  if (!isStartOfRegisteredShortcut) {
+    return false;
+  }
+//  return registeredShortcuts.some(shortcut => shortcut[0][0] == firstPressedKey); TODO turn on ES6+JSX
+  if (pressedPartialShortcut.length > 1) {
+    var secondPressedKey = pressedPartialShortcut[1];
+    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][1] == secondPressedKey });
+  }
+  return isStartOfRegisteredShortcut;
 }
 
 function registerShortcuts(shortcuts) {
@@ -46,5 +55,11 @@ describe('VALID first key of key combo is pressed', function() {
       var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift']);
       expect(isVisible).toBe(true);
     });
+  });
+
+  it('invalid second key => component NOT visible', function() {
+    registerShortcuts([['useless'], ['irrelevant'], ['Shift', 'Ctrl', 'F6']]);
+    var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift', 'Alt']);
+    expect(isVisible).toBe(false);
   });
 });
