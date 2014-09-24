@@ -43,7 +43,7 @@ ShortcutManager.prototype = {
 
   _fireOnPossibleShortcutCallback: function() {
     if (this._onPossibleShortcutCallback) {
-      this._onPossibleShortcutCallback();
+      this._onPossibleShortcutCallback(this._pressedKeys);
     }
   },
 

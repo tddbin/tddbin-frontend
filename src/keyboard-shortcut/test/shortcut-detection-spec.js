@@ -35,6 +35,13 @@ describe('a shortcut', function() {
         expect(callback).toHaveBeenCalled();
       });
 
+      it('started by pressing first key: fire the registered callback with right param', function() {
+        var callback = jasmine.createSpy('callback');
+        manager.onPossibleShortcut(callback);
+        keyPressEmulation.keyDownByKeyName(shortcut[0]);
+        expect(callback).toHaveBeenCalledWith([shortcut[0]]);
+      });
+
       it('complete shortcut pressed: the callback shall be called the number of keys in the shortcut', function() {
         var callback = jasmine.createSpy('callback');
         manager.onPossibleShortcut(callback);
