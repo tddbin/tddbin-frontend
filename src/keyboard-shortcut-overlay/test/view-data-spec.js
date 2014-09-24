@@ -15,9 +15,13 @@ function shallComponentBeVisible(registeredShortcuts, pressedPartialShortcut) {
   if (pressedPartialShortcut.length == 0) {
     return false;
   }
-  return pressedPartialShortcut.every(function(key, chars) {
-    return registeredShortcuts.some(function(shortcut) { return shortcut[0][chars] == key });
-  });
+  function containsPressedKey(shortcutData) {
+    var shortcut = shortcutData[0];
+    return pressedPartialShortcut.every(function(key, idx) {
+      return key == shortcut[idx];
+    });
+  }
+  return registeredShortcuts.some(containsPressedKey);
 }
 
 function registerShortcuts(shortcuts) {
@@ -78,6 +82,13 @@ describe('more keys of key combo pressed', function() {
     it('four keys', function() {
       registerShortcuts([['useless'], ['irrelevant'], ['Shift', 'Alt', 'Ctrl', 'Meta', 'F6']]);
       var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift', 'Alt', 'Ctrl', 'Not Meta']);
+      expect(isVisible).toBe(false);
+    });
+    it('mix of parts from various key combos, but no actual registered one', function() {
+      var key1 = 'One';
+      var key2 = 'Dos';
+      registerShortcuts([[key1, 'Two', 'Three'], ['Uno', key2, 'Tres']]);
+      var isVisible = shallComponentBeVisible(registeredShortcuts, [key1, key2]);
       expect(isVisible).toBe(false);
     });
   });
