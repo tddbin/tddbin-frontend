@@ -3,19 +3,7 @@
   - show all shortcuts filtered by the keycombo
 
  */
-
-function getMatchingShortcuts(shortcuts, pressedKeys) {
-  if (pressedKeys.length == 0) {
-    return [];
-  }
-  function containsPressedKey(shortcutData) {
-    var shortcut = shortcutData[0];
-    return pressedKeys.every(function(key, idx) {
-      return key == shortcut[idx];
-    });
-  }
-  return shortcuts.filter(containsPressedKey);
-}
+var getMatchingShortcuts = require('../view-data').getMatchingShortcuts;
 
 function registerShortcuts(shortcuts) {
   registeredShortcuts = shortcuts.map(function(shortcut) {
