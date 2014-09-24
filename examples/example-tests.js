@@ -3,11 +3,13 @@
 function simplePassing() {
   describe('test embedded mocha', function() {
     it('should run jasmine-style tests', function() {
-      expect(1)
-        .toBe(1);
+      var expected = 1;
+      expect(expected)
+        .toBe(expected);
     });
     it('should run should-style tests', function() {
-      should(1).ok;
+      var expected = 1;
+      should(expected).ok;
     });
   });
 }
