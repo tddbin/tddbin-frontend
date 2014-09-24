@@ -12,15 +12,28 @@
  */
 
 function shallComponentBeVisible(registeredShortcuts, pressedPartialShortcut) {
-  var firstPressedKey = pressedPartialShortcut[0];
-  var isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][0] == firstPressedKey });
+  var key = pressedPartialShortcut[0];
+  var isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][0] == key });
   if (!isStartOfRegisteredShortcut) {
     return false;
   }
-//  return registeredShortcuts.some(shortcut => shortcut[0][0] == firstPressedKey); TODO turn on ES6+JSX
   if (pressedPartialShortcut.length > 1) {
-    var secondPressedKey = pressedPartialShortcut[1];
-    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][1] == secondPressedKey });
+    var key = pressedPartialShortcut[1];
+    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][1] == key });
+  }
+  if (!isStartOfRegisteredShortcut) {
+    return false;
+  }
+  if (pressedPartialShortcut.length > 2) {
+    var key = pressedPartialShortcut[2];
+    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][2] == key });
+  }
+  if (!isStartOfRegisteredShortcut) {
+    return false;
+  }
+  if (pressedPartialShortcut.length > 3) {
+    var key = pressedPartialShortcut[3];
+    isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][3] == key });
   }
   return isStartOfRegisteredShortcut;
 }
@@ -61,5 +74,29 @@ describe('VALID first key of key combo is pressed', function() {
     registerShortcuts([['useless'], ['irrelevant'], ['Shift', 'Ctrl', 'F6']]);
     var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift', 'Alt']);
     expect(isVisible).toBe(false);
+  });
+});
+
+describe('more keys of key combo pressed', function() {
+
+  describe('if start of a registered shortcut, say component visible', function() {
+    it('two keys', function() {
+      registerShortcuts([['useless'], ['irrelevant'], ['Shift', 'Alt', 'F6']]);
+      var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift', 'Alt']);
+      expect(isVisible).toBe(true);
+    });
+    it('four keys', function() {
+      registerShortcuts([['useless'], ['irrelevant'], ['Shift', 'Alt', 'Ctrl', 'Meta', 'F6']]);
+      var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift', 'Alt', 'Ctrl', 'Meta']);
+      expect(isVisible).toBe(true);
+    });
+  });
+
+  describe('if NOT start of a registered shortcut, say component NOT visible', function() {
+    it('four keys', function() {
+      registerShortcuts([['useless'], ['irrelevant'], ['Shift', 'Alt', 'Ctrl', 'Meta', 'F6']]);
+      var isVisible = shallComponentBeVisible(registeredShortcuts, ['Shift', 'Alt', 'Ctrl', 'Not Meta']);
+      expect(isVisible).toBe(false);
+    });
   });
 });
