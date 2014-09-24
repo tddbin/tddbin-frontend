@@ -19,7 +19,7 @@ var registeredShortcuts = [];
 
 describe('filter shortcuts by given key-combo', function() {
   it('should return none, when nothing pressed', function() {
-    registerShortcuts([]);
-    expect(getMatchingShortcuts(registeredShortcuts, ['Meta'])).toEqual([]);
+    registerShortcuts([['Meta']]);
+    expect(getMatchingShortcuts(registeredShortcuts, [])).toEqual([]);
   });
 });
