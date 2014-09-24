@@ -17,7 +17,7 @@ function getViewDataByPressedKeyCombo() {
 
 describe('NO key combo is pressed yet', function() {
   it('should return visible=false', function() {
-    var data = getViewDataByPressedKeyCombo('');
+    var data = getViewDataByPressedKeyCombo([]);
     expect(data.visible).toBe(false);
   });
 });
