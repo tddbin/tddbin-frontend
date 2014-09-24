@@ -11,13 +11,16 @@
 
  */
 
-function getViewDataByPressedKeyCombo() {
-  return {visible: false};
+function shallComponentBeVisible() {
+  return false;
 }
+
+var registeredShortcuts = [];
 
 describe('NO key combo is pressed yet', function() {
   it('should return visible=false', function() {
-    var data = getViewDataByPressedKeyCombo([]);
-    expect(data.visible).toBe(false);
+    var keyCombo = [];
+    var visible = shallComponentBeVisible(registeredShortcuts, keyCombo);
+    expect(visible).toBe(false);
   });
 });
