@@ -21,7 +21,7 @@ var View = React.createClass({
         />
         <KeyboardShortcutOverlay
           metaKeySymbol={props.metaKeySymbol}
-          shortcuts={props.shortcuts}
+          shortcuts={props.shortcutOverlay.shortcuts}
           isVisible={props.shortcutOverlay.isVisible}
         />
       </div>

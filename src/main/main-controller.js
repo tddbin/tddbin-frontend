@@ -2,6 +2,7 @@ var React = require('react');
 var ViewComponent = require('./main-view');
 var editor = require('ace-with-plugins');
 var MochaRunner = require('../test-runner/mocha/runner');
+var overlayViewData = require('../keyboard-shortcut-overlay/view-data');
 
 var ShortcutManager = require('../keyboard-shortcut/shortcut-manager');
 
@@ -23,8 +24,10 @@ Controller.prototype = {
       editorId: editorDomNodeId,
       runnerId: runnerDomNodeId,
       onSave: this.runEditorContent.bind(this),
-      shortcuts: this._getShortcutsForComponent(this._config.shortcuts),
-      shortcutOverlay: {isVisible: false}
+      shortcutOverlay: {
+        shortcuts: this._getShortcutsForComponent(this._config.shortcuts),
+        isVisible: false
+      }
     };
     this._component = React.renderComponent(ViewComponent(props), this._domNode);
     this._editor = editor(editorDomNodeId);
@@ -55,17 +58,19 @@ Controller.prototype = {
   _registerShortcuts: function(shortcuts) {
     var manager = new ShortcutManager();
     manager.registerShortcuts(shortcuts);
+    manager.onPossibleShortcut(this._updateOverlayView.bind(this));
+    var noPressedKeys = [];
+    manager.onShortcutEnd(this._updateOverlayView.bind(this, noPressedKeys));
+  },
 
+  _updateOverlayView: function(pressedKeys) {
     var component = this._component;
-    function showShortCutOverlay() {
-      component.setProps({shortcutOverlay: {isVisible: true}});
-    }
-    function hideShortCutOverlay() {
-      component.setProps({shortcutOverlay: {isVisible: false}});
-    }
-
-    manager.onPossibleShortcut(showShortCutOverlay);
-    manager.onShortcutEnd(hideShortCutOverlay);
+    var shortcuts = overlayViewData.getMatchingShortcuts(this._config.shortcuts, pressedKeys);
+    var props = {
+      shortcuts: this._getShortcutsForComponent(shortcuts),
+      isVisible: overlayViewData.shallComponentBeVisible(this._config.shortcuts, pressedKeys)
+    };
+    component.setProps({shortcutOverlay: props});
   }
 
 };
