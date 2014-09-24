@@ -11,8 +11,13 @@
 
  */
 
-describe('provide all data for the view', function() {
-  it('', function() {
+function getViewDataByPressedKeyCombo() {
+  return {visible: false};
+}
 
+describe('NO key combo is pressed yet', function() {
+  it('should return visible=false', function() {
+    var data = getViewDataByPressedKeyCombo('');
+    expect(data.visible).toBe(false);
   });
 });
