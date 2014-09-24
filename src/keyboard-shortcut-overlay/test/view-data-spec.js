@@ -15,16 +15,9 @@ function shallComponentBeVisible(registeredShortcuts, pressedPartialShortcut) {
   if (pressedPartialShortcut.length == 0) {
     return false;
   }
-  var chars = 0;
-  while (pressedPartialShortcut.length > chars) {
-    var key = pressedPartialShortcut[chars];
-    var isStartOfRegisteredShortcut = registeredShortcuts.some(function(shortcut) { return shortcut[0][chars] == key });
-    if (!isStartOfRegisteredShortcut) {
-      return false;
-    }
-    chars++;
-  }
-  return true;
+  return pressedPartialShortcut.every(function(key, chars) {
+    return registeredShortcuts.some(function(shortcut) { return shortcut[0][chars] == key });
+  });
 }
 
 function registerShortcuts(shortcuts) {
