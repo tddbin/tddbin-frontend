@@ -59,8 +59,8 @@ Controller.prototype = {
     var manager = new ShortcutManager();
     manager.registerShortcuts(shortcuts);
     manager.onPossibleShortcut(this._updateOverlayView.bind(this));
-    var noPressedKeys = [];
-    manager.onShortcutEnd(this._updateOverlayView.bind(this, noPressedKeys));
+    var noKeyPressed = [];
+    manager.onShortcutEnd(this._updateOverlayView.bind(this, noKeyPressed));
   },
 
   _updateOverlayView: function(pressedKeys) {
