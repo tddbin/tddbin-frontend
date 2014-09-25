@@ -10,6 +10,11 @@ var shortcuts = [
   [[metaKey, 'D'], providedByAceEditor(), 'Delete line'],
   [[metaKey, 'Shift', 'D'], providedByAceEditor(), 'Duplicate line'],
   [[metaKey, '/'], providedByAceEditor(), 'Comment in/out line'],
+
+  [[metaKey, 'I', 'E'], providedByAceEditor(), '???'],
+  [[metaKey, 'I', 'I'], providedByAceEditor(), '???'],
+  [[metaKey, 'I', 'E', 'E'], providedByAceEditor(), '???'],
+
   [['Shift', 'F6'], refactoringRename, 'Rename (refactoring)']
 ];
 
