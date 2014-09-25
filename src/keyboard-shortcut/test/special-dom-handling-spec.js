@@ -1,4 +1,4 @@
-var ShortcutManager = require('../shortcut-manager');
+var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
 
@@ -21,8 +21,8 @@ describe('DOM event handling', function() {
   it('should prevent default when shortcut is `overridden`', function() {
     var shortcut = ['Meta', 'S'];
 
-    var manager = new ShortcutManager();
-    manager.registerShortcut(shortcut, function() {});
+    var processor = new ShortcutProcessor();
+    processor.registerShortcut(shortcut, function() {});
 
     var lastKeyDownReturnValue = pressKeys(shortcut);
 

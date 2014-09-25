@@ -1,4 +1,4 @@
-var ShortcutManager = require('../shortcut-manager');
+var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
 var util = require('./util');
@@ -9,7 +9,7 @@ var noop = function() {};
 
 describe('a shortcut', function() {
 
-  var manager;
+  var processor;
   var shortcut = ['Meta', 'S'];
   var keyPressEmulation;
   var blurCallbacks;
@@ -22,29 +22,29 @@ describe('a shortcut', function() {
 
     keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil);
 
-    manager = new ShortcutManager();
-    manager.registerShortcut(shortcut, noop);
+    processor = new ShortcutProcessor();
+    processor.registerShortcut(shortcut, noop);
   });
 
   describe('onPossibleShortcut() should', function() {
     describe('fire', function() {
       it('started by pressing first key: fire the registered callback', function() {
         var callback = jasmine.createSpy('callback');
-        manager.onPossibleShortcut(callback);
+        processor.onPossibleShortcut(callback);
         keyPressEmulation.keyDownByKeyName(shortcut[0]);
         expect(callback).toHaveBeenCalled();
       });
 
       it('started by pressing first key: fire the registered callback with right param', function() {
         var callback = jasmine.createSpy('callback');
-        manager.onPossibleShortcut(callback);
+        processor.onPossibleShortcut(callback);
         keyPressEmulation.keyDownByKeyName(shortcut[0]);
         expect(callback).toHaveBeenCalledWith([shortcut[0]]);
       });
 
       it('complete shortcut pressed: the callback shall be called the number of keys in the shortcut', function() {
         var callback = jasmine.createSpy('callback');
-        manager.onPossibleShortcut(callback);
+        processor.onPossibleShortcut(callback);
         keyPressEmulation.pressByKeyNames(shortcut);
         expect(callback.callCount).toBe(shortcut.length);
       });
@@ -53,7 +53,7 @@ describe('a shortcut', function() {
     describe('NOT fire', function() {
       it('when unregistered first key of a shortcut was pressed', function() {
         var callback = jasmine.createSpy('callback');
-        manager.onPossibleShortcut(callback);
+        processor.onPossibleShortcut(callback);
         keyPressEmulation.pressByKeyNames(['Alt']);
         expect(callback).not.toHaveBeenCalled();
       });
@@ -64,7 +64,7 @@ describe('a shortcut', function() {
 
     it('when the shortcut is done', function() {
       var callback = jasmine.createSpy('callback');
-      manager.onShortcutEnd(callback);
+      processor.onShortcutEnd(callback);
       keyPressEmulation.pressByKeyNames(shortcut);
       expect(callback).toHaveBeenCalled();
     });
@@ -73,7 +73,7 @@ describe('a shortcut', function() {
       // e.g. Meta+S is a valid shortcut
       // but  Meta+S+S is pressed, it should fire since the shortcut turned invalid
       var callback = jasmine.createSpy('callback');
-      manager.onShortcutEnd(callback);
+      processor.onShortcutEnd(callback);
       var lastKeyName = shortcut[shortcut.length - 1];
       keyPressEmulation.pressByKeyNames(shortcut.concat(lastKeyName));
       expect(callback).toHaveBeenCalled();
@@ -81,14 +81,14 @@ describe('a shortcut', function() {
 
     it('when just first key of shortcut was pressed', function() {
       var callback = jasmine.createSpy('callback');
-      manager.onShortcutEnd(callback);
+      processor.onShortcutEnd(callback);
       keyPressEmulation.pressByKeyNames([shortcut[0]]);
       expect(callback).toHaveBeenCalled();
     });
 
     it('when browser window looses focus', function() {
       var callback = jasmine.createSpy('callback');
-      manager.onShortcutEnd(callback);
+      processor.onShortcutEnd(callback);
       blurCallbacks[0]();
       expect(callback).toHaveBeenCalled();
     });
@@ -96,20 +96,20 @@ describe('a shortcut', function() {
     describe('DONT fire', function() {
       it('if its just the first key', function() {
         var callback = jasmine.createSpy('callback');
-        manager.onShortcutEnd(callback);
+        processor.onShortcutEnd(callback);
         keyPressEmulation.keyDownByKeyName(shortcut[0]);
         expect(callback).not.toHaveBeenCalled();
       });
 
       it('if a non-registered shortcut is started', function() {
         var callback = jasmine.createSpy('callback');
-        manager.onShortcutEnd(callback);
+        processor.onShortcutEnd(callback);
         keyPressEmulation.pressByKeyNames(['Alt']);
         expect(callback).not.toHaveBeenCalled();
       });
 
       it('for a three-keys shortcut after ONLY the first 2 keys were pressed', function() {
-        var manager = new ShortcutManager();
+        var manager = new ShortcutProcessor();
         shortcut = ['Meta', 'Shift', 'S'];
         manager.registerShortcut(shortcut, noop);
         var callback = jasmine.createSpy('callback');

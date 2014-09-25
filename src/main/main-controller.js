@@ -4,7 +4,7 @@ var editor = require('ace-with-plugins');
 var MochaRunner = require('../test-runner/mocha/runner');
 var overlayViewData = require('../keyboard-shortcut-overlay/view-data');
 
-var ShortcutManager = require('../keyboard-shortcut/shortcut-manager');
+var ShortcutProcessor = require('../keyboard-shortcut/shortcut-processor');
 
 function Controller(domNode, config) {
   this._domNode = domNode;
@@ -56,11 +56,11 @@ Controller.prototype = {
   },
 
   _registerShortcuts: function(shortcuts) {
-    var manager = new ShortcutManager();
-    manager.registerShortcuts(shortcuts);
-    manager.onPossibleShortcut(this._updateOverlayView.bind(this));
+    var processor = new ShortcutProcessor();
+    processor.registerShortcuts(shortcuts);
+    processor.onPossibleShortcut(this._updateOverlayView.bind(this));
     var noKeyPressed = [];
-    manager.onShortcutEnd(this._updateOverlayView.bind(this, noKeyPressed));
+    processor.onShortcutEnd(this._updateOverlayView.bind(this, noKeyPressed));
   },
 
   _updateOverlayView: function(pressedKeys) {

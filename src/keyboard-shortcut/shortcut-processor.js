@@ -3,7 +3,7 @@
 var keyboardEventUtil = require('./keyboard-event-util');
 var browserEventUtil = require('./browser-event-util');
 
-function ShortcutManager() {
+function ShortcutProcessor() {
   this._pressedKeys = [];
   this._registeredShortcuts = [];
   this._allPossibleShortcutStarterKeys = [];
@@ -12,7 +12,7 @@ function ShortcutManager() {
   browserEventUtil.onWindowBlur(this._fireOnShortcutEndCallback.bind(this));
 }
 
-ShortcutManager.prototype = {
+ShortcutProcessor.prototype = {
 
   _pressedKeys: null,
   _registeredShortcuts: null,
@@ -140,4 +140,4 @@ ShortcutManager.prototype = {
   }
 };
 
-module.exports = ShortcutManager;
+module.exports = ShortcutProcessor;

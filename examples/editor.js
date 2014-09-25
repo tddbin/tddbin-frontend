@@ -1,5 +1,5 @@
 var Editor = require('../src/editor/editor');
-var ShortcutManager = require('../src/keyboard-shortcut/shortcut-manager');
+var ShortcutProcessor = require('../src/keyboard-shortcut/shortcut-processor');
 
 var editor = new Editor('editorNode');
 editor.setContent([
@@ -7,7 +7,7 @@ editor.setContent([
   '// If you press Meta+S `save it` should be console logged.'
 ].join('\n'));
 
-var manager = new ShortcutManager();
+var manager = new ShortcutProcessor();
 manager.registerShortcut(['Meta', 'S'], function() {
   console.log('save it');
 });

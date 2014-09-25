@@ -1,4 +1,4 @@
-var ShortcutManager = require('../shortcut-manager');
+var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
 var util = require('./util');
@@ -117,9 +117,9 @@ describe('keyboard shortcut', function() {
   // test utils
 
   function mapShortcuts(shortcuts) {
-    var manager = new ShortcutManager();
+    var processor = new ShortcutProcessor();
     shortcuts.forEach(function(shortcut) {
-      manager.registerShortcut(shortcut[0], shortcut[1]);
+      processor.registerShortcut(shortcut[0], shortcut[1]);
     });
   }
 });
