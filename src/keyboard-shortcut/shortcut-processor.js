@@ -16,7 +16,7 @@ ShortcutProcessor.prototype = {
   _pressedKeys: null,
   _registeredShortcuts: null,
   _firstKeyOfCurrentShortcut: null,
-  _onPossibleShortcutCallback: null,
+  _onKeyDownCallback: null,
   _onShortcutEndCallback: null,
 
   registerShortcut: function(shortcut) {
@@ -31,16 +31,16 @@ ShortcutProcessor.prototype = {
   },
 
   onKeyDown: function(callback) {
-    this._onPossibleShortcutCallback = callback;
+    this._onKeyDownCallback = callback;
   },
 
   onShortcutEnd: function(callback) {
     this._onShortcutEndCallback = callback;
   },
 
-  _fireOnPossibleShortcutCallback: function() {
-    if (this._onPossibleShortcutCallback) {
-      this._onPossibleShortcutCallback(this._pressedKeys);
+  _fireOnKeyDownCallback: function() {
+    if (this._onKeyDownCallback) {
+      this._onKeyDownCallback(this._pressedKeys);
     }
   },
 
@@ -65,7 +65,7 @@ ShortcutProcessor.prototype = {
     if (isFirstKeyOfRegisteredShortcut) {
       this._pressedKeys = [keyName];
       this._firstKeyOfCurrentShortcut = keyName;
-      this._fireOnPossibleShortcutCallback();
+      this._fireOnKeyDownCallback();
     }
   },
 
@@ -76,7 +76,7 @@ ShortcutProcessor.prototype = {
     }
 
     this._pressedKeys.push(keyName);
-    this._fireOnPossibleShortcutCallback();
+    this._fireOnKeyDownCallback();
 
     if (this._isRegisteredShortcut(this._pressedKeys)) {
       return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
