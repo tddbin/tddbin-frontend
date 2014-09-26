@@ -2,7 +2,7 @@
   - pre-process shortcuts into ui-shortcuts (or alike) where 'Meta' is replace by '⌘' etc.
  */
 
-function toRenderString(keys, map) {
+function toPrintableKeys(keys, map) {
   return keys.map(function(key) {
     return map[key] || key;
   });
@@ -15,11 +15,11 @@ var keyToSignMap = {
 describe('convert key-strings to key signs', function() {
 
   it('convert `Meta` to according sign', function() {
-    expect(toRenderString(['Meta', 'S'], keyToSignMap)).toEqual([keyToSignMap.Meta, 'S']);
+    expect(toPrintableKeys(['Meta', 'S'], keyToSignMap)).toEqual([keyToSignMap.Meta, 'S']);
   });
 
   it('convert `Meta` to according sign', function() {
-    expect(toRenderString(['Meta', 'Shift', 'A'], keyToSignMap)).toEqual([keyToSignMap.Meta, keyToSignMap.Shift, 'A']);
+    expect(toPrintableKeys(['Meta', 'Shift', 'A'], keyToSignMap)).toEqual([keyToSignMap.Meta, keyToSignMap.Shift, 'A']);
   });
 
 });
