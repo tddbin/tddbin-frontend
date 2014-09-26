@@ -17,7 +17,7 @@ Shortcut.prototype = {
     return pressedKeys.join('+') === this._keys.join('+');
   },
 
-  process: function() {
+  fireAssignedCallback: function() {
     this._fn();
   },
 

@@ -28,25 +28,25 @@ describe('a shortcut', function() {
     processor.registerShortcut(shortcut);
   });
 
-  describe('onPossibleShortcut() should', function() {
+  describe('onKeyDown() should', function() {
     describe('fire', function() {
       it('started by pressing first key: fire the registered callback', function() {
         var callback = jasmine.createSpy('callback');
-        processor.onPossibleShortcut(callback);
+        processor.onKeyDown(callback);
         keyPressEmulation.keyDownByKeyName(shortcutKeys[0]);
         expect(callback).toHaveBeenCalled();
       });
 
       it('started by pressing first key: fire the registered callback with right param', function() {
         var callback = jasmine.createSpy('callback');
-        processor.onPossibleShortcut(callback);
+        processor.onKeyDown(callback);
         keyPressEmulation.keyDownByKeyName(shortcutKeys[0]);
         expect(callback).toHaveBeenCalledWith([shortcutKeys[0]]);
       });
 
       it('complete shortcut pressed: the callback shall be called the number of keys in the shortcut', function() {
         var callback = jasmine.createSpy('callback');
-        processor.onPossibleShortcut(callback);
+        processor.onKeyDown(callback);
         keyPressEmulation.pressByKeyNames(shortcutKeys);
         expect(callback.callCount).toBe(shortcutKeys.length);
       });
@@ -55,7 +55,7 @@ describe('a shortcut', function() {
     describe('NOT fire', function() {
       it('when unregistered first key of a shortcut was pressed', function() {
         var callback = jasmine.createSpy('callback');
-        processor.onPossibleShortcut(callback);
+        processor.onKeyDown(callback);
         keyPressEmulation.pressByKeyNames(['Alt']);
         expect(callback).not.toHaveBeenCalled();
       });

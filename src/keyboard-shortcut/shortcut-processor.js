@@ -98,7 +98,7 @@ ShortcutProcessor.prototype = {
   _processFirstMatchingShortcut: function(pressedKeys) {
     this._registeredShortcuts.some(function(shortcut) {
       if (shortcut.isKeyCombo(pressedKeys)) {
-        shortcut.process();
+        shortcut.fireAssignedCallback();
         return true;
       }
       return false;
