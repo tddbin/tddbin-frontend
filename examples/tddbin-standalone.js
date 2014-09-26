@@ -2,23 +2,38 @@ var $ = document.getElementById.bind(document);
 var exampleTests = require('./example-tests');
 var Main = require('../src/main/main-controller');
 var Shortcut = require('../src/keyboard-shortcut/shortcut');
+var util = require('../src/keyboard-shortcut/util');
 
 var providedByAceEditor = function() {/* noop() */};
 var isMac = navigator.platform.indexOf('Mac') === 0;
 var metaKey = isMac ? 'Meta' : 'Control';
+
+var map = {
+  Meta: '⌘'
+};
+function format(keys) {
+  return util.toPrintableKeys(keys, map);
+}
+
+function getShortcutObject(keys, fn, helpText) {
+  var shortcut = new Shortcut(keys, fn, helpText);
+  shortcut.setPrintableKeysFormatter(format);
+  return shortcut;
+}
+
 var shortcuts = [
-  new Shortcut([metaKey, 'S'], executeTestCode, 'Save+Run'),
-  new Shortcut([metaKey, 'D'], providedByAceEditor, 'Delete line'),
-  new Shortcut([metaKey, 'Z'], providedByAceEditor, 'Undo'),
-  new Shortcut([metaKey, 'Shift', 'D'], providedByAceEditor, 'Duplicate line'),
-  new Shortcut([metaKey, 'Shift', 'Z'], providedByAceEditor, 'Redo'),
-  new Shortcut([metaKey, '/'], providedByAceEditor, 'Comment in/out line'),
+  getShortcutObject([metaKey, 'S'], executeTestCode, 'Save+Run'),
+  getShortcutObject([metaKey, 'D'], providedByAceEditor, 'Delete line'),
+  getShortcutObject([metaKey, 'Z'], providedByAceEditor, 'Undo'),
+  getShortcutObject([metaKey, 'Shift', 'D'], providedByAceEditor, 'Duplicate line'),
+  getShortcutObject([metaKey, 'Shift', 'Z'], providedByAceEditor, 'Redo'),
+  getShortcutObject([metaKey, '/'], providedByAceEditor, 'Comment in/out line'),
 
-  new Shortcut([metaKey, 'I', 'E'], providedByAceEditor, '???'),
-  new Shortcut([metaKey, 'I', 'I'], providedByAceEditor, '???'),
-  new Shortcut([metaKey, 'I', 'E', 'E'], providedByAceEditor, '???'),
+  getShortcutObject([metaKey, 'I', 'E'], providedByAceEditor, '???'),
+  getShortcutObject([metaKey, 'I', 'I'], providedByAceEditor, '???'),
+  getShortcutObject([metaKey, 'I', 'E', 'E'], providedByAceEditor, '???'),
 
-  new Shortcut(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
+  getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
 ];
 
 var main = new Main($('tddbin'), {
