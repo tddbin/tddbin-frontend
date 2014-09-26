@@ -25,8 +25,8 @@ ShortcutProcessor.prototype = {
 
   registerShortcuts: function(shortcuts) {
     var self = this;
-    shortcuts.forEach(function(shortcutData) {
-      self.registerShortcut(shortcutData[0], shortcutData[1]);
+    shortcuts.forEach(function(shortcut) {
+      self.registerShortcut(shortcut);
     });
   },
 

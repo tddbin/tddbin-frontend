@@ -1,3 +1,4 @@
+var Shortcut = require('../shortcut');
 var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
@@ -14,12 +15,12 @@ describe('registering multiple shortcuts', function() {
     spyOn(processor, 'registerShortcut');
 
     var shortcutMap = [
-      [['Meta', 'S'], noop],
-      [['Ctrl', 'S'], noop]
+      new Shortcut(['Meta', 'S'], noop),
+      new Shortcut(['Ctrl', 'S'], noop)
     ];
     processor.registerShortcuts(shortcutMap);
 
-    expect(processor.registerShortcut).toHaveBeenCalledWith(shortcutMap[0][0], shortcutMap[0][1]);
-    expect(processor.registerShortcut).toHaveBeenCalledWith(shortcutMap[1][0], shortcutMap[1][1]);
+    expect(processor.registerShortcut).toHaveBeenCalledWith(shortcutMap[0]);
+    expect(processor.registerShortcut).toHaveBeenCalledWith(shortcutMap[1]);
   });
 });
