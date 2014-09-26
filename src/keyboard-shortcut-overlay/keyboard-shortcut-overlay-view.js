@@ -7,8 +7,8 @@ var Overlay = React.createClass({
   _renderShortcut: function(shortcut) {
     return (
       <div>
-        <span className="shortcut">{shortcut.keys.join('+')} </span>
-        {shortcut.helpText}
+        <span className="shortcut">{shortcut.getPrintableKeys()} </span>
+        {shortcut.getHelpText()}
       </div>
     );
   },
