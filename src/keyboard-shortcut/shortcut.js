@@ -18,9 +18,19 @@ Shortcut.prototype = {
     this._fn();
   },
 
-  //getPrintableKeys: function() {
-  //  return this._keys.join('+');
-  //},
+  _printableKeysFormatter: null,
+  setPrintableKeysFormatter: function(formatterFunction) {
+    this._printableKeysFormatter = formatterFunction;
+  },
+
+  getPrintableKeys: function() {
+    var format = this._printableKeysFormatter;
+    var keys = this._keys;
+    if (format) {
+      keys = format(this._keys);
+    }
+    return keys.join('+');
+  },
 
   getHelpText: function() {
     return this._helpText;

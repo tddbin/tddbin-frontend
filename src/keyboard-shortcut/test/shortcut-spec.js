@@ -77,3 +77,20 @@ describe('check a given key combo against a shortcut', function() {
     });
   });
 });
+
+describe('printable keys', function() {
+  it('should be formatted using a given formatter function', function() {
+    var keys = ['Meta', 'A'];
+    var shortcut = createShortcut(keys, someFunction, someString);
+    var spy = jasmine.createSpy().andReturn([]);
+    shortcut.setPrintableKeysFormatter(spy);
+    shortcut.getPrintableKeys();
+    expect(spy).toHaveBeenCalledWith(keys);
+  });
+
+  it('should return the string as is if no formatter is given', function() {
+    var keys = ['Meta', 'A'];
+    var shortcut = createShortcut(keys, someFunction, someString);
+    expect(shortcut.getPrintableKeys()).toEqual('Meta+A');
+  });
+});
