@@ -21,14 +21,6 @@ Shortcut.prototype = {
     this._fn();
   },
 
-  getKeys: function() {
-    return this._keys;
-  },
-
-  getCallback: function() {
-    return this._fn;
-  },
-
   getPrintableKeys: function() {
     return this._keys.join('+');
   },
