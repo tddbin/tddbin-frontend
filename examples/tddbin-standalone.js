@@ -8,13 +8,13 @@ var isMac = navigator.platform.indexOf('Mac') === 0;
 var metaKey = isMac ? 'Meta' : 'Control';
 var shortcuts = [
   new Shortcut([metaKey, 'S'], executeTestCode, 'Save+Run'),
-  new Shortcut([metaKey, 'D'], providedByAceEditor(), 'Delete line'),
-  new Shortcut([metaKey, 'Shift', 'D'], providedByAceEditor(), 'Duplicate line'),
-  new Shortcut([metaKey, '/'], providedByAceEditor(), 'Comment in/out line'),
+  new Shortcut([metaKey, 'D'], providedByAceEditor, 'Delete line'),
+  new Shortcut([metaKey, 'Shift', 'D'], providedByAceEditor, 'Duplicate line'),
+  new Shortcut([metaKey, '/'], providedByAceEditor, 'Comment in/out line'),
 
-  new Shortcut([metaKey, 'I', 'E'], providedByAceEditor(), '???'),
-  new Shortcut([metaKey, 'I', 'I'], providedByAceEditor(), '???'),
-  new Shortcut([metaKey, 'I', 'E', 'E'], providedByAceEditor(), '???'),
+  new Shortcut([metaKey, 'I', 'E'], providedByAceEditor, '???'),
+  new Shortcut([metaKey, 'I', 'I'], providedByAceEditor, '???'),
+  new Shortcut([metaKey, 'I', 'E', 'E'], providedByAceEditor, '???'),
 
   new Shortcut(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
 ];
