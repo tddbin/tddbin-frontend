@@ -2,7 +2,6 @@ var React = require('react');
 var ViewComponent = require('./main-view');
 var editor = require('ace-with-plugins');
 var MochaRunner = require('../test-runner/mocha/runner');
-var overlayViewData = require('../keyboard-shortcut-overlay/view-data');
 
 var ShortcutProcessor = require('../keyboard-shortcut/shortcut-processor');
 
