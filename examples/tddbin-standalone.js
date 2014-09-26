@@ -9,7 +9,9 @@ var metaKey = isMac ? 'Meta' : 'Control';
 var shortcuts = [
   new Shortcut([metaKey, 'S'], executeTestCode, 'Save+Run'),
   new Shortcut([metaKey, 'D'], providedByAceEditor, 'Delete line'),
+  new Shortcut([metaKey, 'Z'], providedByAceEditor, 'Undo'),
   new Shortcut([metaKey, 'Shift', 'D'], providedByAceEditor, 'Duplicate line'),
+  new Shortcut([metaKey, 'Shift', 'Z'], providedByAceEditor, 'Redo'),
   new Shortcut([metaKey, '/'], providedByAceEditor, 'Comment in/out line'),
 
   new Shortcut([metaKey, 'I', 'E'], providedByAceEditor, '???'),
