@@ -52,9 +52,9 @@ Controller.prototype = {
   _registerShortcuts: function(shortcuts) {
     var processor = new ShortcutProcessor();
     processor.registerShortcuts(shortcuts);
-    processor.onPossibleShortcut(this._updateOverlayView.bind(this));
     var noKeyPressed = [];
     processor.onShortcutEnd(this._updateOverlayView.bind(this, noKeyPressed));
+    processor.onKeyDown(this._updateOverlayView.bind(this));
   },
 
   _updateOverlayView: function(pressedKeys) {

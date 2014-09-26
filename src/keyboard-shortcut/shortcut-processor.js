@@ -30,7 +30,7 @@ ShortcutProcessor.prototype = {
     });
   },
 
-  onPossibleShortcut: function(callback) {
+  onKeyDown: function(callback) {
     this._onPossibleShortcutCallback = callback;
   },
 
