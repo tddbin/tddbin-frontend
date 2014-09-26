@@ -25,7 +25,7 @@ Controller.prototype = {
       runnerId: runnerDomNodeId,
       onSave: this.runEditorContent.bind(this),
       shortcutOverlay: {
-        shortcuts: this._getShortcutsForComponent(this._config.shortcuts),
+        shortcuts: [],
         isVisible: false
       }
     };
@@ -49,12 +49,6 @@ Controller.prototype = {
     this._editor.placeCursorsForRenaming();
   },
 
-  _getShortcutsForComponent: function(shortcuts) {
-    return shortcuts.map(function(shortcut) {
-      return {keys: shortcut[0], helpText: shortcut[2]};
-    });
-  },
-
   _registerShortcuts: function(shortcuts) {
     var processor = new ShortcutProcessor();
     processor.registerShortcuts(shortcuts);
@@ -64,13 +58,18 @@ Controller.prototype = {
   },
 
   _updateOverlayView: function(pressedKeys) {
-    var component = this._component;
-    var shortcuts = overlayViewData.getMatchingShortcuts(this._config.shortcuts, pressedKeys);
+    var allShortcuts = this._config.shortcuts;
+    var applicableShortcuts = [];
+    if (pressedKeys.length > 0) {
+      applicableShortcuts = allShortcuts.filter(function(shortcut) {
+        return shortcut.isStartOfKeyCombo(pressedKeys);
+      });
+    }
     var props = {
-      shortcuts: this._getShortcutsForComponent(shortcuts),
-      isVisible: overlayViewData.shallComponentBeVisible(this._config.shortcuts, pressedKeys)
+      shortcuts: applicableShortcuts,
+      isVisible: applicableShortcuts.length > 0
     };
-    component.setProps({shortcutOverlay: props});
+    this._component.setProps({shortcutOverlay: props});
   }
 
 };
