@@ -7,10 +7,7 @@ function Shortcut(keys, fn, helpText) {
 Shortcut.prototype = {
 
   isStartOfKeyCombo: function(pressedKeys) {
-    var shortcut = this._keys;
-    return pressedKeys.every(function(key, idx) {
-      return key == shortcut[idx];
-    });
+    return this._keys.join('+').indexOf(pressedKeys.join('+')) === 0;
   },
 
   isKeyCombo: function(pressedKeys) {
