@@ -65,15 +65,23 @@ describe('check a given key combo against a shortcut', function() {
       var shortcut = createShortcut(keys, someFunction, someString);
       expect(shortcut.isStartOfKeyCombo([keys[0]])).toBe(true);
     });
-    it('should NOT validate for only the second key', function() {
-      var keys = ['Meta', 'A'];
-      var shortcut = createShortcut(keys, someFunction, someString);
-      expect(shortcut.isStartOfKeyCombo([keys[1]])).toBe(false);
-    });
-    it('should NOT validate for different keys', function() {
-      var keys = ['Meta', 'A'];
-      var shortcut = createShortcut(keys, someFunction, someString);
-      expect(shortcut.isKeyCombo(['Alt', 'B'])).toBe(false);
+
+    describe('should NOT validate', function() {
+      it('for only the second key', function() {
+        var keys = ['Meta', 'A'];
+        var shortcut = createShortcut(keys, someFunction, someString);
+        expect(shortcut.isStartOfKeyCombo([keys[1]])).toBe(false);
+      });
+      it('should NOT validate for different keys', function() {
+        var keys = ['Meta', 'A'];
+        var shortcut = createShortcut(keys, someFunction, someString);
+        expect(shortcut.isStartOfKeyCombo(['Alt', 'B'])).toBe(false);
+      });
+      it('even Alt+S when Alt+Shift is expected!', function() {
+        var keys = ['Alt', 'Shift'];
+        var shortcut = createShortcut(keys, someFunction, someString);
+        expect(shortcut.isStartOfKeyCombo(['Alt', 'S'])).toBe(false);
+      });
     });
   });
 });
