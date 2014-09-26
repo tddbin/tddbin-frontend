@@ -1,12 +1,7 @@
 /*
   - pre-process shortcuts into ui-shortcuts (or alike) where 'Meta' is replace by '⌘' etc.
  */
-
-function toPrintableKeys(keys, map) {
-  return keys.map(function(key) {
-    return map[key] || key;
-  });
-}
+var toPrintableKeys = require('../util').toPrintableKeys;
 
 var keyToSignMap = {
   Meta: 'Meta',
@@ -18,8 +13,12 @@ describe('convert key-strings to key signs', function() {
     expect(toPrintableKeys(['Meta', 'S'], keyToSignMap)).toEqual([keyToSignMap.Meta, 'S']);
   });
 
-  it('convert `Meta` to according sign', function() {
+  it('convert multiple matches', function() {
     expect(toPrintableKeys(['Meta', 'Shift', 'A'], keyToSignMap)).toEqual([keyToSignMap.Meta, keyToSignMap.Shift, 'A']);
+  });
+
+  it('leave unmappables as they are', function() {
+    expect(toPrintableKeys(['Metas', 'Alt', 'A'], keyToSignMap)).toEqual(['Metas', 'Alt', 'A']);
   });
 
 });
