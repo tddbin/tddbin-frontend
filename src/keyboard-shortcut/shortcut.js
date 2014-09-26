@@ -6,12 +6,12 @@ function Shortcut(keys, fn, helpText) {
 
 Shortcut.prototype = {
 
-  isStartOfKeyCombo: function(pressedKeys) {
-    var shortcut = this._keys;
-    return pressedKeys.every(function(key, idx) {
-      return key == shortcut[idx];
-    });
-  },
+  //isStartOfKeyCombo: function(pressedKeys) {
+  //  var shortcut = this._keys;
+  //  return pressedKeys.every(function(key, idx) {
+  //    return key == shortcut[idx];
+  //  });
+  //},
 
   isKeyCombo: function(pressedKeys) {
     return pressedKeys.join('+') === this._keys.join('+');
@@ -21,9 +21,9 @@ Shortcut.prototype = {
     this._fn();
   },
 
-  getPrintableKeys: function() {
-    return this._keys.join('+');
-  },
+  //getPrintableKeys: function() {
+  //  return this._keys.join('+');
+  //},
 
   getHelpText: function() {
     return this._helpText;
