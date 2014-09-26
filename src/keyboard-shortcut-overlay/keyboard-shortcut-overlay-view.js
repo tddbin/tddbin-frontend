@@ -18,9 +18,11 @@ var Overlay = React.createClass({
   },
 
   render: function() {
-    var styleProps = {display: this.props.isVisible ? 'block' : 'none'};
-    var shortcuts = this.props.shortcuts;
-    var metaKeySymbol = this.props.metaKeySymbol;
+    var props = this.props;
+    var shortcuts = props.shortcuts;
+    var isVisible = props.shortcuts.length > 0;
+    var styleProps = {display: isVisible ? 'block' : 'none'};
+    var metaKeySymbol = props.metaKeySymbol;
     return (
       <div className="keyboard-shortcut-overlay" style={styleProps}>
         {this._renderShortcuts(shortcuts)}

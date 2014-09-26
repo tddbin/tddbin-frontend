@@ -24,10 +24,7 @@ Controller.prototype = {
       editorId: editorDomNodeId,
       runnerId: runnerDomNodeId,
       onSave: this.runEditorContent.bind(this),
-      shortcutOverlay: {
-        shortcuts: [],
-        isVisible: false
-      }
+      shortcuts: []
     };
     this._component = React.renderComponent(ViewComponent(props), this._domNode);
     this._editor = editor(editorDomNodeId);
@@ -52,24 +49,20 @@ Controller.prototype = {
   _registerShortcuts: function(shortcuts) {
     var processor = new ShortcutProcessor();
     processor.registerShortcuts(shortcuts);
-    var noKeyPressed = [];
-    processor.onShortcutEnd(this._updateOverlayView.bind(this, noKeyPressed));
     processor.onKeyDown(this._updateOverlayView.bind(this));
+    processor.onShortcutEnd(this._hideOverlayView.bind(this));
+  },
+
+  _hideOverlayView: function() {
+    this._component.setProps({shortcuts: []});
   },
 
   _updateOverlayView: function(pressedKeys) {
     var allShortcuts = this._config.shortcuts;
-    var applicableShortcuts = [];
-    if (pressedKeys.length > 0) {
-      applicableShortcuts = allShortcuts.filter(function(shortcut) {
-        return shortcut.isStartOfKeyCombo(pressedKeys);
-      });
-    }
-    var props = {
-      shortcuts: applicableShortcuts,
-      isVisible: applicableShortcuts.length > 0
-    };
-    this._component.setProps({shortcutOverlay: props});
+    var applicableShortcuts = allShortcuts.filter(function(shortcut) {
+      return shortcut.isStartOfKeyCombo(pressedKeys);
+    });
+    this._component.setProps({shortcuts: applicableShortcuts});
   }
 
 };
