@@ -32,28 +32,48 @@ describe('fire the callback given to it', function() {
   });
 });
 
-ddescribe('check a given key combo against the one of the shortcut', function() {
-  it('should validate a shortcut of two keys', function() {
-    var keys = ['Meta', 'A'];
-    var shortcut = createShortcut(keys, someFunction, someString);
-    expect(shortcut.isKeyCombo(keys)).toBe(true);
-  });
-  it('should validate a shortcut of five keys', function() {
-    var keys = ['Meta', 'Shift', 'A', 'B', 'C'];
-    var shortcut = createShortcut(keys, someFunction, someString);
-    expect(shortcut.isKeyCombo(keys)).toBe(true);
+describe('check a given key combo against a shortcut', function() {
+  describe('is the same?', function() {
+    it('should validate a shortcut of two keys', function() {
+      var keys = ['Meta', 'A'];
+      var shortcut = createShortcut(keys, someFunction, someString);
+      expect(shortcut.isKeyCombo(keys)).toBe(true);
+    });
+    it('should validate a shortcut of five keys', function() {
+      var keys = ['Meta', 'Shift', 'A', 'B', 'C'];
+      var shortcut = createShortcut(keys, someFunction, someString);
+      expect(shortcut.isKeyCombo(keys)).toBe(true);
+    });
+
+    describe('should invalidate', function() {
+      it('an incomplete shortcut', function() {
+        var keys = ['Meta', 'A'];
+        var shortcut = createShortcut(keys, someFunction, someString);
+        expect(shortcut.isKeyCombo([keys[0]])).toBe(false);
+      });
+      it('a wrong shortcut', function() {
+        var keys = ['Meta', 'A'];
+        var shortcut = createShortcut(keys, someFunction, someString);
+        expect(shortcut.isKeyCombo(['Alt', 'A'])).toBe(false);
+      });
+    });
   });
 
-  describe('should invalidate', function() {
-    it('an incomplete shortcut', function() {
+  describe('is the start of the shortcut?', function() {
+    it('should validate for one key', function() {
       var keys = ['Meta', 'A'];
       var shortcut = createShortcut(keys, someFunction, someString);
-      expect(shortcut.isKeyCombo([keys[0]])).toBe(false);
+      expect(shortcut.isStartOfKeyCombo([keys[0]])).toBe(true);
     });
-    it('a wrong shortcut', function() {
+    it('should NOT validate for only the second key', function() {
       var keys = ['Meta', 'A'];
       var shortcut = createShortcut(keys, someFunction, someString);
-      expect(shortcut.isKeyCombo(['Alt', 'A'])).toBe(false);
+      expect(shortcut.isStartOfKeyCombo([keys[1]])).toBe(false);
+    });
+    it('should NOT validate for different keys', function() {
+      var keys = ['Meta', 'A'];
+      var shortcut = createShortcut(keys, someFunction, someString);
+      expect(shortcut.isKeyCombo(['Alt', 'B'])).toBe(false);
     });
   });
 });
