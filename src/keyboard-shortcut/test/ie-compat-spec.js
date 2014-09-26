@@ -1,3 +1,4 @@
+var Shortcut = require('../shortcut');
 var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
@@ -15,7 +16,7 @@ describe('IE specifics', function() {
     var callback = jasmine.createSpy('callback');
 
     var processor = new ShortcutProcessor();
-    processor.registerShortcut(['Control', 'S'], callback);
+    processor.registerShortcut(new Shortcut(['Control', 'S'], callback));
 
     // Fire `Control` key as Windows does, multiple times when being held down.
     keyPressEmulation.keyDownByKeyNames(['Control', 'Control', 'Control', 'S']);

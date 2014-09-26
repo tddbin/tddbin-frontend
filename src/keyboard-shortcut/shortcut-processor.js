@@ -6,7 +6,6 @@ var browserEventUtil = require('./browser-event-util');
 function ShortcutProcessor() {
   this._pressedKeys = [];
   this._registeredShortcuts = [];
-  this._allPossibleShortcutStarterKeys = [];
   keyboardEventUtil.addKeyDownListener(this._keyDown.bind(this));
   keyboardEventUtil.addKeyUpListener(this._keyUp.bind(this));
   browserEventUtil.onWindowBlur(this._fireOnShortcutEndCallback.bind(this));
@@ -16,14 +15,12 @@ ShortcutProcessor.prototype = {
 
   _pressedKeys: null,
   _registeredShortcuts: null,
-  _allPossibleShortcutStarterKeys: null, // all possible sortcut starter keys
   _firstKeyOfCurrentShortcut: null,
   _onPossibleShortcutCallback: null,
   _onShortcutEndCallback: null,
 
-  registerShortcut: function(shortcut, callback) {
-    this._registeredShortcuts.push([shortcut, callback]);
-    this._rememberFirstKey(shortcut[0]);
+  registerShortcut: function(shortcut) {
+    this._registeredShortcuts.push(shortcut);
   },
 
   registerShortcuts: function(shortcuts) {
@@ -53,12 +50,6 @@ ShortcutProcessor.prototype = {
     }
   },
 
-  _rememberFirstKey: function(keyName) {
-    if (this._allPossibleShortcutStarterKeys.indexOf(keyName) === -1) {
-      this._allPossibleShortcutStarterKeys.push(keyName);
-    }
-  },
-
   _keyDown: function(keyName) {
     var isStartOfShortcut = this._pressedKeys.length === 0;
     if (isStartOfShortcut) {
@@ -68,7 +59,9 @@ ShortcutProcessor.prototype = {
   },
 
   _handlePossibleShortcutStart: function(keyName) {
-    var isFirstKeyOfRegisteredShortcut = this._allPossibleShortcutStarterKeys.indexOf(keyName) > -1;
+    var isFirstKeyOfRegisteredShortcut = this._registeredShortcuts.some(function(shortcut) {
+      return shortcut.isStartOfKeyCombo([keyName]);
+    });
     if (isFirstKeyOfRegisteredShortcut) {
       this._pressedKeys = [keyName];
       this._firstKeyOfCurrentShortcut = keyName;
@@ -105,7 +98,7 @@ ShortcutProcessor.prototype = {
 
   _keyUp: function(keyName) {
     if (this._isEndOfCurrentShortcut(keyName)) {
-      this._fireCallbackForShortcut(this._pressedKeys);
+      this._processFirstMatchingShortcut(this._pressedKeys);
       this._fireOnShortcutEndCallback();
       this._pressedKeys = [];
     }
@@ -115,28 +108,20 @@ ShortcutProcessor.prototype = {
     return keyName === this._firstKeyOfCurrentShortcut;
   },
 
-  _fireCallbackForShortcut: function(pressedKeys) {
-    var callback = this._getCallbackForPressedKeys(pressedKeys);
-    if (callback) {
-      callback();
-    }
-  },
-
-  _getCallbackForPressedKeys: function(pressedKeys) {
-    function isShortcutSameAsPressedKeys(shortcut) {
-      return shortcut[0].join('+') === pressedKeys.join('+');
-    }
-    var found = this._registeredShortcuts.filter(isShortcutSameAsPressedKeys);
-    if (found.length) {
-      // Use the first shortcut map found.
-      var firstShortcut = found[0];
-      return firstShortcut[1];
-    }
-    return null;
+  _processFirstMatchingShortcut: function(pressedKeys) {
+    this._registeredShortcuts.some(function(shortcut) {
+      if (shortcut.isKeyCombo(pressedKeys)) {
+        shortcut.process();
+        return true;
+      }
+      return false;
+    });
   },
 
   _isRegisteredShortcut: function(pressedKeys) {
-    return this._getCallbackForPressedKeys(pressedKeys) !== null;
+    return this._registeredShortcuts.some(function(shortcut) {
+      return shortcut.isKeyCombo(pressedKeys);
+    });
   }
 };
 

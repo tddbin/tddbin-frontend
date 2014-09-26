@@ -1,3 +1,4 @@
+var Shortcut = require('../shortcut');
 var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
@@ -22,7 +23,7 @@ describe('DOM event handling', function() {
     var shortcut = ['Meta', 'S'];
 
     var processor = new ShortcutProcessor();
-    processor.registerShortcut(shortcut, function() {});
+    processor.registerShortcut(new Shortcut(shortcut, function() {}));
 
     var lastKeyDownReturnValue = pressKeys(shortcut);
 
