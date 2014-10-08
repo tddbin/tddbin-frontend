@@ -7,3 +7,16 @@ body {
   font-family: sans-serif;
 }
 
+/*
+ *  Refactor renaming highlight style
+ */
+.ace_marker-layer .selected-for-renaming {
+  position: absolute;
+  z-index: 4;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+
+  background: yellow;
+  border: 1px solid red;
+}

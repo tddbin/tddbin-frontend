@@ -47,5 +47,5 @@ function executeTestCode() {
   main.runEditorContent();
 }
 function refactoringRename() {
-  main.placeCursorsForRenaming();
+  main.turnOnRenameMode();
 }

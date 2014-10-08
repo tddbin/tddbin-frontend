@@ -41,8 +41,8 @@ Controller.prototype = {
     this._runner.send(this._editor.getContent());
   },
 
-  placeCursorsForRenaming: function() {
-    this._editor.placeCursorsForRenaming();
+  turnOnRenameMode: function() {
+    this._editor.turnOnRenameMode();
   },
 
   _registerShortcuts: function(shortcuts) {
