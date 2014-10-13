@@ -34,6 +34,7 @@
     "jasmine-node": "^1.14.5",
     "jsx-loader": "^0.11.0",
     "jsxcs": "0.0.3",
+    "reqwest": "^1.1.4",
     "webpack": "^1.3.6",
     "webpack-dev-server": "^1.5.0"
   }
