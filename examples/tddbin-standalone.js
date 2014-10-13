@@ -9,7 +9,7 @@ var isMac = navigator.platform.indexOf('Mac') === 0;
 var metaKey = isMac ? 'Meta' : 'Control';
 
 var map = {
-  Meta: '⌘',
+  Meta: '⌘Command',
   Shift: '⇧Shift'
 };
 function format(keys) {
