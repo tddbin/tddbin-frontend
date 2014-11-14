@@ -16,7 +16,13 @@ var View = React.createClass({
         />
 
         <div className="editor-and-runner">
-          <div id={this.props.editorId} className="editor"></div>
+          <div>
+            <div className="session-name">
+              Session name <input type="text" name="sessionName" />
+              (Save via 'Save and Run')
+            </div>
+            <div id={this.props.editorId} className="editor"></div>
+          </div>
           <div id={this.props.runnerId} className="runner"></div>
         </div>
 

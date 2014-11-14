@@ -6,6 +6,19 @@ body {
   font-family: sans-serif;
 }
 
+input {
+  border: none;
+  background-color: inherit;
+  border-bottom: 1px solid black;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+input:focus {
+  outline: none;
+  border-color: red;
+}
+
 /*
  *  Refactor renaming highlight style
  */
@@ -23,11 +36,15 @@ body {
 
 
 
+.editor-and-runner .session-name {
+  width: 50%;
+  margin: 1em;
+}
+
 .editor-and-runner .editor {
+  background-color: lightyellow;
   width: 50%;
   height: 500px;
-  float: left;
-  background-color: lightyellow;
   border: none;
 }
 
