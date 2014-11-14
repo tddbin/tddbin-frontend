@@ -1,13 +1,22 @@
-var Editor = require('../src/editor/editor');
 var ShortcutProcessor = require('../src/keyboard-shortcut/shortcut-processor');
+var Shortcut = require('../src/keyboard-shortcut/shortcut');
+var editor = require('ace-with-plugins')('editorNode');
 
-var editor = new Editor('editorNode');
-editor.setContent([
-  '// This just demonstrates the working editor component.',
-  '// If you press Meta+S `save it` should be console logged.'
-].join('\n'));
+var content = [
+  '// This just demonstrates the working editor component (which comes from ace-with-plugins).',
+  '// And it shows that connecting shortcuts works.',
+  '// If you press Meta+S (or Control+S) watch what happens :)',
+  ''
+].join('\n');
+editor.setContent(content);
 
-var manager = new ShortcutProcessor();
-manager.registerShortcut(['Meta', 'S'], function() {
-  console.log('save it');
-});
+// add one shortcut
+
+function onSave() {
+  editor.setContent(editor.getContent() + '\nvoid "You pressed the shortuct :)";');
+}
+var processor = new ShortcutProcessor();
+processor.registerShortcuts([
+  new Shortcut(['Meta', 'S'], onSave, ''),
+  new Shortcut(['Control', 'S'], onSave, '')
+]);
