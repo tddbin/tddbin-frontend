@@ -28,10 +28,11 @@ function onStartUp() {
   reqwest({
     method: 'POST',
     url: '//tddbin.local:8000/sessions/',
+    type: 'json',
     headers: {
       Authorization: 'Token 215744edb33d728845acf5bbce34ba1b26ae89fd'
     },
-    data: {name: ''},
+    data: {name: 'one'},
     success: function(resp) {
       console.log('SESSION POST:', resp);
     },
