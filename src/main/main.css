@@ -1,5 +1,4 @@
 @import "../navigation-bar/navigation-bar.css";
-@import "../editor-and-runner/editor-and-runner.css";
 @import "../keyboard-shortcut-overlay/keyboard-shortcut-overlay.css";
 
 body {
@@ -20,3 +19,25 @@ body {
   background: yellow;
   border: 1px solid red;
 }
+
+
+
+
+.editor-and-runner .editor {
+  width: 50%;
+  height: 500px;
+  float: left;
+  background-color: lightyellow;
+  border: none;
+}
+
+.editor-and-runner .runner {
+  width: 49%;
+  height: 500px;
+  float: right;
+  background-color: #EEE;
+}
+
+  .editor-and-runner .runner iframe {
+    border: none;
+  }
