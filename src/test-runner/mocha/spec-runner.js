@@ -1,4 +1,3 @@
-require('mocha');
 var expect = require('referee/lib/expect');
 var should = require('should');
 
