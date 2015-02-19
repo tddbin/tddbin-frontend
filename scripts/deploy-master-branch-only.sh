@@ -13,7 +13,7 @@ if [ "$CURRENT_BRANCH" == "master" ]; then
   echo "deploy: build via 'npm run build'"
   npm run build
   echo "deploy: run 'deploy-to-ghpages.sh'"
-  ./deploy-to-ghpages.sh
+  ./scripts/deploy-to-ghpages.sh
 else
   echo "deploy: nothing to deploy. (only deploying master branch)"
 fi
