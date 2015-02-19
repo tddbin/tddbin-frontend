@@ -3,7 +3,7 @@ node_js:
   - "0.10"
 
 after_success:
-  script: npm run-script deploy
+  - npm run-script deploy
 
 env:
  global:
