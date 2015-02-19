@@ -1,3 +1,11 @@
 language: node_js
 node_js:
   - "0.10"
+
+after_success:
+  script: npm run-script deploy
+
+env:
+ global:
+ - GH_REF: github.com/tddbin/tddbin-frontend.git
+ - secure: HofeV8v4B9m97cQ7S4otS7r+iY39ME1pIh/oGJc2U46oce+vAI1ONGVccgM0325myUqYTyZmP/dZGewalNm2X2KFoMrJefSNvMVTmyI9DzWKni575ss3tbuOy/RTcHTDzSc4eEZgSdnIC7OyzeTGi7WN583WUthFkc6P+wq0IeA=
