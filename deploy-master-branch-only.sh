@@ -1,6 +1,9 @@
 #!/bin/bash
 
-CURRENT_BRANCH=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+# travis does a `git checkout -qf <hash>` which detaches it from the branch
+# and `git branch` would show `* (detached from <hash>)` but we want the line below
+# of what `git branch` reports
+CURRENT_BRANCH=$(git branch | sed -n -e 's/^\  \(.*\)/\1/p')
 
 echo "deploy: current branch is '$CURRENT_BRANCH'"
 
