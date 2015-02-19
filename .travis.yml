@@ -3,10 +3,10 @@ node_js:
   - "0.10"
 
 after_success:
-  - chmod +x ./deploy-master-branch-only.sh
-  - chmod +x ./deploy-to-ghpages.sh
-  - chmod +x ./deploy/*.sh
-  - ./deploy-master-branch-only.sh
+  - chmod +x ./scripts/deploy-master-branch-only.sh
+  - chmod +x ./scripts/deploy-to-ghpages.sh
+  - chmod +x ./scripts/*.sh
+  - ./scripts/deploy-master-branch-only.sh
 
 env:
  global:
