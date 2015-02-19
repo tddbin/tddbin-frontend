@@ -1,3 +1,10 @@
+1.0.0  2015-02-??
+=================
+- move to browserify (remove webpack)
+- make buildable
+- use mocha from CDN (due to problem with browserifying mocha)
+- create deploy that is triggered by travis after succeeding tests using gh-pages
+
 0.0.2  2014-08-??
 =================
 - added ROADMAP.md and LICENSE
