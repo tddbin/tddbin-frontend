@@ -1,0 +1,69 @@
+/* Common stuff */
+
+.navigation-bar {
+  background-color: #2E3949;
+  color: white;
+  height: 50px;
+  border-bottom: 1px solid #000;
+  overflow: hidden;
+}
+
+.navigation-bar button {
+  background-color: #384355;
+  border: none;
+  font-size: inherit;
+  color: #C1C5CB;
+  vertical-align: middle;
+  margin-left: 1px;
+  height: 50px;
+  outline: none;
+}
+
+.navigation-bar button:hover {
+  background-color: #475263;
+}
+
+/* logo */
+
+.navigation-bar button.logo {
+  background-image: url(./img/tddbin-logo.png);
+  background-repeat: no-repeat;
+  background-color: transparent;
+  height: 30px;
+  width: 105px;
+  margin: 10px 20px 10px 10px;
+  vertical-align: middle;
+}
+
+/* buttons on the left */
+
+.navigation-bar .account {
+  float: right;
+  padding: 7px 5px;
+}
+
+.navigation-bar .icon {
+  /*padding: 16px 5px 0 48px;*/
+  padding-left: 48px;
+  padding-right: 16px;
+  background-repeat: no-repeat;
+}
+
+.navigation-bar .icon.new {
+  background-image: url(./img/icon-new.png);
+}
+
+.navigation-bar .icon.save {
+  background-image: url(./img/icon-reload.png);
+}
+
+.button {
+  padding: 10px;
+  background: #E79741;
+  color: #FFF;
+  border-radius: 3px;
+  margin: 0 10px;
+  font-weight: normal;
+  display: inline-block;
+  text-decoration: none;
+}
