@@ -9,7 +9,7 @@ function MochaRunner(domNode, eventReceiver) {
 MochaRunner.prototype = {
 
   render: function(iframeSrc) {
-    var iframe = React.renderComponent(Iframe({iframeSrc: iframeSrc}), this._domNode);
+    var iframe = React.render(Iframe({iframeSrc: iframeSrc}), this._domNode);
     this._iframeRef = iframe.getIframeRef();
   },
 

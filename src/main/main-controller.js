@@ -25,7 +25,7 @@ Controller.prototype = {
       onSave: this.runEditorContent.bind(this),
       shortcuts: []
     };
-    this._component = React.renderComponent(ViewComponent(props), this._domNode);
+    this._component = React.render(ViewComponent(props), this._domNode);
     this._editor = editor(editorDomNodeId);
     this._runner = new MochaRunner(document.getElementById(runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
