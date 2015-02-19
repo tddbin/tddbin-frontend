@@ -5,6 +5,7 @@ node_js:
 after_success:
   - chmod +x ./deploy-master-branch-only.sh
   - chmod +x ./deploy-to-ghpages.sh
+  - chmod +x ./deploy/*.sh
   - ./deploy-master-branch-only.sh
 
 env:
