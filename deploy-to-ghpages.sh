@@ -21,6 +21,6 @@ TMP_CHECKOUT_DIR=tmp/origin-gh-pages
   git add .
   echo "deploy: committing"
   git commit -m "Travis deployed 'master' - `date`"
-  echo "deploy: push"
+  echo "deploy: push back to gh-pages"
   git push "https://${GH_TOKEN}@${GH_REF}" gh-pages:gh-pages
 )
