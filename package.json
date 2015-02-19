@@ -8,7 +8,6 @@
     "build-html": "rm -Rf dist; mkdir dist; cp examples/tddbin-standalone.html dist; mkdir dist/mocha/; cp src/test-runner/mocha/spec-runner.html dist/mocha",
     "build-app": "browserify examples/tddbin-standalone.js --outfile=dist/tddbin-standalone.js --transform=reactify",
     "build-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify",
-    "deploy": "npm run build && ./deploy-to-ghpages.sh",
     "lint": "jsxcs --preset google src",
     "start": "webpack-dev-server",
     "test": "npm run lint && jasmine-node src",

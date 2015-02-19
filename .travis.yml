@@ -3,8 +3,9 @@ node_js:
   - "0.10"
 
 after_success:
+  - chmod +x ./deploy-master-branch-only.sh
   - chmod +x ./deploy-to-ghpages.sh
-  - npm run-script deploy
+  - ./deploy-master-branch-only.sh
 
 env:
  global:
