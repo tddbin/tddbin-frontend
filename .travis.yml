@@ -3,6 +3,7 @@ node_js:
   - "0.10"
 
 after_success:
+  - chmod +x ./deploy-to-ghpages.sh
   - npm run-script deploy
 
 env:
