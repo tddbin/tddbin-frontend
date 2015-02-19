@@ -3,10 +3,14 @@
 ![Dependencies Status](https://david-dm.org/tddbin/tddbin-frontend.png)
 [![Codacy Badge](https://www.codacy.com/project/badge/857e4f48b2704d3bb3742bc5d78f8c40)](https://www.codacy.com/public/uxebu/tddbin-frontend.git)
 
-# TDDbin Frontend
+# TDDbin.com Frontend
 
-This project contains all the UI stuff for [TDDbin](http://tddbin.com), it should be runnable separately
+This project contains all the UI stuff for [TDDbin](http://tddbin.com), it is runnable separately
 without any backend and aims to provide all components modularly.
+Please [get involved on trello][trello] and [vote][trello] or [add ideas, comments, etc.][trello].
+The highest ranked ideas will be the priority for us to implement.
+
+[trello]: https://trello.com/b/FW1gUVxe/tddbin-com
 
 # Development
 
