@@ -24590,7 +24590,7 @@ Controller.prototype = {
       onSave: this.runEditorContent.bind(this),
       shortcuts: []
     };
-    this._component = React.renderComponent(ViewComponent(props), this._domNode);
+    this._component = React.render(ViewComponent(props), this._domNode);
     this._editor = editor(editorDomNodeId);
     this._runner = new MochaRunner(document.getElementById(runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
@@ -24734,7 +24734,7 @@ function MochaRunner(domNode, eventReceiver) {
 MochaRunner.prototype = {
 
   render: function(iframeSrc) {
-    var iframe = React.renderComponent(Iframe({iframeSrc: iframeSrc}), this._domNode);
+    var iframe = React.render(Iframe({iframeSrc: iframeSrc}), this._domNode);
     this._iframeRef = iframe.getIframeRef();
   },
 
