@@ -1,5 +1,6 @@
 var expect = require('referee/lib/expect');
 var should = require('should');
+var assert = require('assert');
 
 function consumeMessage(messageData) {
   var sender = messageData.source;

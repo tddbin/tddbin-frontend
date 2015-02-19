@@ -2,14 +2,20 @@
 
 function simplePassing() {
   describe('test embedded mocha', function() {
-    it('should run jasmine-style tests', function() {
-      var expected = 1;
-      expect(expected)
-        .toBe(expected);
-    });
+    // doesnt work anymore since we use mocha from the CDN, which we have to do due to
+    // browserify failing when bundling mocha :(
+    //it('should run jasmine-style tests (using referee)', function() {
+    //  var expected = 1;
+    //  expect(expected)
+    //    .toBe(expected);
+    //});
     it('should run should-style tests', function() {
       var expected = 1;
       should(expected).ok;
+    });
+    it('should run assert-style tests', function() {
+      var expected = 1;
+      assert.equal(expected, 1);
     });
   });
 }
