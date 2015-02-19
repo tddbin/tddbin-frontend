@@ -4,9 +4,10 @@
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build-app && npm run build-spec-runners",
+    "build": "npm run build-html && npm run build-app && npm run build-spec-runners",
+    "build-html": "rm -Rf dist; mkdir dist; cp examples/tddbin-standalone.html dist; mkdir dist/mocha/; cp src/test-runner/mocha/spec-runner.html dist/mocha",
     "build-app": "browserify examples/tddbin-standalone.js --outfile=dist/tddbin-standalone.js --transform=reactify",
-    "build-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha-spec-runner.js --transform=reactify",
+    "build-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify",
     "deploy": "npm run build && ./deploy-ghpages.sh",
     "lint": "jsxcs --preset google src",
     "start": "webpack-dev-server",

@@ -11,7 +11,7 @@ var shortcuts = aceDefaultShortcuts.concat([
 
 var main = new Main($('tddbin'), {
   initialContent: exampleTests.simplePassingTestCode,
-  iframeSrcUrl: '../src/test-runner/mocha/spec-runner.html',
+  iframeSrcUrl: './mocha/spec-runner.html',
   shortcuts: shortcuts
 });
 
