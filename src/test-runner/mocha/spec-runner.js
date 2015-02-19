@@ -17,7 +17,7 @@ function consumeMessage(messageData) {
 
   // Let mocha run and report the stats back to the actual sender.
   mocha.checkLeaks();
-  var runner = mocha.run();
+  var runner = mocha.run(function() {}); // if there is no callback given mocha will fail and not work again :(
   function onRan() {
     var stats = runner.stats;
     sender.postMessage(stats, '*');
