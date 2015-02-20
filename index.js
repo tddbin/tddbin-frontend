@@ -54,6 +54,11 @@ module.exports = util;
 "use strict";
 
 function simplePassing() {
+  //
+  // !!!! this is a new version !!!!
+  // this runner below is mocha, with should and assert as assertion libs
+  // for any problem, etc. please tweet to @tddbin
+  //
   describe('test embedded mocha', function() {
     // doesnt work anymore since we use mocha from the CDN, which we have to do due to
     // browserify failing when bundling mocha :(
@@ -24683,12 +24688,7 @@ var View = React.createClass({displayName: "View",
     return (
       React.createElement("header", {className: "navigation-bar"}, 
         React.createElement("button", {className: "logo"}), 
-        React.createElement("button", {className: "icon new", title: "Start new TDD session", onClick: this.props.onNew}, "New"), 
-        React.createElement("button", {className: "icon save", title: "Save and Run tests (⌘S)", onClick: this.props.onSave}, "Save and Run (", this.props.metaKeySymbol, "S)"), 
-        React.createElement("div", {className: "account"}, 
-          this.props.username, 
-          React.createElement("button", {className: "button"}, "Signout")
-        )
+        React.createElement("button", {className: "icon save", title: "Save and Run tests (⌘S)", onClick: this.props.onSave}, "Save and Run (", this.props.metaKeySymbol, "S)")
       )
     );
   }
