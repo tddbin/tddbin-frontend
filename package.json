@@ -4,7 +4,7 @@
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
   "scripts": {
-    "build": "npm run build-html && npm run build-app && npm run build-css && npm run build-ace && npm run build-spec-runners",
+    "build": "./scripts/build.sh",
     "build-html": "rm -Rf dist; mkdir dist; cp html/index.html dist; mkdir dist/mocha/; cp src/test-runner/mocha/spec-runner.html dist/mocha",
     "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify",
     "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
