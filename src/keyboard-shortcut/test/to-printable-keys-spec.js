@@ -15,7 +15,8 @@ describe('convert key-strings to key signs', function() {
   });
 
   it('convert multiple matches', function() {
-    assert.deepEqual(toPrintableKeys(['Meta', 'Shift', 'A'], keyToSignMap), [keyToSignMap.Meta, keyToSignMap.Shift, 'A']);
+    var expected = [keyToSignMap.Meta, keyToSignMap.Shift, 'A'];
+    assert.deepEqual(toPrintableKeys(['Meta', 'Shift', 'A'], keyToSignMap), expected);
   });
 
   it('leave unmappables as they are', function() {
