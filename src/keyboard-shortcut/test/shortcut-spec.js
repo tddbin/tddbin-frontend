@@ -1,4 +1,3 @@
-require('jasmine-matchers');
 var Shortcut = require('../shortcut');
 /*
 - helper function to create a shortcut instance

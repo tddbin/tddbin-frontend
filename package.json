@@ -13,6 +13,7 @@
     "lint": "jsxcs --preset google src",
     "start": "webpack-dev-server",
     "test": "npm run lint && jasmine-node src",
+    "test-with-mocha": "mocha --compilers js:babel/register src/**/**/*spec.js",
     "watch": "watchify examples/tddbin-standalone.js --outfile=dist/tddbin-standalone.js --transform=reactify -v"
   },
   "browserify": {
@@ -50,6 +51,7 @@
     "react": "^0.12.2",
     "mocha": "^1.21.5",
     "referee": "^1.1.1",
-    "should": "^5.0.0"
+    "should": "^5.0.0",
+    "babel": "^4.3.0"
   }
 }
