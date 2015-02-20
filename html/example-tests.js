@@ -1,6 +1,11 @@
 "use strict";
 
 function simplePassing() {
+  //
+  // !!!! this is a new version !!!!
+  // this runner below is mocha, with should and assert as assertion libs
+  // for any problem, etc. please tweet to @tddbin
+  //
   describe('test embedded mocha', function() {
     // doesnt work anymore since we use mocha from the CDN, which we have to do due to
     // browserify failing when bundling mocha :(
