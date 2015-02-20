@@ -1,4 +1,4 @@
-var assert = require('assert');
+var assert = require('../../_test-helper/assert');
 /*
   - pre-process shortcuts into ui-shortcuts (or alike) where 'Meta' is replace by '⌘' etc.
  */
@@ -8,7 +8,7 @@ var keyToSignMap = {
   Meta: 'Meta',
   Shift: 'Shift'
 };
-describe.only('convert key-strings to key signs', function() {
+describe('convert key-strings to key signs', function() {
 
   it('convert `Meta` to according sign', function() {
     assert.deepEqual(toPrintableKeys(['Meta', 'S'], keyToSignMap), [keyToSignMap.Meta, 'S']);

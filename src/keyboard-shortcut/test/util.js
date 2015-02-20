@@ -1,11 +1,11 @@
-function KeyPressEmulation(keyboardEventUtil) {
+function KeyPressEmulation(keyboardEventUtil, sinon) {
   this._keyDownListeners = [];
   this._keyUpListeners = [];
   var self = this;
-  spyOn(keyboardEventUtil, 'addKeyDownListener').andCallFake(function(fn) {
+  sinon.stub(keyboardEventUtil, 'addKeyDownListener', function(fn) {
     self._keyDownListeners.push(fn);
   });
-  spyOn(keyboardEventUtil, 'addKeyUpListener').andCallFake(function(fn) {
+  sinon.stub(keyboardEventUtil, 'addKeyUpListener', function(fn) {
     self._keyUpListeners.push(fn);
   });
 }

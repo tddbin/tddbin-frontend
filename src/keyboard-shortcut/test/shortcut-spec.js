@@ -14,7 +14,7 @@ function createShortcut(shortcut, callback, helpText) {
   return new Shortcut(shortcut, callback, helpText);
 }
 
-describe('provide the help text', function() {
+describe.skip('provide the help text', function() {
   it('via getHelpText()', function() {
     var helpText = 'help text';
     var shortcut = createShortcut([], someFunction, helpText);
@@ -22,7 +22,7 @@ describe('provide the help text', function() {
   });
 });
 
-describe('fire the callback given to it', function() {
+describe.skip('fire the callback given to it', function() {
   it('when fireAssignedCallback is called', function() {
     var fn = jasmine.createSpy();
     var shortcut = createShortcut([], fn, someString);
@@ -31,7 +31,7 @@ describe('fire the callback given to it', function() {
   });
 });
 
-describe('check a given key combo against a shortcut', function() {
+describe.skip('check a given key combo against a shortcut', function() {
   describe('is the same?', function() {
     it('should validate a shortcut of two keys', function() {
       var keys = ['Meta', 'A'];
@@ -85,7 +85,7 @@ describe('check a given key combo against a shortcut', function() {
   });
 });
 
-describe('printable keys', function() {
+describe.skip('printable keys', function() {
   it('should be formatted using a given formatter function', function() {
     var keys = ['Meta', 'A'];
     var shortcut = createShortcut(keys, someFunction, someString);

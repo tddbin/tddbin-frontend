@@ -1,3 +1,5 @@
+var assert = require('../../_test-helper/assert');
+
 var Shortcut = require('../shortcut');
 var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
@@ -8,12 +10,12 @@ describe('IE specifics', function() {
 
   var keyPressEmulation;
   beforeEach(function() {
-    spyOn(browserEventUtil, 'onWindowBlur');
-    keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil);
+    this.sinon.stub(browserEventUtil, 'onWindowBlur');
+    keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil, this.sinon);
   });
 
   it('ignore multiple consecutive keydown-events for Control, Alt, etc.', function() {
-    var callback = jasmine.createSpy('callback');
+    var callback = this.sinon.spy();
 
     var processor = new ShortcutProcessor();
     processor.registerShortcut(new Shortcut(['Control', 'S'], callback));
@@ -22,7 +24,7 @@ describe('IE specifics', function() {
     keyPressEmulation.keyDownByKeyNames(['Control', 'Control', 'Control', 'S']);
     keyPressEmulation.keyUpByKeyNames(['S', 'Control']);
 
-    expect(callback).toHaveBeenCalled();
+    assert.called(callback);
   });
 
 });

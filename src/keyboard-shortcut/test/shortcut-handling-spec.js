@@ -6,13 +6,13 @@ var util = require('./util');
 
 var noop = function() {};
 
-describe('tests suite', function() {
+describe.skip('tests suite', function() {
   it('should execute', function() {
     expect(true).toBe(true);
   });
 });
 
-describe('keyboard shortcut', function() {
+describe.skip('keyboard shortcut', function() {
 
   var callback;
   var keyPressEmulation;
