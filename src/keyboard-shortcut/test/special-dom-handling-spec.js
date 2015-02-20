@@ -1,22 +1,25 @@
+'use strict';
+
+var assert = require('../../_test-helper/assert');
 var Shortcut = require('../shortcut');
 var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
 
-describe.skip('DOM event handling', function() {
+describe('DOM event handling', function() {
 
   var keyDownListeners;
   var keyUpListeners;
   beforeEach(function() {
     keyDownListeners = [];
     keyUpListeners = [];
-    spyOn(keyboardEventUtil, 'addKeyDownListener').andCallFake(function(fn) {
+    this.sinon.stub(keyboardEventUtil, 'addKeyDownListener', function(fn) {
       keyDownListeners.push(fn);
     });
-    spyOn(keyboardEventUtil, 'addKeyUpListener').andCallFake(function(fn) {
+    this.sinon.stub(keyboardEventUtil, 'addKeyUpListener', function(fn) {
       keyUpListeners.push(fn);
     });
-    spyOn(browserEventUtil, 'onWindowBlur');
+    this.sinon.stub(browserEventUtil, 'onWindowBlur');
   });
 
   it('should prevent default when shortcut is `overridden`', function() {
@@ -27,7 +30,7 @@ describe.skip('DOM event handling', function() {
 
     var lastKeyDownReturnValue = pressKeys(shortcut);
 
-    expect(lastKeyDownReturnValue).toBe(keyboardEventUtil.PREVENT_DEFAULT_ACTION);
+    assert.equal(lastKeyDownReturnValue, keyboardEventUtil.PREVENT_DEFAULT_ACTION);
   });
 
   function pressKeys(shortcut) {

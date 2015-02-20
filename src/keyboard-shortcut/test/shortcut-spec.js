@@ -1,3 +1,6 @@
+'use strict';
+
+var assert = require('../../_test-helper/assert');
 var Shortcut = require('../shortcut');
 /*
 - helper function to create a shortcut instance
@@ -14,46 +17,46 @@ function createShortcut(shortcut, callback, helpText) {
   return new Shortcut(shortcut, callback, helpText);
 }
 
-describe.skip('provide the help text', function() {
+describe('provide the help text', function() {
   it('via getHelpText()', function() {
     var helpText = 'help text';
     var shortcut = createShortcut([], someFunction, helpText);
-    expect(shortcut.getHelpText()).toBe(helpText);
+    assert.equal(shortcut.getHelpText(), helpText);
   });
 });
 
-describe.skip('fire the callback given to it', function() {
+describe('fire the callback given to it', function() {
   it('when fireAssignedCallback is called', function() {
-    var fn = jasmine.createSpy();
+    var fn = this.sinon.spy();
     var shortcut = createShortcut([], fn, someString);
     shortcut.fireAssignedCallback();
-    expect(fn).toHaveBeenCalled();
+    assert.called(fn);
   });
 });
 
-describe.skip('check a given key combo against a shortcut', function() {
+describe('check a given key combo against a shortcut', function() {
   describe('is the same?', function() {
     it('should validate a shortcut of two keys', function() {
       var keys = ['Meta', 'A'];
       var shortcut = createShortcut(keys, someFunction, someString);
-      expect(shortcut.isKeyCombo(keys)).toBe(true);
+      assert.equal(shortcut.isKeyCombo(keys), true);
     });
     it('should validate a shortcut of five keys', function() {
       var keys = ['Meta', 'Shift', 'A', 'B', 'C'];
       var shortcut = createShortcut(keys, someFunction, someString);
-      expect(shortcut.isKeyCombo(keys)).toBe(true);
+      assert.equal(shortcut.isKeyCombo(keys), true);
     });
 
     describe('should invalidate', function() {
       it('an incomplete shortcut', function() {
         var keys = ['Meta', 'A'];
         var shortcut = createShortcut(keys, someFunction, someString);
-        expect(shortcut.isKeyCombo([keys[0]])).toBe(false);
+        assert.equal(shortcut.isKeyCombo([keys[0]]), false);
       });
       it('a wrong shortcut', function() {
         var keys = ['Meta', 'A'];
         var shortcut = createShortcut(keys, someFunction, someString);
-        expect(shortcut.isKeyCombo(['Alt', 'A'])).toBe(false);
+        assert.equal(shortcut.isKeyCombo(['Alt', 'A']), false);
       });
     });
   });
@@ -62,42 +65,42 @@ describe.skip('check a given key combo against a shortcut', function() {
     it('should validate for one key', function() {
       var keys = ['Meta', 'A'];
       var shortcut = createShortcut(keys, someFunction, someString);
-      expect(shortcut.isStartOfKeyCombo([keys[0]])).toBe(true);
+      assert.equal(shortcut.isStartOfKeyCombo([keys[0]]), true);
     });
 
     describe('should NOT validate', function() {
       it('for only the second key', function() {
         var keys = ['Meta', 'A'];
         var shortcut = createShortcut(keys, someFunction, someString);
-        expect(shortcut.isStartOfKeyCombo([keys[1]])).toBe(false);
+        assert.equal(shortcut.isStartOfKeyCombo([keys[1]]), false);
       });
       it('should NOT validate for different keys', function() {
         var keys = ['Meta', 'A'];
         var shortcut = createShortcut(keys, someFunction, someString);
-        expect(shortcut.isStartOfKeyCombo(['Alt', 'B'])).toBe(false);
+        assert.equal(shortcut.isStartOfKeyCombo(['Alt', 'B']), false);
       });
       it('even Alt+S when Alt+Shift is expected!', function() {
         var keys = ['Alt', 'Shift'];
         var shortcut = createShortcut(keys, someFunction, someString);
-        expect(shortcut.isStartOfKeyCombo(['Alt', 'S'])).toBe(false);
+        assert.equal(shortcut.isStartOfKeyCombo(['Alt', 'S']), false);
       });
     });
   });
 });
 
-describe.skip('printable keys', function() {
+describe('printable keys', function() {
   it('should be formatted using a given formatter function', function() {
     var keys = ['Meta', 'A'];
     var shortcut = createShortcut(keys, someFunction, someString);
-    var spy = jasmine.createSpy().andReturn([]);
+    var spy = this.sinon.stub().returns([]);
     shortcut.setPrintableKeysFormatter(spy);
     shortcut.getPrintableKeys();
-    expect(spy).toHaveBeenCalledWith(keys);
+    assert.calledWith(spy, keys);
   });
 
   it('should return the string as is if no formatter is given', function() {
     var keys = ['Meta', 'A'];
     var shortcut = createShortcut(keys, someFunction, someString);
-    expect(shortcut.getPrintableKeys()).toEqual('Meta+A');
+    assert.equal(shortcut.getPrintableKeys(), 'Meta+A');
   });
 });

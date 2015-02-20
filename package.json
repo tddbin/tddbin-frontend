@@ -12,8 +12,7 @@
     "build-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify",
     "lint": "jsxcs --preset google src",
     "start": "webpack-dev-server",
-    "test": "npm run lint && jasmine-node src",
-    "test-with-mocha": "mocha --compilers js:babel/register src/**/**/*spec.js",
+    "test": "mocha --compilers js:babel/register src/**/**/*spec.js",
     "watch": "watchify examples/tddbin-standalone.js --outfile=dist/tddbin-standalone.js --transform=reactify -v"
   },
   "browserify": {
@@ -43,8 +42,6 @@
   "devDependencies": {
     "ace-with-plugins": "git://github.com/uxebu/ace-with-plugins.git",
     "browserify": "^8.1.3",
-    "jasmine-matchers": "^0.2.3",
-    "jasmine-node": "^1.14.5",
     "jsxcs": "0.0.3",
     "reactify": "^1.0.0",
     "watchify": "^2.3.0",
