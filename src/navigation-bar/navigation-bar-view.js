@@ -8,7 +8,7 @@ var View = React.createClass({
     return (
       <header className="navigation-bar">
         <button className="logo"></button>
-        <button className="icon save" title="Save and Run tests (⌘S)" onClick={this.props.onSave}>Save and Run ({this.props.metaKeySymbol}S)</button>
+        <button className="icon save" title="Run tests (⌘S)" onClick={this.props.onSave}>Run tests ({this.props.metaKeySymbol}S)</button>
       </header>
     );
   }
