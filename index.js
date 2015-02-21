@@ -1,53 +1,57 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var _util = require('./_util');
+"use strict";
 
-var noop = function() {/* noop() */};
+var util = require("./_util").util;
 
-var shortcuts = [
-  _util.getShortcutObject([_util.metaKey, 'D'], noop, 'Delete line'),
-  _util.getShortcutObject([_util.metaKey, 'Z'], noop, 'Undo'),
-  _util.getShortcutObject([_util.metaKey, 'Shift', 'D'], noop, 'Duplicate line'),
-  _util.getShortcutObject([_util.metaKey, 'Shift', 'Z'], noop, 'Redo'),
-  _util.getShortcutObject([_util.metaKey, '/'], noop, 'Comment in/out line'),
 
-  _util.getShortcutObject([_util.metaKey, 'I', 'E'], noop, '???'),
-  _util.getShortcutObject([_util.metaKey, 'I', 'I'], noop, '???'),
-  _util.getShortcutObject([_util.metaKey, 'I', 'E', 'E'], noop, '???')
-];
+var noop = function () {};
 
-module.exports = shortcuts;
+var shortcuts = exports.shortcuts = [util.getShortcutObject([util.metaKey, "D"], noop, "Delete line"), util.getShortcutObject([util.metaKey, "Z"], noop, "Undo"), util.getShortcutObject([util.metaKey, "Shift", "D"], noop, "Duplicate line"), util.getShortcutObject([util.metaKey, "Shift", "Z"], noop, "Redo"), util.getShortcutObject([util.metaKey, "/"], noop, "Comment in/out line")];
 
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+//
+//util.getShortcutObject([util.metaKey, 'I', 'E'], noop, '???'),
+//util.getShortcutObject([util.metaKey, 'I', 'I'], noop, '???'),
+//util.getShortcutObject([util.metaKey, 'I', 'E', 'E'], noop, '???')
 
 
 },{"./_util":2}],2:[function(require,module,exports){
-var toPrintableKeys = require('../src/keyboard-shortcut/util').toPrintableKeys;
-var Shortcut = require('../src/keyboard-shortcut/shortcut');
+"use strict";
 
-var isMac = navigator.platform.indexOf('Mac') === 0;
+var toPrintableKeys = require("../src/keyboard-shortcut/util").toPrintableKeys;
+var Shortcut = require("../src/keyboard-shortcut/shortcut").Shortcut;
+
+
+var isMac = navigator.platform.indexOf("Mac") === 0;
 
 var map = {
-  Meta: '⌘Command',
-  Shift: '⇧Shift'
+  Meta: "⌘Command",
+  Shift: "⇧Shift"
 };
 
 function format(keys) {
   return toPrintableKeys(keys, map);
 }
 
-var util = {
+var util = exports.util = {
 
-  getShortcutObject: function(keys, fn, helpText) {
+  getShortcutObject: function (keys, fn, helpText) {
     var shortcut = new Shortcut(keys, fn, helpText);
     shortcut.setPrintableKeysFormatter(format);
     return shortcut;
   },
 
-  metaKey: isMac ? 'Meta' : 'Control'
+  metaKey: isMac ? "Meta" : "Control"
 };
 
 
-module.exports = util;
-
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 
 },{"../src/keyboard-shortcut/shortcut":170,"../src/keyboard-shortcut/util":171}],3:[function(require,module,exports){
@@ -59,7 +63,7 @@ function simplePassing() {
   // this runner below is mocha, with should and assert as assertion libs
   // for any problem, etc. please tweet to @tddbin
   //
-  describe('test embedded mocha', function() {
+  describe("test embedded mocha", function () {
     // doesnt work anymore since we use mocha from the CDN, which we have to do due to
     // browserify failing when bundling mocha :(
     //it('should run jasmine-style tests (using referee)', function() {
@@ -67,11 +71,11 @@ function simplePassing() {
     //  expect(expected)
     //    .toBe(expected);
     //});
-    it('should run should-style tests', function() {
+    it("should run should-style tests", function () {
       var expected = 1;
       should(expected).ok;
     });
-    it('should run assert-style tests', function() {
+    it("should run assert-style tests", function () {
       var expected = 1;
       assert.equal(expected, 1);
     });
@@ -79,10 +83,9 @@ function simplePassing() {
 }
 
 function simpleFailing() {
-  describe('test embedded mocha', function() {
-    it('should fail', function() {
-      expect(1)
-        .toBe(2);
+  describe("test embedded mocha", function () {
+    it("should fail", function () {
+      expect(1).toBe(2);
     });
   });
 }
@@ -91,41 +94,43 @@ function simpleFailing() {
 function _replaceTrailingWhitespaces(lines) {
   var firstLineTrailingSpaces = lines[1].match(/^[\s\t]+/);
   if (firstLineTrailingSpaces) {
-    lines = lines.map(function(line) {
-      return line.replace(firstLineTrailingSpaces, '');
+    lines = lines.map(function (line) {
+      return line.replace(firstLineTrailingSpaces, "");
     });
   }
   return lines;
 }
 
 function getSourceFrom(func) {
-  var lines = func.toString().split('\n');
+  var lines = func.toString().split("\n");
   lines = _replaceTrailingWhitespaces(lines);
-  return lines.slice(1, -1).join('\n');
+  return lines.slice(1, -1).join("\n");
 }
 
-module.exports = {
-  simplePassingTestCode: getSourceFrom(simplePassing),
-  simpleFailingTestCode: getSourceFrom(simpleFailing)
-};
+var simplePassingTestCode = exports.simplePassingTestCode = getSourceFrom(simplePassing);
+var simpleFailingTestCode = exports.simpleFailingTestCode = getSourceFrom(simpleFailing);
 
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 
 },{}],4:[function(require,module,exports){
+"use strict";
+
 var $ = document.getElementById.bind(document);
-var exampleTests = require('./example-tests');
-var Main = require('../src/main/main-controller');
-var util = require('./_util');
-var aceDefaultShortcuts = require('./_aceDefaultShortcuts');
+var simplePassingTestCode = require("./example-tests").simplePassingTestCode;
+var Main = require("../src/main/main-controller").Controller;
+var util = require("./_util").util;
+var aceDefaultShortcuts = require("./_aceDefaultShortcuts").shortcuts;
 
-var shortcuts = aceDefaultShortcuts.concat([
-  util.getShortcutObject([util.metaKey, 'S'], executeTestCode, 'Save+Run'),
-  util.getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
-]);
 
-var main = new Main($('tddbin'), {
-  initialContent: exampleTests.simplePassingTestCode,
-  iframeSrcUrl: './mocha/spec-runner.html',
+var shortcuts = aceDefaultShortcuts.concat([util.getShortcutObject([util.metaKey, "S"], executeTestCode, "Save+Run"), util.getShortcutObject(["Shift", "F6"], refactoringRename, "Rename (refactoring)")]);
+
+var main = new Main($("tddbin"), {
+  initialContent: simplePassingTestCode,
+  iframeSrcUrl: "./mocha/spec-runner.html",
   shortcuts: shortcuts
 });
 
@@ -135,6 +140,7 @@ function executeTestCode() {
 function refactoringRename() {
   main.turnOnRenameMode();
 }
+
 
 
 
@@ -24265,52 +24271,40 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":47}],166:[function(require,module,exports){
+"use strict";
+
 /** @jsx React.DOM */
 
-var React = require('react');
+var React = require("react");
 
-var Overlay = React.createClass({displayName: "Overlay",
+var Overlay = React.createClass({ displayName: "Overlay",
 
-  _renderShortcut: function(shortcut) {
-    return (
-      React.createElement("div", null, 
-        React.createElement("span", {className: "shortcut"}, shortcut.getPrintableKeys(), " "), 
-        shortcut.getHelpText()
-      )
-    );
+  _renderShortcut: function (shortcut) {
+    return React.createElement("div", null, React.createElement("span", { className: "shortcut" }, shortcut.getPrintableKeys(), " "), shortcut.getHelpText());
   },
 
-  _renderShortcuts: function(shortcuts) {
+  _renderShortcuts: function (shortcuts) {
     return shortcuts.map(this._renderShortcut);
   },
 
-  render: function() {
+  render: function () {
     var props = this.props;
     var shortcuts = props.shortcuts;
     var isVisible = props.shortcuts.length > 0;
-    var styleProps = {display: isVisible ? 'block' : 'none'};
+    var styleProps = { display: isVisible ? "block" : "none" };
     var metaKeySymbol = props.metaKeySymbol;
-    return (
-      React.createElement("div", {className: "keyboard-shortcut-overlay", style: styleProps}, 
-        this._renderShortcuts(shortcuts), 
-        React.createElement("div", {className: "hint"}, 
-          "Note: All keyboard shortcuts fire ", React.createElement("b", null, "when you release the ", metaKeySymbol), "  key.", React.createElement("br", null), 
-          "This allows for combinations such as  ", metaKeySymbol, "+I+E  and  ", metaKeySymbol, "+I+E+E , and way more", React.createElement("br", null), 
-          "combinations for faster working with your code."
-        )
-      )
-    );
+    return React.createElement("div", { className: "keyboard-shortcut-overlay", style: styleProps }, this._renderShortcuts(shortcuts), React.createElement("div", { className: "hint" }, "Note: All keyboard shortcuts fire ", React.createElement("b", null, "when you release the ", metaKeySymbol), "  key.", React.createElement("br", null), "This allows for combinations such as  ", metaKeySymbol, "+I+E  and  ", metaKeySymbol, "+I+E+E , and way more", React.createElement("br", null), "combinations for faster working with your code."));
 
-//      <span className="shortcut"> meta_key "D" </span>Remove line<br/>
-//      <span className="shortcut"> meta_key "I" </span>Insert code<br/>
-//      <div className="subShortcut">
-//        <span className="shortcut">E</span>expect().toBe();<br/>
-//        <span className="shortcut">EE</span>expect().toEqual();<br/>
-//        <span className="shortcut">I</span>it();<br/>
-//      </div>
-//      <span className="shortcut"> meta_key "S" </span><span className="run">Run tests (and save)</span><br/>
-//      <span className="shortcut"> meta_key "/" </span>Toggle comment<br/>
-//      <br/>
+    //      <span className="shortcut"> meta_key "D" </span>Remove line<br/>
+    //      <span className="shortcut"> meta_key "I" </span>Insert code<br/>
+    //      <div className="subShortcut">
+    //        <span className="shortcut">E</span>expect().toBe();<br/>
+    //        <span className="shortcut">EE</span>expect().toEqual();<br/>
+    //        <span className="shortcut">I</span>it();<br/>
+    //      </div>
+    //      <span className="shortcut"> meta_key "S" </span><span className="run">Run tests (and save)</span><br/>
+    //      <span className="shortcut"> meta_key "/" </span>Toggle comment<br/>
+    //      <br/>
   }
 
 });
@@ -24319,36 +24313,39 @@ module.exports = Overlay;
 
 
 
+
 },{"react":165}],167:[function(require,module,exports){
-'use strict';
+"use strict";
 
-var browserEventUtil = {
+var browserEventUtil = exports.browserEventUtil = {
 
-  onWindowBlur: function(fn) {
-    window.addEventListener('blur', fn);
+  onWindowBlur: function (fn) {
+    window.addEventListener("blur", fn);
   }
 };
 
-module.exports = browserEventUtil;
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 
 },{}],168:[function(require,module,exports){
-'use strict';
+"use strict";
 
-var keyboardEventUtil = {
+var keyboardEventUtil = exports.keyboardEventUtil = {
 
-  PREVENT_DEFAULT_ACTION: 'preventDefault',
+  PREVENT_DEFAULT_ACTION: "preventDefault",
 
   _keyCodeToReadableKeyMap: {
-    16: 'Shift',
-    17: 'Control',
-    18: 'Alt',
-    91: 'Meta', // Seems not to be correct in FF, but FF supports evt.key
-    117: 'F6'
+    16: "Shift",
+    17: "Control",
+    18: "Alt",
+    91: "Meta", // Seems not to be correct in FF, but FF supports evt.key
+    117: "F6"
   },
 
-  _mapKeyCodeToReadable: function(keyCode) {
+  _mapKeyCodeToReadable: function (keyCode) {
     var keyCodeMap = keyboardEventUtil._keyCodeToReadableKeyMap;
     if (keyCode in keyCodeMap) {
       return keyCodeMap[keyCode];
@@ -24356,7 +24353,7 @@ var keyboardEventUtil = {
     return String.fromCharCode(keyCode);
   },
 
-  _getKeyNameFromEvent: function(evt) {
+  _getKeyNameFromEvent: function (evt) {
     if (evt.key) {
       // Ctrl+S in FF reports evt.key='s' (which makes sense) but we handle all just in upper case.
       if (evt.key.length === 1) {
@@ -24367,8 +24364,8 @@ var keyboardEventUtil = {
     return keyboardEventUtil._mapKeyCodeToReadable(evt.keyCode);
   },
 
-  addKeyDownListener: function(fn) {
-    document.addEventListener('keydown', function(evt) {
+  addKeyDownListener: function (fn) {
+    document.addEventListener("keydown", function (evt) {
       var whatToDo = fn(keyboardEventUtil._getKeyNameFromEvent(evt));
       if (whatToDo === keyboardEventUtil.PREVENT_DEFAULT_ACTION) {
         evt.preventDefault();
@@ -24376,22 +24373,25 @@ var keyboardEventUtil = {
     });
   },
 
-  addKeyUpListener: function(fn) {
-    document.addEventListener('keyup', function(evt) {
+  addKeyUpListener: function (fn) {
+    document.addEventListener("keyup", function (evt) {
       fn(keyboardEventUtil._getKeyNameFromEvent(evt));
     });
   }
 };
 
-module.exports = keyboardEventUtil;
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 
 },{}],169:[function(require,module,exports){
-'use strict';
+"use strict";
 
-var keyboardEventUtil = require('./keyboard-event-util');
-var browserEventUtil = require('./browser-event-util');
+var keyboardEventUtil = require("./keyboard-event-util").keyboardEventUtil;
+var browserEventUtil = require("./browser-event-util").browserEventUtil;
+
 
 function ShortcutProcessor() {
   this._pressedKeys = [];
@@ -24409,38 +24409,38 @@ ShortcutProcessor.prototype = {
   _onKeyDownCallback: null,
   _onShortcutEndCallback: null,
 
-  registerShortcut: function(shortcut) {
+  registerShortcut: function (shortcut) {
     this._registeredShortcuts.push(shortcut);
   },
 
-  registerShortcuts: function(shortcuts) {
+  registerShortcuts: function (shortcuts) {
     var self = this;
-    shortcuts.forEach(function(shortcut) {
+    shortcuts.forEach(function (shortcut) {
       self.registerShortcut(shortcut);
     });
   },
 
-  onKeyDown: function(callback) {
+  onKeyDown: function (callback) {
     this._onKeyDownCallback = callback;
   },
 
-  onShortcutEnd: function(callback) {
+  onShortcutEnd: function (callback) {
     this._onShortcutEndCallback = callback;
   },
 
-  _fireOnKeyDownCallback: function() {
+  _fireOnKeyDownCallback: function () {
     if (this._onKeyDownCallback) {
       this._onKeyDownCallback(this._pressedKeys);
     }
   },
 
-  _fireOnShortcutEndCallback: function() {
+  _fireOnShortcutEndCallback: function () {
     if (this._onShortcutEndCallback) {
       this._onShortcutEndCallback();
     }
   },
 
-  _keyDown: function(keyName) {
+  _keyDown: function (keyName) {
     var isStartOfShortcut = this._pressedKeys.length === 0;
     if (isStartOfShortcut) {
       return this._handlePossibleShortcutStart(keyName);
@@ -24448,8 +24448,8 @@ ShortcutProcessor.prototype = {
     return this._handleConsecutiveKey(keyName);
   },
 
-  _handlePossibleShortcutStart: function(keyName) {
-    var isFirstKeyOfRegisteredShortcut = this._registeredShortcuts.some(function(shortcut) {
+  _handlePossibleShortcutStart: function (keyName) {
+    var isFirstKeyOfRegisteredShortcut = this._registeredShortcuts.some(function (shortcut) {
       return shortcut.isStartOfKeyCombo([keyName]);
     });
     if (isFirstKeyOfRegisteredShortcut) {
@@ -24459,7 +24459,7 @@ ShortcutProcessor.prototype = {
     }
   },
 
-  _handleConsecutiveKey: function(keyName) {
+  _handleConsecutiveKey: function (keyName) {
     var isFirstKeyRepition = this._pressedKeys.length === 1 && this._pressedKeys[0] === keyName;
     if (isFirstKeyRepition) {
       return;
@@ -24473,7 +24473,7 @@ ShortcutProcessor.prototype = {
     }
   },
 
-  _keyUp: function(keyName) {
+  _keyUp: function (keyName) {
     if (this._isEndOfCurrentShortcut(keyName)) {
       this._processFirstMatchingShortcut(this._pressedKeys);
       this._fireOnShortcutEndCallback();
@@ -24481,12 +24481,12 @@ ShortcutProcessor.prototype = {
     }
   },
 
-  _isEndOfCurrentShortcut: function(keyName) {
+  _isEndOfCurrentShortcut: function (keyName) {
     return keyName === this._firstKeyOfCurrentShortcut;
   },
 
-  _processFirstMatchingShortcut: function(pressedKeys) {
-    this._registeredShortcuts.some(function(shortcut) {
+  _processFirstMatchingShortcut: function (pressedKeys) {
+    this._registeredShortcuts.some(function (shortcut) {
       if (shortcut.isKeyCombo(pressedKeys)) {
         shortcut.fireAssignedCallback();
         return true;
@@ -24495,8 +24495,8 @@ ShortcutProcessor.prototype = {
     });
   },
 
-  _isRegisteredShortcut: function(pressedKeys) {
-    return this._registeredShortcuts.some(function(shortcut) {
+  _isRegisteredShortcut: function (pressedKeys) {
+    return this._registeredShortcuts.some(function (shortcut) {
       return shortcut.isKeyCombo(pressedKeys);
     });
   }
@@ -24506,58 +24506,92 @@ module.exports = ShortcutProcessor;
 
 
 
+
 },{"./browser-event-util":167,"./keyboard-event-util":168}],170:[function(require,module,exports){
-function Shortcut(keys, fn, helpText) {
-  this._keys = keys;
-  this._fn = fn;
-  this._helpText = helpText;
-}
+"use strict";
 
-Shortcut.prototype = {
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-  isStartOfKeyCombo: function(pressedKeys) {
-    var shortcut = this._keys;
-    return pressedKeys.every(function(key, idx) {
-      return shortcut[idx] === key;
-    });
-  },
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-  isKeyCombo: function(pressedKeys) {
-    return pressedKeys.join('+') === this._keys.join('+');
-  },
+var Shortcut = exports.Shortcut = (function () {
+  function Shortcut(keys, fn, helpText) {
+    _classCallCheck(this, Shortcut);
 
-  fireAssignedCallback: function() {
-    this._fn();
-  },
-
-  _printableKeysFormatter: null,
-  setPrintableKeysFormatter: function(formatterFunction) {
-    this._printableKeysFormatter = formatterFunction;
-  },
-
-  getPrintableKeys: function() {
-    var format = this._printableKeysFormatter;
-    var keys = this._keys;
-    if (format) {
-      keys = format(this._keys);
-    }
-    return keys.join('+');
-  },
-
-  getHelpText: function() {
-    return this._helpText;
+    this._keys = keys;
+    this._fn = fn;
+    this._helpText = helpText;
+    this._printableKeysFormatter = null;
   }
 
-};
+  _prototypeProperties(Shortcut, null, {
+    isStartOfKeyCombo: {
+      value: function isStartOfKeyCombo(pressedKeys) {
+        var shortcut = this._keys;
+        return pressedKeys.every(function (key, idx) {
+          return shortcut[idx] === key;
+        });
+      },
+      writable: true,
+      configurable: true
+    },
+    isKeyCombo: {
+      value: function isKeyCombo(pressedKeys) {
+        return pressedKeys.join("+") === this._keys.join("+");
+      },
+      writable: true,
+      configurable: true
+    },
+    fireAssignedCallback: {
+      value: function fireAssignedCallback() {
+        this._fn();
+      },
+      writable: true,
+      configurable: true
+    },
+    setPrintableKeysFormatter: {
+      value: function setPrintableKeysFormatter(formatterFunction) {
+        this._printableKeysFormatter = formatterFunction;
+      },
+      writable: true,
+      configurable: true
+    },
+    getPrintableKeys: {
+      value: function getPrintableKeys() {
+        var format = this._printableKeysFormatter;
+        var keys = this._keys;
+        if (format) {
+          keys = format(this._keys);
+        }
+        return keys.join("+");
+      },
+      writable: true,
+      configurable: true
+    },
+    getHelpText: {
+      value: function getHelpText() {
+        return this._helpText;
+      },
+      writable: true,
+      configurable: true
+    }
+  });
 
-module.exports = Shortcut;
+  return Shortcut;
+})();
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 
 
 
 },{}],171:[function(require,module,exports){
+"use strict";
+
 var util = {
-  toPrintableKeys: function(keys, map) {
-    return keys.map(function(key) {
+  toPrintableKeys: function (keys, map) {
+    return keys.map(function (key) {
       return map[key] || key;
     });
   }
@@ -24567,13 +24601,17 @@ module.exports = util;
 
 
 
-},{}],172:[function(require,module,exports){
-var React = require('react');
-var ViewComponent = require('./main-view');
-var editor = require('ace-with-plugins');
-var MochaRunner = require('../test-runner/mocha/runner');
 
-var ShortcutProcessor = require('../keyboard-shortcut/shortcut-processor');
+},{}],172:[function(require,module,exports){
+"use strict";
+
+exports.Controller = Controller;
+var React = require("react");
+var ViewComponent = require("./main-view");
+var editor = require("ace-with-plugins");
+var MochaRunner = require("../test-runner/mocha/runner");
+
+var ShortcutProcessor = require("../keyboard-shortcut/shortcut-processor");
 
 function Controller(domNode, config) {
   this._domNode = domNode;
@@ -24585,11 +24623,11 @@ Controller.prototype = {
 
   _component: null,
 
-  _render: function() {
-    var editorDomNodeId = 'editorId';
-    var runnerDomNodeId = 'runnerId';
+  _render: function () {
+    var editorDomNodeId = "editorId";
+    var runnerDomNodeId = "runnerId";
     var props = {
-      metaKeySymbol: '⌘',
+      metaKeySymbol: "⌘",
       editorId: editorDomNodeId,
       runnerId: runnerDomNodeId,
       onSave: this.runEditorContent.bind(this),
@@ -24603,94 +24641,83 @@ Controller.prototype = {
     this._registerShortcuts(this._config.shortcuts);
   },
 
-  _setEditorContent: function(sourceCode) {
+  _setEditorContent: function (sourceCode) {
     this._editor.setContent(sourceCode);
   },
 
-  runEditorContent: function() {
+  runEditorContent: function () {
     this._runner.send(this._editor.getContent());
   },
 
-  turnOnRenameMode: function() {
+  turnOnRenameMode: function () {
     this._editor.turnOnRenameMode();
   },
 
-  _registerShortcuts: function(shortcuts) {
+  _registerShortcuts: function (shortcuts) {
     var processor = new ShortcutProcessor();
     processor.registerShortcuts(shortcuts);
     processor.onKeyDown(this._updateOverlayView.bind(this));
     processor.onShortcutEnd(this._hideOverlayView.bind(this));
   },
 
-  _hideOverlayView: function() {
-    this._component.setProps({shortcuts: []});
+  _hideOverlayView: function () {
+    this._component.setProps({ shortcuts: [] });
   },
 
-  _updateOverlayView: function(pressedKeys) {
+  _updateOverlayView: function (pressedKeys) {
     var allShortcuts = this._config.shortcuts;
-    var applicableShortcuts = allShortcuts.filter(function(shortcut) {
+    var applicableShortcuts = allShortcuts.filter(function (shortcut) {
       return shortcut.isStartOfKeyCombo(pressedKeys);
     });
-    this._component.setProps({shortcuts: applicableShortcuts});
+    this._component.setProps({ shortcuts: applicableShortcuts });
   }
 
 };
 
-module.exports = Controller;
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 
 },{"../keyboard-shortcut/shortcut-processor":169,"../test-runner/mocha/runner":176,"./main-view":173,"ace-with-plugins":14,"react":165}],173:[function(require,module,exports){
+"use strict";
+
 /** @jsx React.DOM */
-var NavigationBar = require('../navigation-bar/navigation-bar-view');
-var KeyboardShortcutOverlay = require('../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view');
+var NavigationBar = require("../navigation-bar/navigation-bar-view");
+var KeyboardShortcutOverlay = require("../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view");
 
-var React = require('react');
+var React = require("react");
 
-var View = React.createClass({displayName: "View",
+var View = React.createClass({ displayName: "View",
 
-  render: function() {
+  render: function () {
     var props = this.props;
-    return (
-      React.createElement("div", null, 
-        React.createElement(NavigationBar, {
-          metaKeySymbol: props.metaKeySymbol, 
-          onSave: props.onSave}
-        ), 
-
-        React.createElement("div", {className: "editor-and-runner"}, 
-          React.createElement("div", {id: this.props.editorId, className: "editor"}), 
-          React.createElement("div", {id: this.props.runnerId, className: "runner"})
-        ), 
-
-        React.createElement(KeyboardShortcutOverlay, {
-          metaKeySymbol: props.metaKeySymbol, 
-          shortcuts: props.shortcuts}
-        )
-      )
-    );
+    return React.createElement("div", null, React.createElement(NavigationBar, {
+      metaKeySymbol: props.metaKeySymbol,
+      onSave: props.onSave }), React.createElement("div", { className: "editor-and-runner" }, React.createElement("div", { id: this.props.editorId, className: "editor" }), React.createElement("div", { id: this.props.runnerId, className: "runner" })), React.createElement(KeyboardShortcutOverlay, {
+      metaKeySymbol: props.metaKeySymbol,
+      shortcuts: props.shortcuts }));
   }
 
 });
 
 module.exports = View;
+
 
 
 
 },{"../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view":166,"../navigation-bar/navigation-bar-view":174,"react":165}],174:[function(require,module,exports){
+"use strict";
+
 /** @jsx React.DOM */
 
-var React = require('react');
+var React = require("react");
 
-var View = React.createClass({displayName: "View",
+var View = React.createClass({ displayName: "View",
 
-  render: function() {
-    return (
-      React.createElement("header", {className: "navigation-bar"}, 
-        React.createElement("button", {className: "logo"}), 
-        React.createElement("button", {className: "icon save", title: "Save and Run tests (⌘S)", onClick: this.props.onSave}, "Save and Run (", this.props.metaKeySymbol, "S)")
-      )
-    );
+  render: function () {
+    return React.createElement("header", { className: "navigation-bar" }, React.createElement("button", { className: "logo" }), React.createElement("button", { className: "icon save", title: "Run tests (⌘S)", onClick: this.props.onSave }, "Run tests (", this.props.metaKeySymbol, "S)"));
   }
 
 });
@@ -24699,21 +24726,22 @@ module.exports = View;
 
 
 
+
 },{"react":165}],175:[function(require,module,exports){
+"use strict";
+
 /** @jsx React.DOM */
 
-var React = require('react');
+var React = require("react");
 
-var Iframe = React.createClass({displayName: "Iframe",
+var Iframe = React.createClass({ displayName: "Iframe",
 
-  getIframeRef: function() {
+  getIframeRef: function () {
     return this.refs.iframe.getDOMNode();
   },
 
-  render: function() {
-    return (
-      React.createElement("iframe", {ref: "iframe", src: this.props.iframeSrc, width: "100%", height: "400"})
-    );
+  render: function () {
+    return React.createElement("iframe", { ref: "iframe", src: this.props.iframeSrc, width: "100%", height: "400" });
   }
 
 });
@@ -24722,33 +24750,36 @@ module.exports = Iframe;
 
 
 
+
 },{"react":165}],176:[function(require,module,exports){
-var React = require('react');
-var Iframe = require('./iframe');
+"use strict";
+
+var React = require("react");
+var Iframe = require("./iframe");
 
 function MochaRunner(domNode, eventReceiver) {
   this._domNode = domNode;
-  (eventReceiver || window).addEventListener('message', this.handleDataReceived.bind(this), false);
+  (eventReceiver || window).addEventListener("message", this.handleDataReceived.bind(this), false);
 }
 
 MochaRunner.prototype = {
 
-  render: function(iframeSrc) {
-    var iframe = React.render(Iframe({iframeSrc: iframeSrc}), this._domNode);
+  render: function (iframeSrc) {
+    var iframe = React.render(Iframe({ iframeSrc: iframeSrc }), this._domNode);
     this._iframeRef = iframe.getIframeRef();
   },
 
-  send: function(sourceCode) {
+  send: function (sourceCode) {
     var iframe = this._iframeRef.contentWindow;
-    iframe.postMessage(sourceCode, '*');
+    iframe.postMessage(sourceCode, "*");
   },
 
   _onStats: null,
-  onStats: function(fn) {
+  onStats: function (fn) {
     this._onStats = fn;
   },
 
-  handleDataReceived: function(data) {
+  handleDataReceived: function (data) {
     if (this._onStats) {
       var stats = data.data;
       this._onStats(stats);
@@ -24758,6 +24789,7 @@ MochaRunner.prototype = {
 };
 
 module.exports = MochaRunner;
+
 
 
 
