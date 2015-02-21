@@ -51,7 +51,5 @@ function getSourceFrom(func) {
   return lines.slice(1, -1).join('\n');
 }
 
-module.exports = {
-  simplePassingTestCode: getSourceFrom(simplePassing),
-  simpleFailingTestCode: getSourceFrom(simpleFailing)
-};
+export var simplePassingTestCode = getSourceFrom(simplePassing);
+export var simpleFailingTestCode = getSourceFrom(simpleFailing);

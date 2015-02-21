@@ -12,7 +12,7 @@ function format(keys) {
   return toPrintableKeys(keys, map);
 }
 
-var util = {
+export var util = {
 
   getShortcutObject: function(keys, fn, helpText) {
     var shortcut = new Shortcut(keys, fn, helpText);
@@ -22,6 +22,3 @@ var util = {
 
   metaKey: isMac ? 'Meta' : 'Control'
 };
-
-
-module.exports = util;

@@ -5,7 +5,7 @@ var MochaRunner = require('../test-runner/mocha/runner');
 
 var ShortcutProcessor = require('../keyboard-shortcut/shortcut-processor');
 
-function Controller(domNode, config) {
+export function Controller(domNode, config) {
   this._domNode = domNode;
   this._config = config;
   this._render();
@@ -65,5 +65,3 @@ Controller.prototype = {
   }
 
 };
-
-module.exports = Controller;

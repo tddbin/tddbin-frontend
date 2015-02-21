@@ -1,8 +1,8 @@
 var $ = document.getElementById.bind(document);
-var exampleTests = require('./example-tests');
-var Main = require('../src/main/main-controller');
-var util = require('./_util');
-var aceDefaultShortcuts = require('./_aceDefaultShortcuts');
+import {simplePassingTestCode} from './example-tests';
+import {Controller as Main} from '../src/main/main-controller';
+import {util} from './_util';
+import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 
 var shortcuts = aceDefaultShortcuts.concat([
   util.getShortcutObject([util.metaKey, 'S'], executeTestCode, 'Save+Run'),
@@ -10,7 +10,7 @@ var shortcuts = aceDefaultShortcuts.concat([
 ]);
 
 var main = new Main($('tddbin'), {
-  initialContent: exampleTests.simplePassingTestCode,
+  initialContent: simplePassingTestCode,
   iframeSrcUrl: './mocha/spec-runner.html',
   shortcuts: shortcuts
 });
