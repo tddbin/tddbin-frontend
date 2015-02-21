@@ -1,4 +1,9 @@
-1.0.0  2015-02-??
+1.1.0  2015-02-??
+=================
+- move all tests to mocha+sinon
+- use babel (used to be 6to5) for transpiling ES6
+
+1.0.0  2015-02-20
 =================
 - move to browserify (remove webpack)
 - make buildable
