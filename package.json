@@ -11,7 +11,7 @@
     "build-css": "./scripts/copy-media-files.sh",
     "build-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify",
     "lint": "jsxcs --preset google src",
-    "start": "watchify examples/tddbin-standalone.js --outfile=dist/tddbin-standalone.js --transform=reactify -v",
+    "start": "watchify html/index.js --outfile=dist/index.js --transform=reactify -v",
     "test": "mocha --compilers js:babel/register src/**/**/*spec.js"
   },
   "browserify": {
