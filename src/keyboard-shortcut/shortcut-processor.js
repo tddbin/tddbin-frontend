@@ -1,7 +1,7 @@
 'use strict';
 
-var keyboardEventUtil = require('./keyboard-event-util');
-var browserEventUtil = require('./browser-event-util');
+import {keyboardEventUtil} from './keyboard-event-util';
+import {browserEventUtil} from './browser-event-util';
 
 function ShortcutProcessor() {
   this._pressedKeys = [];

@@ -1,6 +1,6 @@
 'use strict';
 
-var keyboardEventUtil = {
+export var keyboardEventUtil = {
 
   PREVENT_DEFAULT_ACTION: 'preventDefault',
 
@@ -46,5 +46,3 @@ var keyboardEventUtil = {
     });
   }
 };
-
-module.exports = keyboardEventUtil;

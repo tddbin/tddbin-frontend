@@ -1,3 +1,5 @@
+'use strict';
+
 function KeyPressEmulation(keyboardEventUtil, sinon) {
   this._keyDownListeners = [];
   this._keyUpListeners = [];

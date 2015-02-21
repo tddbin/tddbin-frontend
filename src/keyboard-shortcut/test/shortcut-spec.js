@@ -1,7 +1,8 @@
 'use strict';
 
-var assert = require('../../_test-helper/assert');
-var Shortcut = require('../shortcut');
+import {assert} from '../../_test-helper/assert';
+import {Shortcut} from '../shortcut';
+
 /*
 - helper function to create a shortcut instance
 

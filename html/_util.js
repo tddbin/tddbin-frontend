@@ -1,5 +1,5 @@
-var toPrintableKeys = require('../src/keyboard-shortcut/util').toPrintableKeys;
-var Shortcut = require('../src/keyboard-shortcut/shortcut');
+import {toPrintableKeys} from '../src/keyboard-shortcut/util';
+import {Shortcut} from '../src/keyboard-shortcut/shortcut';
 
 var isMac = navigator.platform.indexOf('Mac') === 0;
 

@@ -1,10 +1,10 @@
 'use strict';
 
-var assert = require('../../_test-helper/assert');
-var Shortcut = require('../shortcut');
+import {assert} from '../../_test-helper/assert';
+import {Shortcut} from '../shortcut';
 var ShortcutProcessor = require('../shortcut-processor');
-var keyboardEventUtil = require('../keyboard-event-util');
-var browserEventUtil = require('../browser-event-util');
+import {keyboardEventUtil} from '../keyboard-event-util';
+import {browserEventUtil} from '../browser-event-util';
 
 describe('DOM event handling', function() {
 

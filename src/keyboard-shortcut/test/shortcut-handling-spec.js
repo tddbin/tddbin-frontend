@@ -1,6 +1,7 @@
-var assert = require('../../_test-helper/assert');
+'use strict';
 
-var Shortcut = require('../shortcut');
+import {assert} from '../../_test-helper/assert';
+import {Shortcut} from '../shortcut';
 var ShortcutProcessor = require('../shortcut-processor');
 var keyboardEventUtil = require('../keyboard-event-util');
 var browserEventUtil = require('../browser-event-util');
