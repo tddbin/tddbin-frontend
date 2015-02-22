@@ -1,4 +1,4 @@
-1.1.0  2015-02-??
+1.1.0  2015-02-22
 =================
 - add favicon
 - enable ES6 for writing tests in tddbin, transpile it before executing tests
