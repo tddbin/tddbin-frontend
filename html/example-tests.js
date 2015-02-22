@@ -22,7 +22,7 @@ export const simplePassingTestCode = [
 '    var expected = 1;',
 '    assert.equal(expected, 1);',
 '  });',
-'  it(\'ES6 class works?\', function() {',
+'  it(\'ES6 class works?\', () => {',
 '    assert.equal(new Es6Class().x, 42);',
 '  });',
 '});',
