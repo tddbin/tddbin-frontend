@@ -1,6 +1,7 @@
 var expect = require('referee/lib/expect');
 var should = require('should');
 var assert = require('assert');
+require('babel/register');
 
 function consumeMessage(messageData) {
   var sender = messageData.source;
