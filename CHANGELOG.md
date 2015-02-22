@@ -1,5 +1,6 @@
 1.1.0  2015-02-??
 =================
+- add favicon
 - enable ES6 for writing tests in tddbin, transpile it before executing tests
 - move all tests to mocha+sinon
 - use babel (used to be 6to5) for transpiling ES6
