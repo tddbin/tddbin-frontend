@@ -1,7 +1,11 @@
 var expect = require('referee/lib/expect');
 var should = require('should');
 var assert = require('assert');
-require('babel/register');
+var babel = require('babel'); // the es6 transpiler
+
+function es6ToEs5(sourceCode) {
+  return babel.transform(sourceCode).code
+}
 
 function consumeMessage(messageData) {
   var sender = messageData.source;
@@ -14,7 +18,7 @@ function consumeMessage(messageData) {
 
   // Run the spec source code, this calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
-  eval(specCode);
+  eval(es6ToEs5(specCode));
 
   // Let mocha run and report the stats back to the actual sender.
   mocha.checkLeaks();
