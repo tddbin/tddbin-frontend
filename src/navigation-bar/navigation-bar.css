@@ -26,7 +26,8 @@
 /* logo */
 
 .navigation-bar button.logo {
-  background-image: url(./img/tddbin-logo.png);
+  background-image: url(./img/logo-150px.png);
+  background-size: contain;
   background-repeat: no-repeat;
   background-color: transparent;
   height: 30px;
