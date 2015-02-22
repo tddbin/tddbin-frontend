@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "build": "./scripts/build.sh",
-    "build-html": "rm -Rf dist; mkdir dist; cp html/index.html dist; mkdir dist/mocha/; cp src/test-runner/mocha/spec-runner.html dist/mocha",
     "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify",
     "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
     "build-css": "./scripts/copy-media-files.sh",
