@@ -26,11 +26,12 @@
 /* logo */
 
 .navigation-bar button.logo {
-  background-image: url(./img/tddbin-logo.png);
+  background-image: url(./img/logo-150px.png);
+  background-size: contain;
   background-repeat: no-repeat;
   background-color: transparent;
   height: 30px;
-  width: 105px;
+  width: 30px;
   margin: 10px 20px 10px 10px;
   vertical-align: middle;
 }
