@@ -3,10 +3,9 @@ node_js:
   - "0.10"
 
 after_success:
-  - chmod +x ./scripts/deploy-master-branch-only.sh
-  - chmod +x ./scripts/deploy-to-ghpages.sh
   - chmod +x ./scripts/*.sh
-  - ./scripts/deploy-master-branch-only.sh
+  - chmod +x ./scripts/for-travis/*.sh
+  - ./scripts/for-travis/build-and-deploy.sh
 
 env:
  global:
