@@ -15,24 +15,27 @@ The highest ranked ideas will be the priority for us to implement.
 
 # Development
 
-In order to run this project locally do the following:
-- `git clone git@github.com:uxebu/tddbin-frontend.git` clone the repo on your machine
+## The short version
+
+Copy+paste into the shell: 
+- `git clone git@github.com:tddbin/tddbin-frontend.git; cd tddbin-frontend; npm install; npm run build; npm start`  
+
+## The long version
+
+In order to run this project locally make sure you have at least nodejs 0.10 installed 
+- `node --version` should say so
+and do the following:
+- `git clone git@github.com:tddbin/tddbin-frontend.git` clone the repo on your machine
 - `cd tddbin-frontend` go into the directory where the project was cloned into
 - `npm install` installs all dependencies into the `node_modules` directory
 - `npm test` runs all the tests of the project
 
 Now you can 
-- once you need to do `npm run build` and
+- `npm run build` for the first time and
 - `npm start` starts [watchify](https://github.com/substack/watchify) which continuously updates the built files 
 
-and you can 
-- served 
-  or [http://localhost:8080/webpack-dev-server/](http://localhost:8080/webpack-dev-server/)
-  get a directory listing where you can go into the `examples` folder and run any of them
-- or go directly to any of
-  - [http://localhost:8080/examples/editor.html](http://localhost:8080/examples/editor.html) a simple editor demo
-  - [http://localhost:8080/examples/tddbin-standalone.html](http://localhost:8080/examples/tddbin-standalone.html) a simple TDDbin demo
-  - [http://localhost:8080/examples/test-runner/mocha.html](http://localhost:8080/examples/test-runner/mocha.html) demo mocha runner demo
+and open the built version in the browser. Be sure to open the `dist` directory 
+through a URL served by a local web server, such as an apache, nginx, etc.
 
 ## Coding style
 
@@ -67,7 +70,7 @@ For an example navigate in your browser to the examples/test-runner directory.
 Mocha is assertion API agnostic, it brings it's own assert() function by default, that can be used.
 By adding plugins various other styles can be provided. See below which ones come with it.
  
-#### Jasmine-style
+#### Jasmine-style (currently not working, see code)
 It is enhanced with [referee](https://github.com/busterjs/referee), which provides jasmine-style expect methods.
 The tests can be written the same way as with jasmine (for the biggest part) - at least
 all standard matchers are available, for details see [the docs](http://docs.busterjs.org/en/latest/modules/referee/#expectations).
