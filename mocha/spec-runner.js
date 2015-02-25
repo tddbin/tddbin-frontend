@@ -53,11 +53,12 @@ exports.transformFile = function (filename, opts, callback) {
 };
 
 exports.transformFileSync = function (filename, opts) {
-  opts = opts || {};
+  if (!opts) opts = {};
+
   opts.filename = filename;
   return transform(fs.readFileSync(filename), opts);
 };
-},{"../../../package":316,"../build-external-helpers":3,"../polyfill":32,"../transformation":45,"../types":123,"../util":125,"./register/node":2,"fs":318,"lodash/lang/isFunction":264}],2:[function(require,module,exports){
+},{"../../../package":317,"../build-external-helpers":3,"../polyfill":32,"../transformation":46,"../types":124,"../util":126,"./register/node":2,"fs":319,"lodash/lang/isFunction":265}],2:[function(require,module,exports){
 "use strict";
 
 // required to safely use babel/register within a browserify codebase
@@ -73,7 +74,7 @@ var generator = require("./generation");
 var util = require("./util");
 var t = require("./types");
 
-module.exports = function () {
+module.exports = function (whitelist) {
   var namespace = t.identifier("babelHelpers");
 
   var body = [];
@@ -82,11 +83,11 @@ module.exports = function () {
 
   body.push(t.variableDeclaration("var", [t.variableDeclarator(namespace, t.assignmentExpression("=", t.memberExpression(t.identifier("global"), namespace), t.objectExpression([])))]));
 
-  buildHelpers(body, namespace);
+  buildHelpers(body, namespace, whitelist);
 
   return generator(tree).code;
 };
-},{"./build-helpers":4,"./generation":18,"./types":123,"./util":125}],4:[function(require,module,exports){
+},{"./build-helpers":4,"./generation":18,"./types":124,"./util":126}],4:[function(require,module,exports){
 "use strict";
 
 var File = require("./transformation/file");
@@ -95,12 +96,16 @@ var each = require("lodash/collection/each");
 var t = require("./types");
 
 module.exports = function (body, namespace) {
+  var whitelist = arguments[2] === undefined ? [] : arguments[2];
+
   each(File.helpers, function (name) {
+    if (whitelist.length && whitelist.indexOf(name) == -1) return;
+
     var key = t.identifier(t.toIdentifier(name));
     body.push(t.expressionStatement(t.assignmentExpression("=", t.memberExpression(namespace, key), util.template(name))));
   });
 };
-},{"./transformation/file":33,"./types":123,"./util":125,"lodash/collection/each":175}],5:[function(require,module,exports){
+},{"./transformation/file":33,"./types":124,"./util":126,"lodash/collection/each":176}],5:[function(require,module,exports){
 "use strict";
 
 module.exports = Buffer;
@@ -183,7 +188,7 @@ Buffer.prototype.newline = function (i, removeLast) {
     return;
   }
 
-  removeLast = removeLast || false;
+  if (!removeLast) removeLast = false;
 
   if (isNumber(i)) {
     i = Math.min(2, i);
@@ -275,7 +280,7 @@ Buffer.prototype.isLast = function (cha) {
     return cha === last;
   }
 };
-},{"lodash/collection/includes":178,"lodash/lang/isBoolean":262,"lodash/lang/isNumber":266,"repeating":299,"trim-right":315}],6:[function(require,module,exports){
+},{"lodash/collection/includes":179,"lodash/lang/isBoolean":263,"lodash/lang/isNumber":267,"repeating":300,"trim-right":316}],6:[function(require,module,exports){
 "use strict";
 
 exports.File = function (node, print) {
@@ -521,7 +526,7 @@ exports.MemberExpression = function (node, print) {
     print(node.property);
   }
 };
-},{"../../types":123,"is-integer":162,"lodash/lang/isNumber":266}],10:[function(require,module,exports){
+},{"../../types":124,"is-integer":163,"lodash/lang/isNumber":267}],10:[function(require,module,exports){
 "use strict";
 
 exports.AnyTypeAnnotation = exports.ArrayTypeAnnotation = exports.BooleanTypeAnnotation = exports.ClassProperty = exports.DeclareClass = exports.DeclareFunction = exports.DeclareModule = exports.DeclareVariable = exports.FunctionTypeAnnotation = exports.FunctionTypeParam = exports.GenericTypeAnnotation = exports.InterfaceExtends = exports.InterfaceDeclaration = exports.IntersectionTypeAnnotation = exports.NullableTypeAnnotation = exports.NumberTypeAnnotation = exports.StringLiteralTypeAnnotation = exports.StringTypeAnnotation = exports.TupleTypeAnnotation = exports.TypeofTypeAnnotation = exports.TypeAlias = exports.TypeAnnotation = exports.TypeParameterDeclaration = exports.TypeParameterInstantiation = exports.ObjectTypeAnnotation = exports.ObjectTypeCallProperty = exports.ObjectTypeIndexer = exports.ObjectTypeProperty = exports.QualifiedTypeIdentifier = exports.UnionTypeAnnotation = exports.TypeCastExpression = exports.VoidTypeAnnotation = function () {};
@@ -606,7 +611,7 @@ exports.JSXClosingElement = function (node, print) {
 };
 
 exports.JSXEmptyExpression = function () {};
-},{"../../types":123,"lodash/collection/each":175}],12:[function(require,module,exports){
+},{"../../types":124,"lodash/collection/each":176}],12:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -674,7 +679,7 @@ exports.ArrowFunctionExpression = function (node, print) {
   this.push(" => ");
   print(node.body);
 };
-},{"../../types":123}],13:[function(require,module,exports){
+},{"../../types":124}],13:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -777,7 +782,7 @@ exports.ImportBatchSpecifier = function (node, print) {
   this.push("* as ");
   print(node.name);
 };
-},{"../../types":123,"lodash/collection/each":175}],14:[function(require,module,exports){
+},{"../../types":124,"lodash/collection/each":176}],14:[function(require,module,exports){
 "use strict";
 
 var each = require("lodash/collection/each");
@@ -787,7 +792,7 @@ each(["BindMemberExpression", "BindFunctionExpression"], function (type) {
     throw new ReferenceError("Trying to render non-standard playground node " + JSON.stringify(type));
   };
 });
-},{"lodash/collection/each":175}],15:[function(require,module,exports){
+},{"lodash/collection/each":176}],15:[function(require,module,exports){
 "use strict";
 
 var repeating = require("repeating");
@@ -1013,7 +1018,7 @@ exports.VariableDeclarator = function (node, print) {
     print(node.id);
   }
 };
-},{"../../types":123,"repeating":299}],16:[function(require,module,exports){
+},{"../../types":124,"repeating":300}],16:[function(require,module,exports){
 "use strict";
 
 var each = require("lodash/collection/each");
@@ -1047,7 +1052,7 @@ exports.TemplateLiteral = function (node, print) {
 
   this._push("`");
 };
-},{"lodash/collection/each":175}],17:[function(require,module,exports){
+},{"lodash/collection/each":176}],17:[function(require,module,exports){
 "use strict";
 
 var each = require("lodash/collection/each");
@@ -1151,7 +1156,7 @@ exports.Literal = function (node) {
     this.push("null");
   }
 };
-},{"lodash/collection/each":175}],18:[function(require,module,exports){
+},{"lodash/collection/each":176}],18:[function(require,module,exports){
 "use strict";
 
 module.exports = function (ast, opts, code) {
@@ -1174,7 +1179,7 @@ var n = require("./node");
 var t = require("../types");
 
 function CodeGenerator(ast, opts, code) {
-  opts = opts || {};
+  if (!opts) opts = {};
 
   this.comments = ast.comments || [];
   this.tokens = ast.tokens || [];
@@ -1266,7 +1271,8 @@ CodeGenerator.prototype.buildPrint = function (parent) {
   };
 
   print.sequence = function (nodes, opts) {
-    opts = opts || {};
+    if (!opts) opts = {};
+
     opts.statement = true;
     return _this.printJoin(print, nodes, opts);
   };
@@ -1276,8 +1282,10 @@ CodeGenerator.prototype.buildPrint = function (parent) {
   };
 
   print.list = function (items, opts) {
-    opts = opts || {};
-    opts.separator = opts.separator || ", ";
+    if (!opts) opts = {};
+    var _opts = opts;
+    if (!_opts.separator) _opts.separator = ", ";
+
     print.join(items, opts);
   };
 
@@ -1306,7 +1314,7 @@ CodeGenerator.prototype.print = function (node, parent, opts) {
     this.format.concise = true;
   }
 
-  opts = opts || {};
+  if (!opts) opts = {};
 
   var newline = function (leading) {
     if (!opts.statement && !n.isUserWhitespacable(node, parent)) {
@@ -1378,7 +1386,7 @@ CodeGenerator.prototype.printJoin = function (print, nodes, opts) {
 
   if (!nodes || !nodes.length) return;
 
-  opts = opts || {};
+  if (!opts) opts = {};
 
   var len = nodes.length;
 
@@ -1522,7 +1530,7 @@ CodeGenerator.prototype._printComments = function (comments) {
     _this.newline(_this.whitespace.getNewlinesAfter(comment));
   });
 };
-},{"../messages":30,"../types":123,"./buffer":5,"./generators/base":6,"./generators/classes":7,"./generators/comprehensions":8,"./generators/expressions":9,"./generators/flow":10,"./generators/jsx":11,"./generators/methods":12,"./generators/modules":13,"./generators/playground":14,"./generators/statements":15,"./generators/template-literals":16,"./generators/types":17,"./node":19,"./position":22,"./source-map":23,"./whitespace":24,"detect-indent":154,"lodash/collection/each":175,"lodash/object/extend":273,"repeating":299}],19:[function(require,module,exports){
+},{"../messages":30,"../types":124,"./buffer":5,"./generators/base":6,"./generators/classes":7,"./generators/comprehensions":8,"./generators/expressions":9,"./generators/flow":10,"./generators/jsx":11,"./generators/methods":12,"./generators/modules":13,"./generators/playground":14,"./generators/statements":15,"./generators/template-literals":16,"./generators/types":17,"./node":19,"./position":22,"./source-map":23,"./whitespace":24,"detect-indent":155,"lodash/collection/each":176,"lodash/object/extend":274,"repeating":300}],19:[function(require,module,exports){
 "use strict";
 
 module.exports = Node;
@@ -1639,7 +1647,7 @@ each(Node, function (fn, key) {
     return Node[key].apply(null, args);
   };
 });
-},{"../../types":123,"./parentheses":20,"./whitespace":21,"lodash/collection/each":175,"lodash/collection/some":181}],20:[function(require,module,exports){
+},{"../../types":124,"./parentheses":20,"./whitespace":21,"lodash/collection/each":176,"lodash/collection/some":182}],20:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -1790,7 +1798,7 @@ exports.AssignmentExpression = exports.ConditionalExpression = function (node, p
 
   return false;
 };
-},{"../../types":123,"lodash/collection/each":175}],21:[function(require,module,exports){
+},{"../../types":124,"lodash/collection/each":176}],21:[function(require,module,exports){
 "use strict";
 
 var isBoolean = require("lodash/lang/isBoolean");
@@ -1809,7 +1817,7 @@ var crawl = (function (_crawl) {
 
   return _crawlWrapper;
 })(function (node, state) {
-  state = state || {};
+  if (!state) state = {};
 
   if (t.isMemberExpression(node)) {
     crawl(node.object, state);
@@ -1823,7 +1831,8 @@ var crawl = (function (_crawl) {
   } else if (t.isFunction(node)) {
     state.hasFunction = true;
   } else if (t.isIdentifier(node)) {
-    state.hasHelper = state.hasHelper || isHelper(node.callee);
+    var _state = state;
+    if (!_state.hasHelper) _state.hasHelper = isHelper(node.callee);
   }
 
   return state;
@@ -1968,7 +1977,7 @@ each({
     };
   });
 });
-},{"../../types":123,"lodash/collection/each":175,"lodash/collection/map":179,"lodash/lang/isBoolean":262}],22:[function(require,module,exports){
+},{"../../types":124,"lodash/collection/each":176,"lodash/collection/map":180,"lodash/lang/isBoolean":263}],22:[function(require,module,exports){
 "use strict";
 
 module.exports = Position;
@@ -2055,7 +2064,7 @@ SourceMap.prototype.mark = function (node, type) {
     original: original
   });
 };
-},{"../types":123,"source-map":304}],24:[function(require,module,exports){
+},{"../types":124,"source-map":305}],24:[function(require,module,exports){
 "use strict";
 
 module.exports = Whitespace;
@@ -2171,7 +2180,7 @@ Whitespace.prototype.getNewlinesBetween = function (startToken, endToken) {
 
   return lines;
 };
-},{"lodash/collection/sortBy":182}],25:[function(require,module,exports){
+},{"lodash/collection/sortBy":183}],25:[function(require,module,exports){
 "use strict";
 
 var lineNumbers = require("line-numbers");
@@ -2264,7 +2273,7 @@ module.exports = function (lines, lineNumber, colNumber) {
     }
   }).join("\n");
 };
-},{"chalk":141,"esutils":159,"js-tokens":165,"line-numbers":167,"lodash/function/ary":184,"repeating":299}],26:[function(require,module,exports){
+},{"chalk":142,"esutils":160,"js-tokens":166,"line-numbers":168,"lodash/function/ary":185,"repeating":300}],26:[function(require,module,exports){
 "use strict";
 
 var t = require("../types");
@@ -2276,7 +2285,7 @@ module.exports = function (ast, comments, tokens) {
     throw new Error("Not a valid ast?");
   }
 };
-},{"../types":123}],27:[function(require,module,exports){
+},{"../types":124}],27:[function(require,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -2334,7 +2343,7 @@ module.exports = function (opts, code, callback) {
     throw err;
   }
 };
-},{"./code-frame":25,"./normalize-ast":26,"acorn-babel":126,"estraverse":155}],29:[function(require,module,exports){
+},{"./code-frame":25,"./normalize-ast":26,"acorn-babel":127,"estraverse":156}],29:[function(require,module,exports){
 "use strict";
 
 /**
@@ -2406,7 +2415,7 @@ exports.parseArgs = function (args) {
     }
   });
 };
-},{"util":344}],31:[function(require,module,exports){
+},{"util":345}],31:[function(require,module,exports){
 "use strict";
 
 var extend = require("lodash/object/extend");
@@ -2443,7 +2452,7 @@ def("BindMemberExpression").bases("Expression").build("object", "property", "arg
 def("BindFunctionExpression").bases("Expression").build("callee", "arguments").field("callee", def("Expression")).field("arguments", [def("Expression")]);
 
 types.finalize();
-},{"./types":123,"ast-types":140,"estraverse":155,"lodash/object/extend":273}],32:[function(require,module,exports){
+},{"./types":124,"ast-types":141,"estraverse":156,"lodash/object/extend":274}],32:[function(require,module,exports){
 (function (global){
 "use strict";
 
@@ -2455,7 +2464,7 @@ global._babelPolyfill = true;
 require("core-js/shim");
 require("regenerator-babel/runtime");
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"core-js/shim":150,"regenerator-babel/runtime":292}],33:[function(require,module,exports){
+},{"core-js/shim":151,"regenerator-babel/runtime":293}],33:[function(require,module,exports){
 "use strict";
 
 module.exports = File;
@@ -2482,6 +2491,7 @@ function File(opts) {
   this.dynamicImported = [];
   this.dynamicImports = [];
 
+  this.usedHelpers = {};
   this.dynamicData = {};
   this.data = {};
 
@@ -2494,7 +2504,7 @@ function File(opts) {
 
 File.helpers = ["inherits", "defaults", "prototype-properties", "apply-constructor", "tagged-template-literal", "tagged-template-literal-loose", "interop-require", "to-array", "to-consumable-array", "sliced-to-array", "object-without-properties", "has-own", "slice", "bind", "define-property", "async-to-generator", "interop-require-wildcard", "typeof", "extends", "get", "set", "class-call-check", "object-destructuring-empty", "temporal-undefined", "temporal-assert-defined", "self-global"];
 
-File.validOptions = ["filename", "filenameRelative", "blacklist", "whitelist", "loose", "optional", "modules", "sourceMap", "sourceMapName", "sourceFileName", "sourceRoot", "moduleRoot", "moduleIds", "comments", "reactCompat", "keepModuleIdExtensions", "code", "ast", "playground", "experimental", "externalHelpers", "auxiliaryComment", "compact", "resolveModuleSource", "moduleId",
+File.validOptions = ["filename", "filenameRelative", "blacklist", "whitelist", "loose", "optional", "modules", "sourceMap", "sourceMapName", "sourceFileName", "sourceRoot", "moduleRoot", "moduleIds", "comments", "reactCompat", "keepModuleIdExtensions", "code", "ast", "playground", "experimental", "externalHelpers", "auxiliaryComment", "compact", "returnUsedHelpers", "resolveModuleSource", "moduleId",
 
 // legacy
 "format",
@@ -2514,6 +2524,7 @@ File.prototype.normalizeOptions = function (opts) {
   defaults(opts, {
     keepModuleIdExtensions: false,
     resolveModuleSource: null,
+    returnUsedHelpers: false,
     externalHelpers: false,
     auxilaryComment: "",
     experimental: false,
@@ -2689,7 +2700,8 @@ File.prototype.get = function (key) {
 };
 
 File.prototype.addImport = function (source, name, noDefault) {
-  name = name || source;
+  if (!name) name = source;
+
   var id = this.dynamicImportIds[name];
 
   if (!id) {
@@ -2715,7 +2727,9 @@ File.prototype.isConsequenceExpressionStatement = function (node) {
 File.prototype.attachAuxiliaryComment = function (node) {
   var comment = this.opts.auxiliaryComment;
   if (comment) {
-    node.leadingComments = node.leadingComments || [];
+    var _node = node;
+    if (!_node.leadingComments) _node.leadingComments = [];
+
     node.leadingComments.push({
       type: "Line",
       value: " " + comment
@@ -2733,6 +2747,8 @@ File.prototype.addHelper = function (name) {
 
   var declar = program._declarations && program._declarations[name];
   if (declar) return declar.id;
+
+  this.usedHelpers[name] = true;
 
   var runtime = this.get("helpersNamespace");
   if (runtime) {
@@ -2754,7 +2770,7 @@ File.prototype.addHelper = function (name) {
 File.prototype.logDeopt = function () {};
 
 File.prototype.errorWithNode = function (node, msg, Error) {
-  Error = Error || SyntaxError;
+  if (!Error) Error = SyntaxError;
 
   var loc = node.loc.start;
   var err = new Error("Line " + loc.line + ": " + msg);
@@ -2832,7 +2848,7 @@ var checkNode = function checkNode(stack, node, scope) {
 
 File.prototype.checkNode = function (node, scope) {
   var stack = this.transformerStack;
-  scope = scope || this.scope;
+  if (!scope) scope = this.scope;
 
   checkNode(stack, node, scope);
 
@@ -2850,6 +2866,10 @@ File.prototype.generate = function () {
     map: null,
     ast: null
   };
+
+  if (this.opts.returnUsedHelpers) {
+    result.usedHelpers = Object.keys(this.usedHelpers);
+  }
 
   if (opts.ast) result.ast = ast;
   if (!opts.code) return result;
@@ -2872,7 +2892,7 @@ File.prototype.generate = function () {
 };
 
 // todo, (node, msg)
-},{"../generation":18,"../helpers/parse":28,"../traversal/scope":120,"../types":123,"../util":125,"./index":45,"lodash/collection/each":175,"lodash/collection/includes":178,"lodash/lang/isFunction":264,"lodash/object/assign":271,"lodash/object/defaults":272,"path":327,"shebang-regex":301,"slash":302,"source-map-to-comment":303}],34:[function(require,module,exports){
+},{"../generation":18,"../helpers/parse":28,"../traversal/scope":121,"../types":124,"../util":126,"./index":46,"lodash/collection/each":176,"lodash/collection/includes":179,"lodash/lang/isFunction":265,"lodash/object/assign":272,"lodash/object/defaults":273,"path":328,"shebang-regex":302,"slash":303,"source-map-to-comment":304}],34:[function(require,module,exports){
 "use strict";
 
 var explode = require("./explode-assignable-expression");
@@ -2917,7 +2937,7 @@ module.exports = function (exports, opts) {
     return opts.build(node.left, node.right);
   };
 };
-},{"../../types":123,"./explode-assignable-expression":39}],35:[function(require,module,exports){
+},{"../../types":124,"./explode-assignable-expression":39}],35:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -2939,7 +2959,7 @@ module.exports = function build(node, buildBody) {
 
   return t.forOfStatement(t.variableDeclaration("let", [t.variableDeclarator(self.left)]), self.right, t.blockStatement([child]));
 };
-},{"../../types":123}],36:[function(require,module,exports){
+},{"../../types":124}],36:[function(require,module,exports){
 "use strict";
 
 var explode = require("./explode-assignable-expression");
@@ -2980,7 +3000,7 @@ module.exports = function (exports, opts) {
     return t.toSequenceExpression(nodes, scope);
   };
 };
-},{"../../types":123,"./explode-assignable-expression":39}],37:[function(require,module,exports){
+},{"../../types":124,"./explode-assignable-expression":39}],37:[function(require,module,exports){
 "use strict";
 
 // Based upon the excellent jsx-transpiler by Ingvar Stepanyan (RReverser)
@@ -3263,7 +3283,7 @@ module.exports = function (exports, opts) {
     }
   };
 };
-},{"../../messages":30,"../../types":123,"./react":41,"esutils":159,"lodash/lang/isString":269}],38:[function(require,module,exports){
+},{"../../messages":30,"../../types":124,"./react":42,"esutils":160,"lodash/lang/isString":270}],38:[function(require,module,exports){
 "use strict";
 
 var cloneDeep = require("lodash/lang/cloneDeep");
@@ -3339,7 +3359,7 @@ exports.build = function (mutatorMap) {
 
   return objExpr;
 };
-},{"../../traversal":118,"../../types":123,"lodash/collection/each":175,"lodash/lang/clone":258,"lodash/lang/cloneDeep":259,"lodash/object/has":274}],39:[function(require,module,exports){
+},{"../../traversal":119,"../../types":124,"lodash/collection/each":176,"lodash/lang/clone":259,"lodash/lang/cloneDeep":260,"lodash/object/has":275}],39:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -3409,9 +3429,22 @@ module.exports = function (node, nodes, file, scope, allowedSingleIdent) {
     ref: ref
   };
 };
-},{"../../types":123}],40:[function(require,module,exports){
+},{"../../types":124}],40:[function(require,module,exports){
 "use strict";
 
+var t = require("../../types");
+
+module.exports = function (node) {
+  var lastNonDefault = 0;
+  for (var i = 0; i < node.params.length; i++) {
+    if (!t.isAssignmentPattern(node.params[i])) lastNonDefault = i + 1;
+  }
+  return lastNonDefault;
+};
+},{"../../types":124}],41:[function(require,module,exports){
+"use strict";
+
+var getFunctionArity = require("./get-function-arity");
 var util = require("../../util");
 var t = require("../../types");
 
@@ -3435,12 +3468,21 @@ var wrap = function wrap(state, method, id, scope) {
   if (state.selfReference) {
     var templateName = "property-method-assignment-wrapper";
     if (method.generator) templateName += "-generator";
-    return util.template(templateName, {
+    var template = util.template(templateName, {
       FUNCTION: method,
       FUNCTION_ID: id,
       FUNCTION_KEY: scope.generateUidIdentifier(id.name),
       WRAPPER_KEY: scope.generateUidIdentifier(id.name + "Wrapper")
     });
+
+    // shim in dummy params to retain function arity, if you try to read the
+    // source then you'll get the original since it's proxied so it's all good
+    var params = template.callee.body.body[0].declarations[0].init.params;
+    for (var i = 0, len = getFunctionArity(method); i < len; i++) {
+      params.push(scope.generateUidIdentifier("x"));
+    }
+
+    return template;
   } else {
     method.id = id;
     return method;
@@ -3501,7 +3543,7 @@ exports.bare = function (node, parent, scope) {
 
   var id;
   if (t.isProperty(parent) && parent.kind === "init" && !parent.computed) {
-    // { foo: function () {} };
+    // { foo() {} };
     id = parent.key;
   } else if (t.isVariableDeclarator(parent)) {
     // var foo = function () {};
@@ -3527,7 +3569,7 @@ exports.bare = function (node, parent, scope) {
 //
 // so we can safely just set the id and move along as it shadows the
 // bound function id
-},{"../../types":123,"../../util":125}],41:[function(require,module,exports){
+},{"../../types":124,"../../util":126,"./get-function-arity":40}],42:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -3556,7 +3598,7 @@ exports.isReactComponent = t.buildMatchMemberExpression("React.Component");
 exports.isCompatTag = function (tagName) {
   return tagName && /^[a-z]|\-/.test(tagName);
 };
-},{"../../types":123}],42:[function(require,module,exports){
+},{"../../types":124}],43:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -3595,7 +3637,7 @@ module.exports = function (node, callId, scope) {
     return call;
   }
 };
-},{"../../types":123}],43:[function(require,module,exports){
+},{"../../types":124}],44:[function(require,module,exports){
 "use strict";
 
 module.exports = ReplaceSupers;
@@ -3866,7 +3908,7 @@ var isIllegalBareSuper = function isIllegalBareSuper(node, parent) {
 var isSuper = function isSuper(node, parent) {
   return t.isIdentifier(node, { name: "super" }) && t.isReferenced(node, parent);
 };
-},{"../../messages":30,"../../types":123}],44:[function(require,module,exports){
+},{"../../messages":30,"../../types":124}],45:[function(require,module,exports){
 "use strict";
 
 var t = require("../../types");
@@ -3888,7 +3930,7 @@ exports.wrap = function (node, callback) {
     node.body.unshift(useStrictNode);
   }
 };
-},{"../../types":123}],45:[function(require,module,exports){
+},{"../../types":124}],46:[function(require,module,exports){
 "use strict";
 
 module.exports = transform;
@@ -3951,13 +3993,16 @@ var rawTransformers = require("./transformers");
 each(rawTransformers, function (transformer, key) {
   var namespace = key.split(".")[0];
 
-  transform.namespaces[namespace] = transform.namespaces[namespace] || [];
+  var _transform$namespaces = transform.namespaces;
+  var _namespace = namespace;
+  if (!_transform$namespaces[_namespace]) _transform$namespaces[_namespace] = [];
+
   transform.namespaces[namespace].push(key);
   transform.transformerNamespaces[key] = namespace;
 
   transform.transformers[key] = new Transformer(key, transformer);
 });
-},{"../helpers/normalize-ast":26,"../helpers/object":27,"./file":33,"./modules":53,"./transformer":58,"./transformers":84,"./transformers/deprecated":59,"lodash/collection/each":175}],46:[function(require,module,exports){
+},{"../helpers/normalize-ast":26,"../helpers/object":27,"./file":33,"./modules":54,"./transformer":59,"./transformers":85,"./transformers/deprecated":60,"lodash/collection/each":176}],47:[function(require,module,exports){
 "use strict";
 
 module.exports = DefaultFormatter;
@@ -3995,7 +4040,10 @@ DefaultFormatter.prototype.doDefaultExportInterop = function (node) {
 DefaultFormatter.prototype.bumpImportOccurences = function (node) {
   var source = node.source.value;
   var occurs = this.localImportOccurences;
-  occurs[source] = occurs[source] || 0;
+  var _occurs = occurs;
+  var _source = source;
+  if (!_occurs[_source]) _occurs[_source] = 0;
+
   occurs[source] += node.specifiers.length;
 };
 
@@ -4239,7 +4287,7 @@ DefaultFormatter.prototype.exportDeclaration = function (node, nodes) {
     this._hoistExport(declar, assign);
   }
 };
-},{"../../helpers/object":27,"../../messages":30,"../../types":123,"../../util":125,"lodash/object/extend":273}],47:[function(require,module,exports){
+},{"../../helpers/object":27,"../../messages":30,"../../types":124,"../../util":126,"lodash/object/extend":274}],48:[function(require,module,exports){
 "use strict";
 
 var util = require("../../util");
@@ -4255,11 +4303,11 @@ module.exports = function (Parent) {
 
   return Constructor;
 };
-},{"../../util":125}],48:[function(require,module,exports){
+},{"../../util":126}],49:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./_strict")(require("./amd"));
-},{"./_strict":47,"./amd":49}],49:[function(require,module,exports){
+},{"./_strict":48,"./amd":50}],50:[function(require,module,exports){
 "use strict";
 
 module.exports = AMDFormatter;
@@ -4366,11 +4414,11 @@ AMDFormatter.prototype.exportDeclaration = function (node) {
 };
 
 // import * as bar from "foo";
-},{"../../types":123,"../../util":125,"./_default":46,"./common":51,"lodash/collection/includes":178,"lodash/object/values":277}],50:[function(require,module,exports){
+},{"../../types":124,"../../util":126,"./_default":47,"./common":52,"lodash/collection/includes":179,"lodash/object/values":278}],51:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./_strict")(require("./common"));
-},{"./_strict":47,"./common":51}],51:[function(require,module,exports){
+},{"./_strict":48,"./common":52}],52:[function(require,module,exports){
 "use strict";
 
 module.exports = CommonJSFormatter;
@@ -4468,7 +4516,7 @@ CommonJSFormatter.prototype._getExternalReference = function (node, nodes) {
     return call;
   }
 };
-},{"../../types":123,"../../util":125,"./_default":46,"lodash/collection/includes":178}],52:[function(require,module,exports){
+},{"../../types":124,"../../util":126,"./_default":47,"lodash/collection/includes":179}],53:[function(require,module,exports){
 "use strict";
 
 module.exports = IgnoreFormatter;
@@ -4483,7 +4531,7 @@ IgnoreFormatter.prototype.exportDeclaration = function (node, nodes) {
 };
 
 IgnoreFormatter.prototype.importDeclaration = IgnoreFormatter.prototype.importSpecifier = IgnoreFormatter.prototype.exportSpecifier = function () {};
-},{"../../types":123}],53:[function(require,module,exports){
+},{"../../types":124}],54:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -4496,7 +4544,7 @@ module.exports = {
   amd: require("./amd"),
   umd: require("./umd")
 };
-},{"./amd":49,"./amd-strict":48,"./common":51,"./common-strict":50,"./ignore":52,"./system":54,"./umd":56,"./umd-strict":55}],54:[function(require,module,exports){
+},{"./amd":50,"./amd-strict":49,"./common":52,"./common-strict":51,"./ignore":53,"./system":55,"./umd":57,"./umd-strict":56}],55:[function(require,module,exports){
 "use strict";
 
 module.exports = SystemFormatter;
@@ -4688,11 +4736,11 @@ SystemFormatter.prototype.transform = function (program) {
 
   program.body = [runner];
 };
-},{"../../types":123,"../../util":125,"./_default":46,"./amd":49,"lodash/array/last":171,"lodash/collection/each":175,"lodash/collection/map":179}],55:[function(require,module,exports){
+},{"../../types":124,"../../util":126,"./_default":47,"./amd":50,"lodash/array/last":172,"lodash/collection/each":176,"lodash/collection/map":180}],56:[function(require,module,exports){
 "use strict";
 
 module.exports = require("./_strict")(require("./umd"));
-},{"./_strict":47,"./umd":56}],56:[function(require,module,exports){
+},{"./_strict":48,"./umd":57}],57:[function(require,module,exports){
 "use strict";
 
 module.exports = UMDFormatter;
@@ -4766,7 +4814,7 @@ UMDFormatter.prototype.transform = function (program) {
   var call = t.callExpression(runner, [factory]);
   program.body = [t.expressionStatement(call)];
 };
-},{"../../types":123,"../../util":125,"./amd":49,"lodash/object/values":277}],57:[function(require,module,exports){
+},{"../../types":124,"../../util":126,"./amd":50,"lodash/object/values":278}],58:[function(require,module,exports){
 "use strict";
 
 module.exports = TransformerPass;
@@ -4832,7 +4880,7 @@ TransformerPass.prototype.transform = function () {
 
   file.scope.traverse(file.ast, this.handlers, file);
 };
-},{"lodash/collection/includes":178}],58:[function(require,module,exports){
+},{"lodash/collection/includes":179}],59:[function(require,module,exports){
 "use strict";
 
 module.exports = Transformer;
@@ -4870,7 +4918,11 @@ function Transformer(key, transformer, opts) {
   this.optional = !!take("optional");
 
   this.handlers = this.normalize(transformer);
-  this.opts = opts || {};
+
+  var _ref = this;
+
+  if (!_ref.opts) _ref.opts = {};
+
   this.key = key;
 }
 
@@ -4908,12 +4960,12 @@ Transformer.prototype.normalize = function (transformer) {
 Transformer.prototype.buildPass = function (file) {
   return new TransformerPass(file, this);
 };
-},{"../traversal":118,"./transformer-pass":57,"lodash/collection/each":175,"lodash/lang/isFunction":264,"lodash/lang/isObject":267,"lodash/object/assign":271}],59:[function(require,module,exports){
+},{"../traversal":119,"./transformer-pass":58,"lodash/collection/each":176,"lodash/lang/isFunction":265,"lodash/lang/isObject":268,"lodash/object/assign":272}],60:[function(require,module,exports){
 module.exports={
   "selfContained": "runtime"
 }
 
-},{}],60:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -4930,7 +4982,7 @@ exports.MemberExpression = function (node) {
     node.computed = true;
   }
 };
-},{"../../../types":123}],61:[function(require,module,exports){
+},{"../../../types":124}],62:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -4946,7 +4998,7 @@ exports.Property = function (node) {
     node.key = t.literal(key.name);
   }
 };
-},{"../../../types":123}],62:[function(require,module,exports){
+},{"../../../types":124}],63:[function(require,module,exports){
 "use strict";
 
 var defineMap = require("../../helpers/define-map");
@@ -4974,7 +5026,7 @@ exports.ObjectExpression = function (node) {
 
   return t.callExpression(t.memberExpression(t.identifier("Object"), t.identifier("defineProperties")), [node, defineMap.build(mutatorMap)]);
 };
-},{"../../../types":123,"../../helpers/define-map":38}],63:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/define-map":38}],64:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -4990,7 +5042,7 @@ exports.ArrowFunctionExpression = function (node) {
 
   return node;
 };
-},{"../../../types":123}],64:[function(require,module,exports){
+},{"../../../types":124}],65:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -5031,8 +5083,10 @@ exports.Loop = exports.Program = exports.BlockStatement = function (node, parent
 
   scope.traverse(node, visitor, state);
 };
-},{"../../../types":123}],65:[function(require,module,exports){
+},{"../../../types":124}],66:[function(require,module,exports){
 "use strict";
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 var traverse = require("../../../traversal");
 var object = require("../../../helpers/object");
@@ -5054,7 +5108,8 @@ var isLet = function isLet(node, parent) {
   if (isLetInitable(node, parent)) {
     for (var i = 0; i < node.declarations.length; i++) {
       var declar = node.declarations[i];
-      declar.init = declar.init || t.identifier("undefined");
+      var _declar = declar;
+      if (!_declar.init) _declar.init = t.identifier("undefined");
     }
   }
 
@@ -5116,53 +5171,6 @@ exports.Program = exports.BlockStatement = function (block, parent, scope, file)
   }
 };
 
-/**
- * Description
- *
- * @param {Boolean|Node} loopParent
- * @param {Node} block
- * @param {Node} parent
- * @param {Scope} scope
- * @param {File} file
- */
-
-function BlockScoping(loopParent, block, parent, scope, file) {
-  this.loopParent = loopParent;
-  this.parent = parent;
-  this.scope = scope;
-  this.block = block;
-  this.file = file;
-
-  this.outsideLetReferences = object();
-  this.hasLetReferences = false;
-  this.letReferences = block._letReferences = object();
-  this.body = [];
-}
-
-/**
- * Start the ball rolling.
- */
-
-BlockScoping.prototype.run = function () {
-  var block = this.block;
-  if (block._letDone) return;
-  block._letDone = true;
-
-  var needsClosure = this.getLetReferences();
-
-  // this is a block within a `Function/Program` so we can safely leave it be
-  if (t.isFunction(this.parent) || t.isProgram(this.block)) return;
-
-  // we can skip everything
-  if (!this.hasLetReferences) return;
-
-  if (needsClosure) {
-    this.wrapClosure();
-  } else {
-    this.remap();
-  }
-};
-
 function replace(node, parent, scope, remaps) {
   if (!t.isReferencedIdentifier(node, parent)) return;
 
@@ -5188,114 +5196,13 @@ function traverseReplace(node, parent, scope, remaps) {
   scope.traverse(node, replaceVisitor, remaps);
 }
 
-/**
- * Description
- */
-
-BlockScoping.prototype.remap = function () {
-  var hasRemaps = false;
-  var letRefs = this.letReferences;
-  var scope = this.scope;
-
-  // alright, so since we aren't wrapping this block in a closure
-  // we have to check if any of our let variables collide with
-  // those in upper scopes and then if they do, generate a uid
-  // for them and replace all references with it
-  var remaps = object();
-
-  for (var key in letRefs) {
-    // just an Identifier node we collected in `getLetReferences`
-    // this is the defining identifier of a declaration
-    var ref = letRefs[key];
-
-    if (scope.parentHasBinding(key) || scope.hasGlobal(key)) {
-      var uid = scope.generateUidIdentifier(ref.name).name;
-      ref.name = uid;
-
-      hasRemaps = true;
-      remaps[key] = remaps[uid] = {
-        binding: ref,
-        uid: uid
-      };
+var letReferenceBlockVisitor = {
+  enter: function enter(node, parent, scope, state) {
+    if (t.isFunction(node)) {
+      scope.traverse(node, letReferenceFunctionVisitor, state);
+      return this.skip();
     }
   }
-
-  if (!hasRemaps) return;
-
-  //
-
-  var loopParent = this.loopParent;
-  if (loopParent) {
-    traverseReplace(loopParent.right, loopParent, scope, remaps);
-    traverseReplace(loopParent.test, loopParent, scope, remaps);
-    traverseReplace(loopParent.update, loopParent, scope, remaps);
-  }
-
-  scope.traverse(this.block, replaceVisitor, remaps);
-};
-
-/**
- * Description
- */
-
-BlockScoping.prototype.wrapClosure = function () {
-  var block = this.block;
-
-  var outsideRefs = this.outsideLetReferences;
-
-  // remap loop heads with colliding variables
-  if (this.loopParent) {
-    for (var name in outsideRefs) {
-      var id = outsideRefs[name];
-
-      if (this.scope.hasGlobal(id.name)) {
-        delete outsideRefs[id.name];
-        delete this.letReferences[id.name];
-
-        this.scope.rename(id.name);
-
-        this.letReferences[id.name] = id;
-        outsideRefs[id.name] = id;
-      }
-    }
-  }
-
-  // if we're inside of a for loop then we search to see if there are any
-  // `break`s, `continue`s, `return`s etc
-  this.has = this.checkLoop();
-
-  // hoist var references to retain scope
-  this.hoistVarDeclarations();
-
-  // turn outsideLetReferences into an array
-  var params = values(outsideRefs);
-
-  // build the closure that we're going to wrap the block with
-  var fn = t.functionExpression(null, params, t.blockStatement(block.body));
-  fn._aliasFunction = true;
-
-  // replace the current block body with the one we're going to build
-  block.body = this.body;
-
-  // build a call and a unique id that we can assign the return value to
-  var call = t.callExpression(fn, params);
-  var ret = this.scope.generateUidIdentifier("ret");
-
-  // handle generators
-  var hasYield = traverse.hasType(fn.body, this.scope, "YieldExpression", t.FUNCTION_TYPES);
-  if (hasYield) {
-    fn.generator = true;
-    call = t.yieldExpression(call, true);
-  }
-
-  // handlers async functions
-  var hasAsync = traverse.hasType(fn.body, this.scope, "AwaitExpression", t.FUNCTION_TYPES);
-  if (hasAsync) {
-    fn.async = true;
-    call = t.awaitExpression(call, true);
-  }
-
-  this.build(ret, call);
 };
 
 var letReferenceFunctionVisitor = {
@@ -5314,65 +5221,30 @@ var letReferenceFunctionVisitor = {
   }
 };
 
-var letReferenceBlockVisitor = {
-  enter: function enter(node, parent, scope, state) {
-    if (t.isFunction(node)) {
-      scope.traverse(node, letReferenceFunctionVisitor, state);
+var hoistVarDeclarationsVisitor = {
+  enter: function enter(node, parent, scope, self) {
+    if (t.isForStatement(node)) {
+      if (isVar(node.init, node)) {
+        node.init = t.sequenceExpression(self.pushDeclar(node.init));
+      }
+    } else if (t.isFor(node)) {
+      if (isVar(node.left, node)) {
+        node.left = node.left.declarations[0].id;
+      }
+    } else if (isVar(node, parent)) {
+      return self.pushDeclar(node).map(t.expressionStatement);
+    } else if (t.isFunction(node)) {
       return this.skip();
     }
   }
 };
 
-/**
- * Description
- */
-
-BlockScoping.prototype.getLetReferences = function () {
-  var block = this.block;
-
-  var declarators = block._letDeclarators || [];
-  var declar;
-
-  //
-  for (var i = 0; i < declarators.length; i++) {
-    declar = declarators[i];
-    extend(this.outsideLetReferences, t.getBindingIdentifiers(declar));
-  }
-
-  //
-  if (block.body) {
-    for (i = 0; i < block.body.length; i++) {
-      declar = block.body[i];
-      if (isLet(declar, block)) {
-        declarators = declarators.concat(declar.declarations);
-      }
+var loopLabelVisitor = {
+  enter: function enter(node, parent, scope, state) {
+    if (t.isLabeledStatement(node)) {
+      state.innerLabels.push(node.label.name);
     }
   }
-
-  //
-  for (i = 0; i < declarators.length; i++) {
-    declar = declarators[i];
-    var keys = t.getBindingIdentifiers(declar);
-    extend(this.letReferences, keys);
-    this.hasLetReferences = true;
-  }
-
-  // no let references so we can just quit
-  if (!this.hasLetReferences) return;
-
-  // set let references to plain var references
-  standardizeLets(declarators);
-
-  var state = {
-    letReferences: this.letReferences,
-    closurify: false
-  };
-
-  // traverse through this block, stopping on functions and checking if they
-  // contain any local let references
-  this.scope.traverse(this.block, letReferenceBlockVisitor, state);
-
-  return state.closurify;
 };
 
 var loopNodeTo = function loopNodeTo(node) {
@@ -5433,159 +5305,351 @@ var loopVisitor = {
   }
 };
 
-var loopLabelVisitor = {
-  enter: function enter(node, parent, scope, state) {
-    if (t.isLabeledStatement(node)) {
-      state.innerLabels.push(node.label.name);
-    }
+var BlockScoping = (function () {
+
+  /**
+   * Description
+   *
+   * @param {Boolean|Node} loopParent
+   * @param {Node} block
+   * @param {Node} parent
+   * @param {Scope} scope
+   * @param {File} file
+   */
+
+  function BlockScoping(loopParent, block, parent, scope, file) {
+    _classCallCheck(this, BlockScoping);
+
+    this.loopParent = loopParent;
+    this.parent = parent;
+    this.scope = scope;
+    this.block = block;
+    this.file = file;
+
+    this.outsideLetReferences = object();
+    this.hasLetReferences = false;
+    this.letReferences = block._letReferences = object();
+    this.body = [];
   }
-};
 
-/**
- * If we're inside of a loop then traverse it and check if it has one of
- * the following node types `ReturnStatement`, `BreakStatement`,
- * `ContinueStatement` and replace it with a return value that we can track
- * later on.
- *
- * @returns {Object}
- */
+  /**
+   * Start the ball rolling.
+   */
 
-BlockScoping.prototype.checkLoop = function () {
-  var state = {
-    hasBreakContinue: false,
-    ignoreLabeless: false,
-    innerLabels: [],
-    hasReturn: false,
-    isLoop: !!this.loopParent,
-    map: {}
+  BlockScoping.prototype.run = function run() {
+    var block = this.block;
+    if (block._letDone) return;
+    block._letDone = true;
+
+    var needsClosure = this.getLetReferences();
+
+    // this is a block within a `Function/Program` so we can safely leave it be
+    if (t.isFunction(this.parent) || t.isProgram(this.block)) return;
+
+    // we can skip everything
+    if (!this.hasLetReferences) return;
+
+    if (needsClosure) {
+      this.wrapClosure();
+    } else {
+      this.remap();
+    }
   };
 
-  this.scope.traverse(this.block, loopLabelVisitor, state);
-  this.scope.traverse(this.block, loopVisitor, state);
+  /**
+   * Description
+   */
 
-  return state;
-};
+  BlockScoping.prototype.remap = function remap() {
+    var hasRemaps = false;
+    var letRefs = this.letReferences;
+    var scope = this.scope;
 
-var hoistVarDeclarationsVisitor = {
-  enter: function enter(node, parent, scope, self) {
-    if (t.isForStatement(node)) {
-      if (isVar(node.init, node)) {
-        node.init = t.sequenceExpression(self.pushDeclar(node.init));
+    // alright, so since we aren't wrapping this block in a closure
+    // we have to check if any of our let variables collide with
+    // those in upper scopes and then if they do, generate a uid
+    // for them and replace all references with it
+    var remaps = object();
+
+    for (var key in letRefs) {
+      // just an Identifier node we collected in `getLetReferences`
+      // this is the defining identifier of a declaration
+      var ref = letRefs[key];
+
+      if (scope.parentHasBinding(key) || scope.hasGlobal(key)) {
+        var uid = scope.generateUidIdentifier(ref.name).name;
+        ref.name = uid;
+
+        hasRemaps = true;
+        remaps[key] = remaps[uid] = {
+          binding: ref,
+          uid: uid
+        };
       }
-    } else if (t.isFor(node)) {
-      if (isVar(node.left, node)) {
-        node.left = node.left.declarations[0].id;
+    }
+
+    if (!hasRemaps) return;
+
+    //
+
+    var loopParent = this.loopParent;
+    if (loopParent) {
+      traverseReplace(loopParent.right, loopParent, scope, remaps);
+      traverseReplace(loopParent.test, loopParent, scope, remaps);
+      traverseReplace(loopParent.update, loopParent, scope, remaps);
+    }
+
+    scope.traverse(this.block, replaceVisitor, remaps);
+  };
+
+  /**
+   * Description
+   */
+
+  BlockScoping.prototype.wrapClosure = function wrapClosure() {
+    var block = this.block;
+
+    var outsideRefs = this.outsideLetReferences;
+
+    // remap loop heads with colliding variables
+    if (this.loopParent) {
+      for (var name in outsideRefs) {
+        var id = outsideRefs[name];
+
+        if (this.scope.hasGlobal(id.name)) {
+          delete outsideRefs[id.name];
+          delete this.letReferences[id.name];
+
+          this.scope.rename(id.name);
+
+          this.letReferences[id.name] = id;
+          outsideRefs[id.name] = id;
+        }
       }
-    } else if (isVar(node, parent)) {
-      return self.pushDeclar(node).map(t.expressionStatement);
-    } else if (t.isFunction(node)) {
-      return this.skip();
-    }
-  }
-};
-
-/**
- * Hoist all var declarations in this block to before it so they retain scope
- * once we wrap everything in a closure.
- */
-
-BlockScoping.prototype.hoistVarDeclarations = function () {
-  traverse(this.block, hoistVarDeclarationsVisitor, this.scope, this);
-};
-
-/**
- * Turn a `VariableDeclaration` into an array of `AssignmentExpressions` with
- * their declarations hoisted to before the closure wrapper.
- *
- * @param {Node} node VariableDeclaration
- * @returns {Array}
- */
-
-BlockScoping.prototype.pushDeclar = function (node) {
-  this.body.push(t.variableDeclaration(node.kind, node.declarations.map(function (declar) {
-    return t.variableDeclarator(declar.id);
-  })));
-
-  var replace = [];
-
-  for (var i = 0; i < node.declarations.length; i++) {
-    var declar = node.declarations[i];
-    if (!declar.init) continue;
-
-    var expr = t.assignmentExpression("=", declar.id, declar.init);
-    replace.push(t.inherits(expr, declar));
-  }
-
-  return replace;
-};
-
-/**
- * Push the closure to the body.
- *
- * @param {Node} ret Identifier
- * @param {Node} call CallExpression
- */
-
-BlockScoping.prototype.build = function (ret, call) {
-  var has = this.has;
-  if (has.hasReturn || has.hasBreakContinue) {
-    this.buildHas(ret, call);
-  } else {
-    this.body.push(t.expressionStatement(call));
-  }
-};
-
-/**
- * Description
- *
- * @param {Node} ret Identifier
- * @param {Node} call CallExpression
- */
-
-BlockScoping.prototype.buildHas = function (ret, call) {
-  var body = this.body;
-
-  body.push(t.variableDeclaration("var", [t.variableDeclarator(ret, call)]));
-
-  var loopParent = this.loopParent;
-  var retCheck;
-  var has = this.has;
-  var cases = [];
-
-  if (has.hasReturn) {
-    // typeof ret === "object"
-    retCheck = util.template("let-scoping-return", {
-      RETURN: ret
-    });
-  }
-
-  if (has.hasBreakContinue) {
-    if (!loopParent) {
-      throw new Error("Has no loop parent but we're trying to reassign breaks " + "and continues, something is going wrong here.");
     }
 
-    for (var key in has.map) {
-      cases.push(t.switchCase(t.literal(key), [has.map[key]]));
+    // if we're inside of a for loop then we search to see if there are any
+    // `break`s, `continue`s, `return`s etc
+    this.has = this.checkLoop();
+
+    // hoist var references to retain scope
+    this.hoistVarDeclarations();
+
+    // turn outsideLetReferences into an array
+    var params = values(outsideRefs);
+
+    // build the closure that we're going to wrap the block with
+    var fn = t.functionExpression(null, params, t.blockStatement(block.body));
+    fn._aliasFunction = true;
+
+    // replace the current block body with the one we're going to build
+    block.body = this.body;
+
+    // build a call and a unique id that we can assign the return value to
+    var call = t.callExpression(fn, params);
+    var ret = this.scope.generateUidIdentifier("ret");
+
+    // handle generators
+    var hasYield = traverse.hasType(fn.body, this.scope, "YieldExpression", t.FUNCTION_TYPES);
+    if (hasYield) {
+      fn.generator = true;
+      call = t.yieldExpression(call, true);
     }
 
-    if (has.hasReturn) {
-      cases.push(t.switchCase(null, [retCheck]));
+    // handlers async functions
+    var hasAsync = traverse.hasType(fn.body, this.scope, "AwaitExpression", t.FUNCTION_TYPES);
+    if (hasAsync) {
+      fn.async = true;
+      call = t.awaitExpression(call, true);
     }
 
-    if (cases.length === 1) {
-      var single = cases[0];
-      body.push(this.file.attachAuxiliaryComment(t.ifStatement(t.binaryExpression("===", ret, single.test), single.consequent[0])));
+    this.build(ret, call);
+  };
+
+  /**
+   * Description
+   */
+
+  BlockScoping.prototype.getLetReferences = function getLetReferences() {
+    var block = this.block;
+
+    var declarators = block._letDeclarators || [];
+    var declar;
+
+    //
+    for (var i = 0; i < declarators.length; i++) {
+      declar = declarators[i];
+      extend(this.outsideLetReferences, t.getBindingIdentifiers(declar));
+    }
+
+    //
+    if (block.body) {
+      for (i = 0; i < block.body.length; i++) {
+        declar = block.body[i];
+        if (isLet(declar, block)) {
+          declarators = declarators.concat(declar.declarations);
+        }
+      }
+    }
+
+    //
+    for (i = 0; i < declarators.length; i++) {
+      declar = declarators[i];
+      var keys = t.getBindingIdentifiers(declar);
+      extend(this.letReferences, keys);
+      this.hasLetReferences = true;
+    }
+
+    // no let references so we can just quit
+    if (!this.hasLetReferences) return;
+
+    // set let references to plain var references
+    standardizeLets(declarators);
+
+    var state = {
+      letReferences: this.letReferences,
+      closurify: false
+    };
+
+    // traverse through this block, stopping on functions and checking if they
+    // contain any local let references
+    this.scope.traverse(this.block, letReferenceBlockVisitor, state);
+
+    return state.closurify;
+  };
+
+  /**
+   * If we're inside of a loop then traverse it and check if it has one of
+   * the following node types `ReturnStatement`, `BreakStatement`,
+   * `ContinueStatement` and replace it with a return value that we can track
+   * later on.
+   *
+   * @returns {Object}
+   */
+
+  BlockScoping.prototype.checkLoop = function checkLoop() {
+    var state = {
+      hasBreakContinue: false,
+      ignoreLabeless: false,
+      innerLabels: [],
+      hasReturn: false,
+      isLoop: !!this.loopParent,
+      map: {}
+    };
+
+    this.scope.traverse(this.block, loopLabelVisitor, state);
+    this.scope.traverse(this.block, loopVisitor, state);
+
+    return state;
+  };
+
+  /**
+   * Hoist all var declarations in this block to before it so they retain scope
+   * once we wrap everything in a closure.
+   */
+
+  BlockScoping.prototype.hoistVarDeclarations = function hoistVarDeclarations() {
+    traverse(this.block, hoistVarDeclarationsVisitor, this.scope, this);
+  };
+
+  /**
+   * Turn a `VariableDeclaration` into an array of `AssignmentExpressions` with
+   * their declarations hoisted to before the closure wrapper.
+   *
+   * @param {Node} node VariableDeclaration
+   * @returns {Array}
+   */
+
+  BlockScoping.prototype.pushDeclar = function pushDeclar(node) {
+    this.body.push(t.variableDeclaration(node.kind, node.declarations.map(function (declar) {
+      return t.variableDeclarator(declar.id);
+    })));
+
+    var replace = [];
+
+    for (var i = 0; i < node.declarations.length; i++) {
+      var declar = node.declarations[i];
+      if (!declar.init) continue;
+
+      var expr = t.assignmentExpression("=", declar.id, declar.init);
+      replace.push(t.inherits(expr, declar));
+    }
+
+    return replace;
+  };
+
+  /**
+   * Push the closure to the body.
+   *
+   * @param {Node} ret Identifier
+   * @param {Node} call CallExpression
+   */
+
+  BlockScoping.prototype.build = function build(ret, call) {
+    var has = this.has;
+    if (has.hasReturn || has.hasBreakContinue) {
+      this.buildHas(ret, call);
     } else {
-      body.push(this.file.attachAuxiliaryComment(t.switchStatement(ret, cases)));
+      this.body.push(t.expressionStatement(call));
     }
-  } else {
+  };
+
+  /**
+   * Description
+   *
+   * @param {Node} ret Identifier
+   * @param {Node} call CallExpression
+   */
+
+  BlockScoping.prototype.buildHas = function buildHas(ret, call) {
+    var body = this.body;
+
+    body.push(t.variableDeclaration("var", [t.variableDeclarator(ret, call)]));
+
+    var loopParent = this.loopParent;
+    var retCheck;
+    var has = this.has;
+    var cases = [];
+
     if (has.hasReturn) {
-      body.push(this.file.attachAuxiliaryComment(retCheck));
+      // typeof ret === "object"
+      retCheck = util.template("let-scoping-return", {
+        RETURN: ret
+      });
     }
-  }
-};
-},{"../../../helpers/object":27,"../../../traversal":118,"../../../types":123,"../../../util":125,"lodash/object/extend":273,"lodash/object/values":277}],66:[function(require,module,exports){
+
+    if (has.hasBreakContinue) {
+      if (!loopParent) {
+        throw new Error("Has no loop parent but we're trying to reassign breaks " + "and continues, something is going wrong here.");
+      }
+
+      for (var key in has.map) {
+        cases.push(t.switchCase(t.literal(key), [has.map[key]]));
+      }
+
+      if (has.hasReturn) {
+        cases.push(t.switchCase(null, [retCheck]));
+      }
+
+      if (cases.length === 1) {
+        var single = cases[0];
+        body.push(this.file.attachAuxiliaryComment(t.ifStatement(t.binaryExpression("===", ret, single.test), single.consequent[0])));
+      } else {
+        body.push(this.file.attachAuxiliaryComment(t.switchStatement(ret, cases)));
+      }
+    } else {
+      if (has.hasReturn) {
+        body.push(this.file.attachAuxiliaryComment(retCheck));
+      }
+    }
+  };
+
+  return BlockScoping;
+})();
+},{"../../../helpers/object":27,"../../../traversal":119,"../../../types":124,"../../../util":126,"lodash/object/extend":274,"lodash/object/values":278}],67:[function(require,module,exports){
 "use strict";
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 var ReplaceSupers = require("../../helpers/replace-supers");
 var nameMethod = require("../../helpers/name-method");
@@ -5616,263 +5680,270 @@ exports.ClassExpression = function (node, parent, scope, file) {
   return new ClassTransformer(node, file, scope, false).run();
 };
 
-/**
- * Description
- *
- * @param {Node} node
- * @param {File} file
- * @param {Scope} scope
- * @param {Boolean} isStatement
- */
+var ClassTransformer = (function () {
 
-function ClassTransformer(node, file, scope, isStatement) {
-  this.isStatement = isStatement;
-  this.scope = scope;
-  this.node = node;
-  this.file = file;
+  /**
+   * Description
+   *
+   * @param {Node} node
+   * @param {File} file
+   * @param {Scope} scope
+   * @param {Boolean} isStatement
+   */
 
-  this.hasInstanceMutators = false;
-  this.hasStaticMutators = false;
+  function ClassTransformer(node, file, scope, isStatement) {
+    _classCallCheck(this, ClassTransformer);
 
-  this.instanceMutatorMap = {};
-  this.staticMutatorMap = {};
-  this.hasConstructor = false;
-  this.className = node.id || scope.generateUidIdentifier("class");
-  this.superName = node.superClass || t.identifier("Function");
-  this.hasSuper = !!node.superClass;
-  this.isLoose = file.isLoose("es6.classes");
-}
+    this.isStatement = isStatement;
+    this.scope = scope;
+    this.node = node;
+    this.file = file;
 
-/**
- * Description
- *
- * @returns {Array}
- */
+    this.hasInstanceMutators = false;
+    this.hasStaticMutators = false;
 
-ClassTransformer.prototype.run = function () {
-  var superName = this.superName;
-  var className = this.className;
-  var classBody = this.node.body.body;
-  var file = this.file;
-
-  //
-
-  var body = this.body = [];
-
-  var constructorBody = t.blockStatement([t.expressionStatement(t.callExpression(file.addHelper("class-call-check"), [t.thisExpression(), className]))]);
-
-  var constructor;
-  if (this.node.id) {
-    constructor = t.functionDeclaration(className, [], constructorBody);
-    body.push(constructor);
-  } else {
-    var constructorName = null;
-    // when a class has no parent and there is only a constructor or no body
-    // then the constructor is not wrapped in a closure and needs to be named
-    var containsOnlyConstructor = classBody.length === 1 && classBody[0].key.name === "constructor";
-    if (!this.hasSuper && (classBody.length === 0 || containsOnlyConstructor)) {
-      constructorName = className;
-    }
-
-    constructor = t.functionExpression(constructorName, [], constructorBody);
-    body.push(t.variableDeclaration("var", [t.variableDeclarator(className, constructor)]));
-  }
-  this.constructor = constructor;
-
-  var closureParams = [];
-  var closureArgs = [];
-
-  //
-
-  if (this.hasSuper) {
-    closureArgs.push(superName);
-
-    if (!t.isIdentifier(superName)) {
-      superName = this.scope.generateUidBasedOnNode(superName, this.file);
-    }
-
-    closureParams.push(superName);
-
-    this.superName = superName;
-    body.push(t.expressionStatement(t.callExpression(file.addHelper("inherits"), [className, superName])));
+    this.instanceMutatorMap = {};
+    this.staticMutatorMap = {};
+    this.hasConstructor = false;
+    this.className = node.id || scope.generateUidIdentifier("class");
+    this.superName = node.superClass || t.identifier("Function");
+    this.hasSuper = !!node.superClass;
+    this.isLoose = file.isLoose("es6.classes");
   }
 
-  this.buildBody();
+  /**
+   * Description
+   *
+   * @returns {Array}
+   */
 
-  t.inheritsComments(body[0], this.node);
+  ClassTransformer.prototype.run = function run() {
+    var superName = this.superName;
+    var className = this.className;
+    var classBody = this.node.body.body;
+    var file = this.file;
 
-  var init;
+    //
 
-  if (body.length === 1) {
-    // only a constructor so no need for a closure container
-    init = t.toExpression(constructor);
-  } else {
-    body.push(t.returnStatement(className));
-    init = t.callExpression(t.functionExpression(null, closureParams, t.blockStatement(body)), closureArgs);
-  }
+    var body = this.body = [];
 
-  if (this.isStatement) {
-    return t.variableDeclaration("let", [t.variableDeclarator(className, init)]);
-  } else {
-    return init;
-  }
-};
+    var constructorBody = t.blockStatement([t.expressionStatement(t.callExpression(file.addHelper("class-call-check"), [t.thisExpression(), className]))]);
 
-/**
- * Description
- */
-
-ClassTransformer.prototype.buildBody = function () {
-  var constructor = this.constructor;
-  var className = this.className;
-  var superName = this.superName;
-  var classBody = this.node.body.body;
-  var body = this.body;
-
-  for (var i = 0; i < classBody.length; i++) {
-    var node = classBody[i];
-    if (t.isMethodDefinition(node)) {
-      var replaceSupers = new ReplaceSupers({
-        methodNode: node,
-        className: this.className,
-        superName: this.superName,
-        isStatic: node["static"],
-        isLoose: this.isLoose,
-        scope: this.scope,
-        file: this.file
-      }, true);
-      replaceSupers.replace();
-
-      if (!node.computed && t.isIdentifier(node.key, { name: "constructor" }) || t.isLiteral(node.key, { value: "constructor" })) {
-        this.pushConstructor(node);
-      } else {
-        this.pushMethod(node);
+    var constructor;
+    if (this.node.id) {
+      constructor = t.functionDeclaration(className, [], constructorBody);
+      body.push(constructor);
+    } else {
+      var constructorName = null;
+      // when a class has no parent and there is only a constructor or no body
+      // then the constructor is not wrapped in a closure and needs to be named
+      var containsOnlyConstructor = classBody.length === 1 && classBody[0].key.name === "constructor";
+      if (!this.hasSuper && (classBody.length === 0 || containsOnlyConstructor)) {
+        constructorName = className;
       }
-    } else if (t.isPrivateDeclaration(node)) {
-      this.closure = true;
-      body.unshift(node);
-    } else if (t.isClassProperty(node)) {
-      this.pushProperty(node);
+
+      constructor = t.functionExpression(constructorName, [], constructorBody);
+      body.push(t.variableDeclaration("var", [t.variableDeclarator(className, constructor)]));
     }
-  }
+    this.constructor = constructor;
 
-  // we have no constructor, we have a super, and the super doesn't appear to be falsy
-  if (!this.hasConstructor && this.hasSuper && !t.isFalsyExpression(superName)) {
-    var helperName = "class-super-constructor-call";
-    if (this.isLoose) helperName += "-loose";
-    constructor.body.body.push(util.template(helperName, {
-      CLASS_NAME: className,
-      SUPER_NAME: this.superName
-    }, true));
-  }
+    var closureParams = [];
+    var closureArgs = [];
 
-  var instanceProps;
-  var staticProps;
+    //
 
-  if (this.hasInstanceMutators) {
-    instanceProps = defineMap.build(this.instanceMutatorMap);
-  }
+    if (this.hasSuper) {
+      closureArgs.push(superName);
 
-  if (this.hasStaticMutators) {
-    staticProps = defineMap.build(this.staticMutatorMap);
-  }
+      if (!t.isIdentifier(superName)) {
+        superName = this.scope.generateUidBasedOnNode(superName, this.file);
+      }
 
-  if (instanceProps || staticProps) {
-    staticProps = staticProps || t.literal(null);
+      closureParams.push(superName);
 
-    var args = [className, staticProps];
-    if (instanceProps) args.push(instanceProps);
-
-    body.push(t.expressionStatement(t.callExpression(this.file.addHelper("prototype-properties"), args)));
-  }
-};
-
-/**
- * Push a method to its respective mutatorMap.
- *
- * @param {Node} node MethodDefinition
- */
-
-ClassTransformer.prototype.pushMethod = function (node) {
-  var methodName = node.key;
-
-  var kind = node.kind;
-
-  if (kind === "") {
-    nameMethod.property(node, this.file, this.scope);
-
-    if (this.isLoose) {
-      // use assignments instead of define properties for loose classes
-
-      var className = this.className;
-      if (!node["static"]) className = t.memberExpression(className, t.identifier("prototype"));
-      methodName = t.memberExpression(className, methodName, node.computed);
-
-      var expr = t.expressionStatement(t.assignmentExpression("=", methodName, node.value));
-      t.inheritsComments(expr, node);
-      this.body.push(expr);
-      return;
+      this.superName = superName;
+      body.push(t.expressionStatement(t.callExpression(file.addHelper("inherits"), [className, superName])));
     }
 
-    kind = "value";
-  }
+    this.buildBody();
 
-  var mutatorMap = this.instanceMutatorMap;
-  if (node["static"]) {
-    this.hasStaticMutators = true;
-    mutatorMap = this.staticMutatorMap;
-  } else {
-    this.hasInstanceMutators = true;
-  }
+    t.inheritsComments(body[0], this.node);
 
-  defineMap.push(mutatorMap, methodName, kind, node.computed, node);
-  defineMap.push(mutatorMap, methodName, "enumerable", node.computed, false);
-};
+    var init;
 
-/**
- * Description
- *
- * @param {Node} node
- */
+    if (body.length === 1) {
+      // only a constructor so no need for a closure container
+      init = t.toExpression(constructor);
+    } else {
+      body.push(t.returnStatement(className));
+      init = t.callExpression(t.functionExpression(null, closureParams, t.blockStatement(body)), closureArgs);
+    }
 
-ClassTransformer.prototype.pushProperty = function (node) {
-  if (!node.value) return;
+    if (this.isStatement) {
+      return t.variableDeclaration("let", [t.variableDeclarator(className, init)]);
+    } else {
+      return init;
+    }
+  };
 
-  var key;
+  /**
+   * Description
+   */
 
-  if (node["static"]) {
-    key = t.memberExpression(this.className, node.key);
-    this.body.push(t.expressionStatement(t.assignmentExpression("=", key, node.value)));
-  } else {
-    key = t.memberExpression(t.thisExpression(), node.key);
-    this.constructor.body.body.unshift(t.expressionStatement(t.assignmentExpression("=", key, node.value)));
-  }
-};
+  ClassTransformer.prototype.buildBody = function buildBody() {
+    var constructor = this.constructor;
+    var className = this.className;
+    var superName = this.superName;
+    var classBody = this.node.body.body;
+    var body = this.body;
 
-/**
- * Replace the constructor body of our class.
- *
- * @param {Node} method MethodDefinition
- */
+    for (var i = 0; i < classBody.length; i++) {
+      var node = classBody[i];
+      if (t.isMethodDefinition(node)) {
+        var replaceSupers = new ReplaceSupers({
+          methodNode: node,
+          className: this.className,
+          superName: this.superName,
+          isStatic: node["static"],
+          isLoose: this.isLoose,
+          scope: this.scope,
+          file: this.file
+        }, true);
+        replaceSupers.replace();
 
-ClassTransformer.prototype.pushConstructor = function (method) {
-  if (method.kind) {
-    throw this.file.errorWithNode(method, messages.get("classesIllegalConstructorKind"));
-  }
+        if (!node.computed && t.isIdentifier(node.key, { name: "constructor" }) || t.isLiteral(node.key, { value: "constructor" })) {
+          this.pushConstructor(node);
+        } else {
+          this.pushMethod(node);
+        }
+      } else if (t.isPrivateDeclaration(node)) {
+        this.closure = true;
+        body.unshift(node);
+      } else if (t.isClassProperty(node)) {
+        this.pushProperty(node);
+      }
+    }
 
-  var construct = this.constructor;
-  var fn = method.value;
+    // we have no constructor, we have a super, and the super doesn't appear to be falsy
+    if (!this.hasConstructor && this.hasSuper && !t.isFalsyExpression(superName)) {
+      var helperName = "class-super-constructor-call";
+      if (this.isLoose) helperName += "-loose";
+      constructor.body.body.push(util.template(helperName, {
+        CLASS_NAME: className,
+        SUPER_NAME: this.superName
+      }, true));
+    }
 
-  this.hasConstructor = true;
+    var instanceProps;
+    var staticProps;
 
-  t.inherits(construct, fn);
-  t.inheritsComments(construct, method);
+    if (this.hasInstanceMutators) {
+      instanceProps = defineMap.build(this.instanceMutatorMap);
+    }
 
-  construct._ignoreUserWhitespace = true;
-  construct.params = fn.params;
-  construct.body.body = construct.body.body.concat(fn.body.body);
-};
-},{"../../../messages":30,"../../../types":123,"../../../util":125,"../../helpers/define-map":38,"../../helpers/name-method":40,"../../helpers/replace-supers":43}],67:[function(require,module,exports){
+    if (this.hasStaticMutators) {
+      staticProps = defineMap.build(this.staticMutatorMap);
+    }
+
+    if (instanceProps || staticProps) {
+      if (!staticProps) staticProps = t.literal(null);
+
+      var args = [className, staticProps];
+      if (instanceProps) args.push(instanceProps);
+
+      body.push(t.expressionStatement(t.callExpression(this.file.addHelper("prototype-properties"), args)));
+    }
+  };
+
+  /**
+   * Push a method to its respective mutatorMap.
+   *
+   * @param {Node} node MethodDefinition
+   */
+
+  ClassTransformer.prototype.pushMethod = function pushMethod(node) {
+    var methodName = node.key;
+
+    var kind = node.kind;
+
+    if (kind === "") {
+      nameMethod.property(node, this.file, this.scope);
+
+      if (this.isLoose) {
+        // use assignments instead of define properties for loose classes
+
+        var className = this.className;
+        if (!node["static"]) className = t.memberExpression(className, t.identifier("prototype"));
+        methodName = t.memberExpression(className, methodName, node.computed);
+
+        var expr = t.expressionStatement(t.assignmentExpression("=", methodName, node.value));
+        t.inheritsComments(expr, node);
+        this.body.push(expr);
+        return;
+      }
+
+      kind = "value";
+    }
+
+    var mutatorMap = this.instanceMutatorMap;
+    if (node["static"]) {
+      this.hasStaticMutators = true;
+      mutatorMap = this.staticMutatorMap;
+    } else {
+      this.hasInstanceMutators = true;
+    }
+
+    defineMap.push(mutatorMap, methodName, kind, node.computed, node);
+    defineMap.push(mutatorMap, methodName, "enumerable", node.computed, false);
+  };
+
+  /**
+   * Description
+   *
+   * @param {Node} node
+   */
+
+  ClassTransformer.prototype.pushProperty = function pushProperty(node) {
+    if (!node.value) return;
+
+    var key;
+
+    if (node["static"]) {
+      key = t.memberExpression(this.className, node.key);
+      this.body.push(t.expressionStatement(t.assignmentExpression("=", key, node.value)));
+    } else {
+      key = t.memberExpression(t.thisExpression(), node.key);
+      this.constructor.body.body.unshift(t.expressionStatement(t.assignmentExpression("=", key, node.value)));
+    }
+  };
+
+  /**
+   * Replace the constructor body of our class.
+   *
+   * @param {Node} method MethodDefinition
+   */
+
+  ClassTransformer.prototype.pushConstructor = function pushConstructor(method) {
+    if (method.kind) {
+      throw this.file.errorWithNode(method, messages.get("classesIllegalConstructorKind"));
+    }
+
+    var construct = this.constructor;
+    var fn = method.value;
+
+    this.hasConstructor = true;
+
+    t.inherits(construct, fn);
+    t.inheritsComments(construct, method);
+
+    construct._ignoreUserWhitespace = true;
+    construct.params = fn.params;
+    construct.body.body = construct.body.body.concat(fn.body.body);
+  };
+
+  return ClassTransformer;
+})();
+},{"../../../messages":30,"../../../types":124,"../../../util":126,"../../helpers/define-map":38,"../../helpers/name-method":41,"../../helpers/replace-supers":44}],68:[function(require,module,exports){
 "use strict";
 
 var messages = require("../../../messages");
@@ -5923,259 +5994,15 @@ exports.Scopable = function (node, parent, scope, file) {
 exports.VariableDeclaration = function (node) {
   if (node.kind === "const") node.kind = "let";
 };
-},{"../../../messages":30,"../../../types":123}],68:[function(require,module,exports){
+},{"../../../messages":30,"../../../types":124}],69:[function(require,module,exports){
 "use strict";
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 var messages = require("../../../messages");
 var t = require("../../../types");
 
 exports.check = t.isPattern;
-
-function DestructuringTransformer(opts) {
-  this.blockHoist = opts.blockHoist;
-  this.operator = opts.operator;
-  this.nodes = opts.nodes;
-  this.scope = opts.scope;
-  this.file = opts.file;
-  this.kind = opts.kind;
-}
-
-DestructuringTransformer.prototype.buildVariableAssignment = function (id, init) {
-  var op = this.operator;
-  if (t.isMemberExpression(id)) op = "=";
-
-  var node;
-
-  if (op) {
-    node = t.expressionStatement(t.assignmentExpression(op, id, init));
-  } else {
-    node = t.variableDeclaration(this.kind, [t.variableDeclarator(id, init)]);
-  }
-
-  node._blockHoist = this.blockHoist;
-
-  return node;
-};
-
-DestructuringTransformer.prototype.buildVariableDeclaration = function (id, init) {
-  var declar = t.variableDeclaration("var", [t.variableDeclarator(id, init)]);
-  declar._blockHoist = this.blockHoist;
-  return declar;
-};
-
-DestructuringTransformer.prototype.push = function (id, init) {
-  if (t.isObjectPattern(id)) {
-    this.pushObjectPattern(id, init);
-  } else if (t.isArrayPattern(id)) {
-    this.pushArrayPattern(id, init);
-  } else if (t.isAssignmentPattern(id)) {
-    this.pushAssignmentPattern(id, init);
-  } else {
-    this.nodes.push(this.buildVariableAssignment(id, init));
-  }
-};
-
-DestructuringTransformer.prototype.get = function () {};
-
-DestructuringTransformer.prototype.pushAssignmentPattern = function (pattern, valueRef) {
-  // we need to assign the current value of the assignment to avoid evaluating
-  // it more than once
-
-  var tempValueRef = this.scope.generateUidBasedOnNode(valueRef);
-
-  var declar = t.variableDeclaration("var", [t.variableDeclarator(tempValueRef, valueRef)]);
-  declar._blockHoist = this.blockHoist;
-  this.nodes.push(declar);
-
-  //
-
-  this.nodes.push(this.buildVariableAssignment(pattern.left, t.conditionalExpression(t.binaryExpression("===", tempValueRef, t.identifier("undefined")), pattern.right, tempValueRef)));
-};
-
-DestructuringTransformer.prototype.pushObjectSpread = function (pattern, objRef, spreadProp, spreadPropIndex) {
-  // get all the keys that appear in this object before the current spread
-
-  var keys = [];
-
-  for (var i = 0; i < pattern.properties.length; i++) {
-    var prop = pattern.properties[i];
-
-    // we've exceeded the index of the spread property to all properties to the
-    // right need to be ignored
-    if (i >= spreadPropIndex) break;
-
-    // ignore other spread properties
-    if (t.isSpreadProperty(prop)) continue;
-
-    var key = prop.key;
-    if (t.isIdentifier(key)) key = t.literal(prop.key.name);
-    keys.push(key);
-  }
-
-  keys = t.arrayExpression(keys);
-
-  //
-
-  var value = t.callExpression(this.file.addHelper("object-without-properties"), [objRef, keys]);
-  this.nodes.push(this.buildVariableAssignment(spreadProp.argument, value));
-};
-
-DestructuringTransformer.prototype.pushObjectProperty = function (prop, propRef) {
-  if (t.isLiteral(prop.key)) prop.computed = true;
-
-  var pattern = prop.value;
-  var objRef = t.memberExpression(propRef, prop.key, prop.computed);
-
-  if (t.isPattern(pattern)) {
-    this.push(pattern, objRef);
-  } else {
-    this.nodes.push(this.buildVariableAssignment(pattern, objRef));
-  }
-};
-
-DestructuringTransformer.prototype.pushObjectPattern = function (pattern, objRef) {
-  // https://github.com/babel/babel/issues/681
-
-  if (!pattern.properties.length) {
-    this.nodes.push(t.expressionStatement(t.callExpression(this.file.addHelper("object-destructuring-empty"), [objRef])));
-  }
-
-  // if we have more than one properties in this pattern and the objectRef is a
-  // member expression then we need to assign it to a temporary variable so it's
-  // only evaluated once
-
-  if (pattern.properties.length > 1 && t.isMemberExpression(objRef)) {
-    var temp = this.scope.generateUidBasedOnNode(objRef, this.file);
-    this.nodes.push(this.buildVariableDeclaration(temp, objRef));
-    objRef = temp;
-  }
-
-  //
-
-  for (var i = 0; i < pattern.properties.length; i++) {
-    var prop = pattern.properties[i];
-    if (t.isSpreadProperty(prop)) {
-      this.pushObjectSpread(pattern, objRef, prop, i);
-    } else {
-      this.pushObjectProperty(prop, objRef);
-    }
-  }
-};
-
-var hasRest = function hasRest(pattern) {
-  for (var i = 0; i < pattern.elements.length; i++) {
-    if (t.isRestElement(pattern.elements[i])) {
-      return true;
-    }
-  }
-  return false;
-};
-
-DestructuringTransformer.prototype.canUnpackArrayPattern = function (pattern, arr) {
-  // not an array so there's no way we can deal with this
-  if (!t.isArrayExpression(arr)) return false;
-
-  // pattern has less elements than the array and doesn't have a rest so some
-  // elements wont be evaluated
-  if (pattern.elements.length > arr.elements.length) return;
-  if (pattern.elements.length < arr.elements.length && !hasRest(pattern)) return false;
-
-  // deopt on holes
-  for (var i = 0; i < pattern.elements.length; i++) {
-    if (!pattern.elements[i]) return false;
-  }
-
-  return true;
-};
-
-DestructuringTransformer.prototype.pushUnpackedArrayPattern = function (pattern, arr) {
-  for (var i = 0; i < pattern.elements.length; i++) {
-    var elem = pattern.elements[i];
-    if (t.isRestElement(elem)) {
-      this.push(elem.argument, t.arrayExpression(arr.elements.slice(i)));
-    } else {
-      this.push(elem, arr.elements[i]);
-    }
-  }
-};
-
-DestructuringTransformer.prototype.pushArrayPattern = function (pattern, arrayRef) {
-  if (!pattern.elements) return;
-
-  // optimise basic array destructuring of an array expression
-  //
-  // we can't do this to a pattern of unequal size to it's right hand
-  // array expression as then there will be values that wont be evaluated
-  //
-  // eg: var [a, b] = [1, 2];
-
-  if (this.canUnpackArrayPattern(pattern, arrayRef)) {
-    return this.pushUnpackedArrayPattern(pattern, arrayRef);
-  }
-
-  // if we have a rest then we need all the elements so don't tell
-  // `scope.toArray` to only get a certain amount
-
-  var count = !hasRest(pattern) && pattern.elements.length;
-
-  // so we need to ensure that the `arrayRef` is an array, `scope.toArray` will
-  // return a locally bound identifier if it's been inferred to be an array,
-  // otherwise it'll be a call to a helper that will ensure it's one
-
-  var toArray = this.scope.toArray(arrayRef, count);
-
-  if (t.isIdentifier(toArray)) {
-    // we've been given an identifier so it must have been inferred to be an
-    // array
-    arrayRef = toArray;
-  } else {
-    arrayRef = this.scope.generateUidBasedOnNode(arrayRef);
-    this.nodes.push(this.buildVariableDeclaration(arrayRef, toArray));
-    this.scope.assignTypeGeneric(arrayRef.name, "Array");
-  }
-
-  //
-
-  for (var i = 0; i < pattern.elements.length; i++) {
-    var elem = pattern.elements[i];
-
-    // hole
-    if (!elem) continue;
-
-    var elemRef;
-
-    if (t.isRestElement(elem)) {
-      elemRef = this.scope.toArray(arrayRef);
-
-      if (i > 0) {
-        elemRef = t.callExpression(t.memberExpression(elemRef, t.identifier("slice")), [t.literal(i)]);
-      }
-
-      // set the element to the rest element argument since we've dealt with it
-      // being a rest already
-      elem = elem.argument;
-    } else {
-      elemRef = t.memberExpression(arrayRef, t.literal(i), true);
-    }
-
-    this.push(elem, elemRef);
-  }
-};
-
-DestructuringTransformer.prototype.init = function (pattern, ref) {
-  // trying to destructure a value that we can't evaluate more than once so we
-  // need to save it to a variable
-
-  if (!t.isArrayExpression(ref) && !t.isMemberExpression(ref) && !t.isIdentifier(ref)) {
-    var key = this.scope.generateUidBasedOnNode(ref);
-    this.nodes.push(this.buildVariableDeclaration(key, ref));
-    ref = key;
-  }
-
-  //
-
-  this.push(pattern, ref);
-};
 
 exports.ForInStatement = exports.ForOfStatement = function (node, parent, scope, file) {
   var left = node.left;
@@ -6368,7 +6195,7 @@ exports.VariableDeclaration = function (node, parent, scope, file) {
 
     for (i = 0; i < nodes.length; i++) {
       node = nodes[i];
-      declar = declar || t.variableDeclaration(node.kind, []);
+      if (!declar) declar = t.variableDeclaration(node.kind, []);
 
       if (!t.isVariableDeclaration(node) && declar.kind !== node.kind) {
         throw file.errorWithNode(node, messages.get("invalidParentForThisNode"));
@@ -6382,7 +6209,257 @@ exports.VariableDeclaration = function (node, parent, scope, file) {
 
   return nodes;
 };
-},{"../../../messages":30,"../../../types":123}],69:[function(require,module,exports){
+
+var hasRest = function hasRest(pattern) {
+  for (var i = 0; i < pattern.elements.length; i++) {
+    if (t.isRestElement(pattern.elements[i])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+var DestructuringTransformer = (function () {
+  function DestructuringTransformer(opts) {
+    _classCallCheck(this, DestructuringTransformer);
+
+    this.blockHoist = opts.blockHoist;
+    this.operator = opts.operator;
+    this.nodes = opts.nodes;
+    this.scope = opts.scope;
+    this.file = opts.file;
+    this.kind = opts.kind;
+  }
+
+  DestructuringTransformer.prototype.buildVariableAssignment = function buildVariableAssignment(id, init) {
+    var op = this.operator;
+    if (t.isMemberExpression(id)) op = "=";
+
+    var node;
+
+    if (op) {
+      node = t.expressionStatement(t.assignmentExpression(op, id, init));
+    } else {
+      node = t.variableDeclaration(this.kind, [t.variableDeclarator(id, init)]);
+    }
+
+    node._blockHoist = this.blockHoist;
+
+    return node;
+  };
+
+  DestructuringTransformer.prototype.buildVariableDeclaration = function buildVariableDeclaration(id, init) {
+    var declar = t.variableDeclaration("var", [t.variableDeclarator(id, init)]);
+    declar._blockHoist = this.blockHoist;
+    return declar;
+  };
+
+  DestructuringTransformer.prototype.push = function push(id, init) {
+    if (t.isObjectPattern(id)) {
+      this.pushObjectPattern(id, init);
+    } else if (t.isArrayPattern(id)) {
+      this.pushArrayPattern(id, init);
+    } else if (t.isAssignmentPattern(id)) {
+      this.pushAssignmentPattern(id, init);
+    } else {
+      this.nodes.push(this.buildVariableAssignment(id, init));
+    }
+  };
+
+  DestructuringTransformer.prototype.pushAssignmentPattern = function pushAssignmentPattern(pattern, valueRef) {
+    // we need to assign the current value of the assignment to avoid evaluating
+    // it more than once
+
+    var tempValueRef = this.scope.generateUidBasedOnNode(valueRef);
+
+    var declar = t.variableDeclaration("var", [t.variableDeclarator(tempValueRef, valueRef)]);
+    declar._blockHoist = this.blockHoist;
+    this.nodes.push(declar);
+
+    //
+
+    this.nodes.push(this.buildVariableAssignment(pattern.left, t.conditionalExpression(t.binaryExpression("===", tempValueRef, t.identifier("undefined")), pattern.right, tempValueRef)));
+  };
+
+  DestructuringTransformer.prototype.pushObjectSpread = function pushObjectSpread(pattern, objRef, spreadProp, spreadPropIndex) {
+    // get all the keys that appear in this object before the current spread
+
+    var keys = [];
+
+    for (var i = 0; i < pattern.properties.length; i++) {
+      var prop = pattern.properties[i];
+
+      // we've exceeded the index of the spread property to all properties to the
+      // right need to be ignored
+      if (i >= spreadPropIndex) break;
+
+      // ignore other spread properties
+      if (t.isSpreadProperty(prop)) continue;
+
+      var key = prop.key;
+      if (t.isIdentifier(key)) key = t.literal(prop.key.name);
+      keys.push(key);
+    }
+
+    keys = t.arrayExpression(keys);
+
+    //
+
+    var value = t.callExpression(this.file.addHelper("object-without-properties"), [objRef, keys]);
+    this.nodes.push(this.buildVariableAssignment(spreadProp.argument, value));
+  };
+
+  DestructuringTransformer.prototype.pushObjectProperty = function pushObjectProperty(prop, propRef) {
+    if (t.isLiteral(prop.key)) prop.computed = true;
+
+    var pattern = prop.value;
+    var objRef = t.memberExpression(propRef, prop.key, prop.computed);
+
+    if (t.isPattern(pattern)) {
+      this.push(pattern, objRef);
+    } else {
+      this.nodes.push(this.buildVariableAssignment(pattern, objRef));
+    }
+  };
+
+  DestructuringTransformer.prototype.pushObjectPattern = function pushObjectPattern(pattern, objRef) {
+    // https://github.com/babel/babel/issues/681
+
+    if (!pattern.properties.length) {
+      this.nodes.push(t.expressionStatement(t.callExpression(this.file.addHelper("object-destructuring-empty"), [objRef])));
+    }
+
+    // if we have more than one properties in this pattern and the objectRef is a
+    // member expression then we need to assign it to a temporary variable so it's
+    // only evaluated once
+
+    if (pattern.properties.length > 1 && t.isMemberExpression(objRef)) {
+      var temp = this.scope.generateUidBasedOnNode(objRef, this.file);
+      this.nodes.push(this.buildVariableDeclaration(temp, objRef));
+      objRef = temp;
+    }
+
+    //
+
+    for (var i = 0; i < pattern.properties.length; i++) {
+      var prop = pattern.properties[i];
+      if (t.isSpreadProperty(prop)) {
+        this.pushObjectSpread(pattern, objRef, prop, i);
+      } else {
+        this.pushObjectProperty(prop, objRef);
+      }
+    }
+  };
+
+  DestructuringTransformer.prototype.canUnpackArrayPattern = function canUnpackArrayPattern(pattern, arr) {
+    // not an array so there's no way we can deal with this
+    if (!t.isArrayExpression(arr)) return false;
+
+    // pattern has less elements than the array and doesn't have a rest so some
+    // elements wont be evaluated
+    if (pattern.elements.length > arr.elements.length) return;
+    if (pattern.elements.length < arr.elements.length && !hasRest(pattern)) return false;
+
+    // deopt on holes
+    for (var i = 0; i < pattern.elements.length; i++) {
+      if (!pattern.elements[i]) return false;
+    }
+
+    return true;
+  };
+
+  DestructuringTransformer.prototype.pushUnpackedArrayPattern = function pushUnpackedArrayPattern(pattern, arr) {
+    for (var i = 0; i < pattern.elements.length; i++) {
+      var elem = pattern.elements[i];
+      if (t.isRestElement(elem)) {
+        this.push(elem.argument, t.arrayExpression(arr.elements.slice(i)));
+      } else {
+        this.push(elem, arr.elements[i]);
+      }
+    }
+  };
+
+  DestructuringTransformer.prototype.pushArrayPattern = function pushArrayPattern(pattern, arrayRef) {
+    if (!pattern.elements) return;
+
+    // optimise basic array destructuring of an array expression
+    //
+    // we can't do this to a pattern of unequal size to it's right hand
+    // array expression as then there will be values that wont be evaluated
+    //
+    // eg: var [a, b] = [1, 2];
+
+    if (this.canUnpackArrayPattern(pattern, arrayRef)) {
+      return this.pushUnpackedArrayPattern(pattern, arrayRef);
+    }
+
+    // if we have a rest then we need all the elements so don't tell
+    // `scope.toArray` to only get a certain amount
+
+    var count = !hasRest(pattern) && pattern.elements.length;
+
+    // so we need to ensure that the `arrayRef` is an array, `scope.toArray` will
+    // return a locally bound identifier if it's been inferred to be an array,
+    // otherwise it'll be a call to a helper that will ensure it's one
+
+    var toArray = this.scope.toArray(arrayRef, count);
+
+    if (t.isIdentifier(toArray)) {
+      // we've been given an identifier so it must have been inferred to be an
+      // array
+      arrayRef = toArray;
+    } else {
+      arrayRef = this.scope.generateUidBasedOnNode(arrayRef);
+      this.nodes.push(this.buildVariableDeclaration(arrayRef, toArray));
+      this.scope.assignTypeGeneric(arrayRef.name, "Array");
+    }
+
+    //
+
+    for (var i = 0; i < pattern.elements.length; i++) {
+      var elem = pattern.elements[i];
+
+      // hole
+      if (!elem) continue;
+
+      var elemRef;
+
+      if (t.isRestElement(elem)) {
+        elemRef = this.scope.toArray(arrayRef);
+
+        if (i > 0) {
+          elemRef = t.callExpression(t.memberExpression(elemRef, t.identifier("slice")), [t.literal(i)]);
+        }
+
+        // set the element to the rest element argument since we've dealt with it
+        // being a rest already
+        elem = elem.argument;
+      } else {
+        elemRef = t.memberExpression(arrayRef, t.literal(i), true);
+      }
+
+      this.push(elem, elemRef);
+    }
+  };
+
+  DestructuringTransformer.prototype.init = function init(pattern, ref) {
+    // trying to destructure a value that we can't evaluate more than once so we
+    // need to save it to a variable
+
+    if (!t.isArrayExpression(ref) && !t.isMemberExpression(ref) && !t.isIdentifier(ref)) {
+      var key = this.scope.generateUidBasedOnNode(ref);
+      this.nodes.push(this.buildVariableDeclaration(key, ref));
+      ref = key;
+    }
+
+    //
+
+    this.push(pattern, ref);
+  };
+
+  return DestructuringTransformer;
+})();
+},{"../../../messages":30,"../../../types":124}],70:[function(require,module,exports){
 "use strict";
 
 var messages = require("../../../messages");
@@ -6538,7 +6615,7 @@ var spec = function spec(node, parent, scope, file) {
     loop: loop
   };
 };
-},{"../../../messages":30,"../../../types":123,"../../../util":125}],70:[function(require,module,exports){
+},{"../../../messages":30,"../../../types":124,"../../../util":126}],71:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -6597,7 +6674,7 @@ exports.ExportDeclaration = function (node, parent, scope, file) {
 
   return nodes;
 };
-},{"../../../types":123,"../internal/modules":90}],71:[function(require,module,exports){
+},{"../../../types":124,"../internal/modules":91}],72:[function(require,module,exports){
 "use strict";
 
 var ReplaceSupers = require("../../helpers/replace-supers");
@@ -6628,7 +6705,7 @@ exports.Property = function (node, parent, scope, file) {
     value.body.body.unshift(t.variableDeclaration("var", [t.variableDeclarator(thisExpr, t.thisExpression())]));
   }
 };
-},{"../../../types":123,"../../helpers/replace-supers":43}],72:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/replace-supers":44}],73:[function(require,module,exports){
 "use strict";
 
 var util = require("../../../util");
@@ -6733,7 +6810,7 @@ exports.Function = function (node, parent, scope, file) {
     node.body.body = body.concat(node.body.body);
   }
 };
-},{"../../../types":123,"../../../util":125}],73:[function(require,module,exports){
+},{"../../../types":124,"../../../util":126}],74:[function(require,module,exports){
 "use strict";
 
 var util = require("../../../util");
@@ -6803,7 +6880,7 @@ exports.Function = function (node, parent, scope) {
   loop._blockHoist = node.params.length + 1;
   node.body.body.unshift(loop);
 };
-},{"../../../types":123,"../../../util":125}],74:[function(require,module,exports){
+},{"../../../types":124,"../../../util":126}],75:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -6921,7 +6998,7 @@ var spec = function spec(node, body, objId, initProps, file) {
     }
   }
 };
-},{"../../../types":123}],75:[function(require,module,exports){
+},{"../../../types":124}],76:[function(require,module,exports){
 "use strict";
 
 var clone = require("lodash/lang/clone");
@@ -6941,7 +7018,7 @@ exports.Property = function (node) {
     node.key = t.removeComments(clone(node.key));
   }
 };
-},{"../../../types":123,"lodash/lang/clone":258}],76:[function(require,module,exports){
+},{"../../../types":124,"lodash/lang/clone":259}],77:[function(require,module,exports){
 "use strict";
 
 var includes = require("lodash/collection/includes");
@@ -7069,8 +7146,10 @@ exports.NewExpression = function (node, parent, scope, file) {
     return t.callExpression(file.addHelper("apply-constructor"), [node.callee, args]);
   }
 };
-},{"../../../types":123,"lodash/collection/includes":178}],77:[function(require,module,exports){
+},{"../../../types":124,"lodash/collection/includes":179}],78:[function(require,module,exports){
 "use strict";
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
 var reduceRight = require("lodash/collection/reduceRight");
 var messages = require("../../../messages");
@@ -7079,280 +7158,14 @@ var util = require("../../../util");
 var map = require("lodash/collection/map");
 var t = require("../../../types");
 
+exports.Function = function (node, parent, scope, file) {
+  var tailCall = new TailCallTransformer(node, scope, file);
+  tailCall.run();
+};
+
 function returnBlock(expr) {
   return t.blockStatement([t.returnStatement(expr)]);
 }
-
-function TailCallTransformer(node, scope, file) {
-  this.hasTailRecursion = false;
-  this.needsArguments = false;
-  this.setsArguments = false;
-  this.needsThis = false;
-  this.ownerId = node.id;
-  this.vars = [];
-
-  this.scope = scope;
-  this.file = file;
-  this.node = node;
-}
-
-TailCallTransformer.prototype.getArgumentsId = function () {
-  return this.argumentsId = this.argumentsId || this.scope.generateUidIdentifier("arguments");
-};
-
-TailCallTransformer.prototype.getThisId = function () {
-  return this.thisId = this.thisId || this.scope.generateUidIdentifier("this");
-};
-
-TailCallTransformer.prototype.getLeftId = function () {
-  return this.leftId = this.leftId || this.scope.generateUidIdentifier("left");
-};
-
-TailCallTransformer.prototype.getFunctionId = function () {
-  return this.functionId = this.functionId || this.scope.generateUidIdentifier("function");
-};
-
-TailCallTransformer.prototype.getAgainId = function () {
-  return this.againId = this.againId || this.scope.generateUidIdentifier("again");
-};
-
-TailCallTransformer.prototype.getParams = function () {
-  var params = this.params;
-
-  if (!params) {
-    params = this.node.params;
-    this.paramDecls = [];
-
-    for (var i = 0; i < params.length; i++) {
-      var param = params[i];
-      if (!param._isDefaultPlaceholder) {
-        this.paramDecls.push(t.variableDeclarator(param, params[i] = this.scope.generateUidIdentifier("x")));
-      }
-    }
-  }
-
-  return this.params = params;
-};
-
-TailCallTransformer.prototype.hasDeopt = function () {
-  // check if the ownerId has been reassigned, if it has then it's not safe to
-  // perform optimisations
-  var ownerIdInfo = this.scope.getBindingInfo(this.ownerId.name);
-  return ownerIdInfo && ownerIdInfo.reassigned;
-};
-
-TailCallTransformer.prototype.run = function () {
-  var scope = this.scope;
-  var node = this.node;
-
-  // only tail recursion can be optimized as for now, so we can skip anonymous
-  // functions entirely
-  var ownerId = this.ownerId;
-  if (!ownerId) return;
-
-  // traverse the function and look for tail recursion
-  scope.traverse(node, firstPass, this);
-
-  if (!this.hasTailRecursion) return;
-
-  if (this.hasDeopt()) {
-    this.file.logDeopt(node, messages.get("tailCallReassignmentDeopt"));
-    return;
-  }
-
-  //
-
-  scope.traverse(node, secondPass, this);
-
-  if (!this.needsThis || !this.needsArguments) {
-    scope.traverse(node, thirdPass, this);
-  }
-
-  var body = t.ensureBlock(node).body;
-
-  if (this.vars.length > 0) {
-    var declarations = flatten(map(this.vars, function (decl) {
-      return decl.declarations;
-    }, this));
-    var statement = reduceRight(declarations, function (expr, decl) {
-      return t.assignmentExpression("=", decl.id, expr);
-    }, t.identifier("undefined"));
-    body.unshift(t.expressionStatement(statement));
-  }
-
-  var paramDecls = this.paramDecls;
-  if (paramDecls.length > 0) {
-    body.unshift(t.variableDeclaration("var", paramDecls));
-  }
-
-  body.unshift(t.expressionStatement(t.assignmentExpression("=", this.getAgainId(), t.literal(false))));
-
-  node.body = util.template("tail-call-body", {
-    AGAIN_ID: this.getAgainId(),
-    THIS_ID: this.thisId,
-    ARGUMENTS_ID: this.argumentsId,
-    FUNCTION_ID: this.getFunctionId(),
-    BLOCK: node.body
-  });
-
-  var topVars = [];
-
-  if (this.needsThis) {
-    topVars.push(t.variableDeclarator(this.getThisId(), t.thisExpression()));
-  }
-
-  if (this.needsArguments || this.setsArguments) {
-    var decl = t.variableDeclarator(this.getArgumentsId());
-    if (this.needsArguments) {
-      decl.init = t.identifier("arguments");
-    }
-    topVars.push(decl);
-  }
-
-  var leftId = this.leftId;
-  if (leftId) {
-    topVars.push(t.variableDeclarator(leftId));
-  }
-
-  if (topVars.length > 0) {
-    node.body.body.unshift(t.variableDeclaration("var", topVars));
-  }
-};
-
-TailCallTransformer.prototype.subTransform = function (node) {
-  if (!node) return;
-
-  var handler = this["subTransform" + node.type];
-  if (handler) return handler.call(this, node);
-};
-
-TailCallTransformer.prototype.subTransformConditionalExpression = function (node) {
-  var callConsequent = this.subTransform(node.consequent);
-  var callAlternate = this.subTransform(node.alternate);
-  if (!callConsequent && !callAlternate) {
-    return;
-  }
-
-  // if ternary operator had tail recursion in value, convert to optimized if-statement
-  node.type = "IfStatement";
-  node.consequent = callConsequent ? t.toBlock(callConsequent) : returnBlock(node.consequent);
-
-  if (callAlternate) {
-    node.alternate = t.isIfStatement(callAlternate) ? callAlternate : t.toBlock(callAlternate);
-  } else {
-    node.alternate = returnBlock(node.alternate);
-  }
-
-  return [node];
-};
-
-TailCallTransformer.prototype.subTransformLogicalExpression = function (node) {
-  // only call in right-value of can be optimized
-  var callRight = this.subTransform(node.right);
-  if (!callRight) return;
-
-  // cache left value as it might have side-effects
-  var leftId = this.getLeftId();
-  var testExpr = t.assignmentExpression("=", leftId, node.left);
-
-  if (node.operator === "&&") {
-    testExpr = t.unaryExpression("!", testExpr);
-  }
-
-  return [t.ifStatement(testExpr, returnBlock(leftId))].concat(callRight);
-};
-
-TailCallTransformer.prototype.subTransformSequenceExpression = function (node) {
-  var seq = node.expressions;
-
-  // only last element can be optimized
-  var lastCall = this.subTransform(seq[seq.length - 1]);
-  if (!lastCall) {
-    return;
-  }
-
-  // remove converted expression from sequence
-  // and convert to regular expression if needed
-  if (--seq.length === 1) {
-    node = seq[0];
-  }
-
-  return [t.expressionStatement(node)].concat(lastCall);
-};
-
-TailCallTransformer.prototype.subTransformCallExpression = function (node) {
-  var callee = node.callee,
-      thisBinding,
-      args;
-
-  if (t.isMemberExpression(callee, { computed: false }) && t.isIdentifier(callee.property)) {
-    switch (callee.property.name) {
-      case "call":
-        args = t.arrayExpression(node.arguments.slice(1));
-        break;
-
-      case "apply":
-        args = node.arguments[1] || t.identifier("undefined");
-        break;
-
-      default:
-        return;
-    }
-
-    thisBinding = node.arguments[0];
-    callee = callee.object;
-  }
-
-  // only tail recursion can be optimized as for now
-  if (!t.isIdentifier(callee) || !this.scope.bindingIdentifierEquals(callee.name, this.ownerId)) {
-    return;
-  }
-
-  this.hasTailRecursion = true;
-
-  if (this.hasDeopt()) return;
-
-  var body = [];
-
-  if (!t.isThisExpression(thisBinding)) {
-    body.push(t.expressionStatement(t.assignmentExpression("=", this.getThisId(), thisBinding || t.identifier("undefined"))));
-  }
-
-  if (!args) {
-    args = t.arrayExpression(node.arguments);
-  }
-
-  var argumentsId = this.getArgumentsId();
-  var params = this.getParams();
-
-  body.push(t.expressionStatement(t.assignmentExpression("=", argumentsId, args)));
-
-  var i, param;
-
-  if (t.isArrayExpression(args)) {
-    var elems = args.elements;
-    for (i = 0; i < elems.length && i < params.length; i++) {
-      param = params[i];
-      var elem = elems[i] || (elems[i] = t.identifier("undefined"));
-      if (!param._isDefaultPlaceholder) {
-        elems[i] = t.assignmentExpression("=", param, elem);
-      }
-    }
-  } else {
-    this.setsArguments = true;
-    for (i = 0; i < params.length; i++) {
-      param = params[i];
-      if (!param._isDefaultPlaceholder) {
-        body.push(t.expressionStatement(t.assignmentExpression("=", param, t.memberExpression(argumentsId, t.literal(i), true))));
-      }
-    }
-  }
-
-  body.push(t.expressionStatement(t.assignmentExpression("=", this.getAgainId(), t.literal(true))));
-  body.push(t.continueStatement(this.getFunctionId()));
-
-  return body;
-};
 
 // looks for and replaces tail recursion calls
 var firstPass = {
@@ -7422,11 +7235,293 @@ var thirdPass = {
   }
 };
 
-exports.Function = function (node, parent, scope, file) {
-  var tailCall = new TailCallTransformer(node, scope, file);
-  tailCall.run();
-};
-},{"../../../messages":30,"../../../types":123,"../../../util":125,"lodash/array/flatten":170,"lodash/collection/map":179,"lodash/collection/reduceRight":180}],78:[function(require,module,exports){
+var TailCallTransformer = (function () {
+  function TailCallTransformer(node, scope, file) {
+    _classCallCheck(this, TailCallTransformer);
+
+    this.hasTailRecursion = false;
+    this.needsArguments = false;
+    this.setsArguments = false;
+    this.needsThis = false;
+    this.ownerId = node.id;
+    this.vars = [];
+
+    this.scope = scope;
+    this.file = file;
+    this.node = node;
+  }
+
+  TailCallTransformer.prototype.getArgumentsId = function getArgumentsId() {
+    var _ref;
+
+    return (_ref = this, !_ref.argumentsId && (_ref.argumentsId = this.scope.generateUidIdentifier("arguments")), _ref.argumentsId);
+  };
+
+  TailCallTransformer.prototype.getThisId = function getThisId() {
+    var _ref;
+
+    return (_ref = this, !_ref.thisId && (_ref.thisId = this.scope.generateUidIdentifier("this")), _ref.thisId);
+  };
+
+  TailCallTransformer.prototype.getLeftId = function getLeftId() {
+    var _ref;
+
+    return (_ref = this, !_ref.leftId && (_ref.leftId = this.scope.generateUidIdentifier("left")), _ref.leftId);
+  };
+
+  TailCallTransformer.prototype.getFunctionId = function getFunctionId() {
+    var _ref;
+
+    return (_ref = this, !_ref.functionId && (_ref.functionId = this.scope.generateUidIdentifier("function")), _ref.functionId);
+  };
+
+  TailCallTransformer.prototype.getAgainId = function getAgainId() {
+    var _ref;
+
+    return (_ref = this, !_ref.againId && (_ref.againId = this.scope.generateUidIdentifier("again")), _ref.againId);
+  };
+
+  TailCallTransformer.prototype.getParams = function getParams() {
+    var params = this.params;
+
+    if (!params) {
+      params = this.node.params;
+      this.paramDecls = [];
+
+      for (var i = 0; i < params.length; i++) {
+        var param = params[i];
+        if (!param._isDefaultPlaceholder) {
+          this.paramDecls.push(t.variableDeclarator(param, params[i] = this.scope.generateUidIdentifier("x")));
+        }
+      }
+    }
+
+    return this.params = params;
+  };
+
+  TailCallTransformer.prototype.hasDeopt = function hasDeopt() {
+    // check if the ownerId has been reassigned, if it has then it's not safe to
+    // perform optimisations
+    var ownerIdInfo = this.scope.getBindingInfo(this.ownerId.name);
+    return ownerIdInfo && ownerIdInfo.reassigned;
+  };
+
+  TailCallTransformer.prototype.run = function run() {
+    var scope = this.scope;
+    var node = this.node;
+
+    // only tail recursion can be optimized as for now, so we can skip anonymous
+    // functions entirely
+    var ownerId = this.ownerId;
+    if (!ownerId) return;
+
+    // traverse the function and look for tail recursion
+    scope.traverse(node, firstPass, this);
+
+    if (!this.hasTailRecursion) return;
+
+    if (this.hasDeopt()) {
+      this.file.logDeopt(node, messages.get("tailCallReassignmentDeopt"));
+      return;
+    }
+
+    //
+
+    scope.traverse(node, secondPass, this);
+
+    if (!this.needsThis || !this.needsArguments) {
+      scope.traverse(node, thirdPass, this);
+    }
+
+    var body = t.ensureBlock(node).body;
+
+    if (this.vars.length > 0) {
+      var declarations = flatten(map(this.vars, function (decl) {
+        return decl.declarations;
+      }, this));
+      var statement = reduceRight(declarations, function (expr, decl) {
+        return t.assignmentExpression("=", decl.id, expr);
+      }, t.identifier("undefined"));
+      body.unshift(t.expressionStatement(statement));
+    }
+
+    var paramDecls = this.paramDecls;
+    if (paramDecls.length > 0) {
+      body.unshift(t.variableDeclaration("var", paramDecls));
+    }
+
+    body.unshift(t.expressionStatement(t.assignmentExpression("=", this.getAgainId(), t.literal(false))));
+
+    node.body = util.template("tail-call-body", {
+      AGAIN_ID: this.getAgainId(),
+      THIS_ID: this.thisId,
+      ARGUMENTS_ID: this.argumentsId,
+      FUNCTION_ID: this.getFunctionId(),
+      BLOCK: node.body
+    });
+
+    var topVars = [];
+
+    if (this.needsThis) {
+      topVars.push(t.variableDeclarator(this.getThisId(), t.thisExpression()));
+    }
+
+    if (this.needsArguments || this.setsArguments) {
+      var decl = t.variableDeclarator(this.getArgumentsId());
+      if (this.needsArguments) {
+        decl.init = t.identifier("arguments");
+      }
+      topVars.push(decl);
+    }
+
+    var leftId = this.leftId;
+    if (leftId) {
+      topVars.push(t.variableDeclarator(leftId));
+    }
+
+    if (topVars.length > 0) {
+      node.body.body.unshift(t.variableDeclaration("var", topVars));
+    }
+  };
+
+  TailCallTransformer.prototype.subTransform = function subTransform(node) {
+    if (!node) return;
+
+    var handler = this["subTransform" + node.type];
+    if (handler) return handler.call(this, node);
+  };
+
+  TailCallTransformer.prototype.subTransformConditionalExpression = function subTransformConditionalExpression(node) {
+    var callConsequent = this.subTransform(node.consequent);
+    var callAlternate = this.subTransform(node.alternate);
+    if (!callConsequent && !callAlternate) {
+      return;
+    }
+
+    // if ternary operator had tail recursion in value, convert to optimized if-statement
+    node.type = "IfStatement";
+    node.consequent = callConsequent ? t.toBlock(callConsequent) : returnBlock(node.consequent);
+
+    if (callAlternate) {
+      node.alternate = t.isIfStatement(callAlternate) ? callAlternate : t.toBlock(callAlternate);
+    } else {
+      node.alternate = returnBlock(node.alternate);
+    }
+
+    return [node];
+  };
+
+  TailCallTransformer.prototype.subTransformLogicalExpression = function subTransformLogicalExpression(node) {
+    // only call in right-value of can be optimized
+    var callRight = this.subTransform(node.right);
+    if (!callRight) return;
+
+    // cache left value as it might have side-effects
+    var leftId = this.getLeftId();
+    var testExpr = t.assignmentExpression("=", leftId, node.left);
+
+    if (node.operator === "&&") {
+      testExpr = t.unaryExpression("!", testExpr);
+    }
+
+    return [t.ifStatement(testExpr, returnBlock(leftId))].concat(callRight);
+  };
+
+  TailCallTransformer.prototype.subTransformSequenceExpression = function subTransformSequenceExpression(node) {
+    var seq = node.expressions;
+
+    // only last element can be optimized
+    var lastCall = this.subTransform(seq[seq.length - 1]);
+    if (!lastCall) {
+      return;
+    }
+
+    // remove converted expression from sequence
+    // and convert to regular expression if needed
+    if (--seq.length === 1) {
+      node = seq[0];
+    }
+
+    return [t.expressionStatement(node)].concat(lastCall);
+  };
+
+  TailCallTransformer.prototype.subTransformCallExpression = function subTransformCallExpression(node) {
+    var callee = node.callee,
+        thisBinding,
+        args;
+
+    if (t.isMemberExpression(callee, { computed: false }) && t.isIdentifier(callee.property)) {
+      switch (callee.property.name) {
+        case "call":
+          args = t.arrayExpression(node.arguments.slice(1));
+          break;
+
+        case "apply":
+          args = node.arguments[1] || t.identifier("undefined");
+          break;
+
+        default:
+          return;
+      }
+
+      thisBinding = node.arguments[0];
+      callee = callee.object;
+    }
+
+    // only tail recursion can be optimized as for now
+    if (!t.isIdentifier(callee) || !this.scope.bindingIdentifierEquals(callee.name, this.ownerId)) {
+      return;
+    }
+
+    this.hasTailRecursion = true;
+
+    if (this.hasDeopt()) return;
+
+    var body = [];
+
+    if (!t.isThisExpression(thisBinding)) {
+      body.push(t.expressionStatement(t.assignmentExpression("=", this.getThisId(), thisBinding || t.identifier("undefined"))));
+    }
+
+    if (!args) {
+      args = t.arrayExpression(node.arguments);
+    }
+
+    var argumentsId = this.getArgumentsId();
+    var params = this.getParams();
+
+    body.push(t.expressionStatement(t.assignmentExpression("=", argumentsId, args)));
+
+    var i, param;
+
+    if (t.isArrayExpression(args)) {
+      var elems = args.elements;
+      for (i = 0; i < elems.length && i < params.length; i++) {
+        param = params[i];
+        var elem = elems[i] || (elems[i] = t.identifier("undefined"));
+        if (!param._isDefaultPlaceholder) {
+          elems[i] = t.assignmentExpression("=", param, elem);
+        }
+      }
+    } else {
+      this.setsArguments = true;
+      for (i = 0; i < params.length; i++) {
+        param = params[i];
+        if (!param._isDefaultPlaceholder) {
+          body.push(t.expressionStatement(t.assignmentExpression("=", param, t.memberExpression(argumentsId, t.literal(i), true))));
+        }
+      }
+    }
+
+    body.push(t.expressionStatement(t.assignmentExpression("=", this.getAgainId(), t.literal(true))));
+    body.push(t.continueStatement(this.getFunctionId()));
+
+    return body;
+  };
+
+  return TailCallTransformer;
+})();
+},{"../../../messages":30,"../../../types":124,"../../../util":126,"lodash/array/flatten":171,"lodash/collection/map":180,"lodash/collection/reduceRight":181}],79:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -7493,7 +7588,7 @@ exports.TemplateLiteral = function (node) {
     return nodes[0];
   }
 };
-},{"../../../types":123}],79:[function(require,module,exports){
+},{"../../../types":124}],80:[function(require,module,exports){
 "use strict";
 
 var rewritePattern = require("regexpu/rewrite-pattern");
@@ -7515,7 +7610,7 @@ exports.Literal = function (node) {
   regex.pattern = rewritePattern(regex.pattern, regex.flags);
   regex.flags = flags.join("");
 };
-},{"../../../types":123,"lodash/array/pull":172,"regexpu/rewrite-pattern":298}],80:[function(require,module,exports){
+},{"../../../types":124,"lodash/array/pull":173,"regexpu/rewrite-pattern":299}],81:[function(require,module,exports){
 "use strict";
 
 // https://github.com/zenparsing/es-abstract-refs
@@ -7619,7 +7714,7 @@ exports.PrivateDeclaration = function (node) {
     return t.variableDeclarator(id, t.newExpression(t.identifier("WeakMap"), []));
   }));
 };
-},{"../../../types":123,"../../../util":125}],81:[function(require,module,exports){
+},{"../../../types":124,"../../../util":126}],82:[function(require,module,exports){
 "use strict";
 
 var buildComprehension = require("../../helpers/build-comprehension");
@@ -7675,7 +7770,7 @@ var array = function array(node, parent, scope, file) {
 
   return container;
 };
-},{"../../../traversal":118,"../../../types":123,"../../../util":125,"../../helpers/build-comprehension":35}],82:[function(require,module,exports){
+},{"../../../traversal":119,"../../../types":124,"../../../util":126,"../../helpers/build-comprehension":35}],83:[function(require,module,exports){
 "use strict";
 
 // https://github.com/rwaldron/exponentiation-operator
@@ -7694,7 +7789,7 @@ build(exports, {
     return t.callExpression(MATH_POW, [left, right]);
   }
 });
-},{"../../../types":123,"../../helpers/build-binary-assignment-operator-transformer":34}],83:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/build-binary-assignment-operator-transformer":34}],84:[function(require,module,exports){
 "use strict";
 
 // https://github.com/sebmarkbage/ecmascript-rest-spread
@@ -7746,19 +7841,20 @@ exports.ObjectExpression = function (node, parent, scope, file) {
 
   return t.callExpression(file.addHelper("extends"), args);
 };
-},{"../../../types":123}],84:[function(require,module,exports){
+},{"../../../types":124}],85:[function(require,module,exports){
 "use strict";
 
 module.exports = {
   useStrict: require("./other/use-strict"),
 
-  // this goes at the start so we only transform the original user code
-  "spec.functionName": require("./spec/function-name"),
-
   "validation.undeclaredVariableCheck": require("./validation/undeclared-variable-check"),
   "validation.noForInOfAssignment": require("./validation/no-for-in-of-assignment"),
   "validation.setters": require("./validation/setters"),
   "validation.react": require("./validation/react"),
+
+  // this goes at the start so we only transform the original user code
+  "spec.functionName": require("./spec/function-name"),
+
   "spec.blockScopedFunctions": require("./spec/block-scoped-functions"),
 
   // needs to be before `_aliasFunction`
@@ -7859,7 +7955,7 @@ module.exports = {
 
   _cleanUp: require("./internal/cleanup")
 };
-},{"./es3/member-expression-literals":60,"./es3/property-literals":61,"./es5/properties.mutators":62,"./es6/arrow-functions":63,"./es6/block-scoping":65,"./es6/block-scoping-tdz":64,"./es6/classes":66,"./es6/constants":67,"./es6/destructuring":68,"./es6/for-of":69,"./es6/modules":70,"./es6/object-super":71,"./es6/parameters.default":72,"./es6/parameters.rest":73,"./es6/properties.computed":74,"./es6/properties.shorthand":75,"./es6/spread":76,"./es6/tail-call":77,"./es6/template-literals":78,"./es6/unicode-regex":79,"./es7/abstract-references":80,"./es7/comprehensions":81,"./es7/exponentiation-operator":82,"./es7/object-rest-spread":83,"./internal/alias-functions":85,"./internal/block-hoist":86,"./internal/cleanup":87,"./internal/declarations":88,"./internal/module-formatter":89,"./internal/modules":90,"./internal/use-strict":91,"./minification/dead-code-elimination":92,"./minification/remove-console-calls":93,"./minification/remove-debugger":94,"./minification/rename-local-variables":95,"./other/async-to-generator":96,"./other/bluebird-coroutines":97,"./other/flow":98,"./other/react":100,"./other/react-compat":99,"./other/regenerator":101,"./other/runtime":102,"./other/use-strict":103,"./playground/mallet-operator":104,"./playground/memoization-operator":105,"./playground/method-binding":106,"./playground/object-getter-memoization":107,"./spec/block-scoped-functions":108,"./spec/function-name":109,"./spec/proto-to-assign":110,"./spec/typeof-symbol":111,"./spec/undefined-to-void":112,"./validation/no-for-in-of-assignment":113,"./validation/react":114,"./validation/setters":115,"./validation/undeclared-variable-check":116}],85:[function(require,module,exports){
+},{"./es3/member-expression-literals":61,"./es3/property-literals":62,"./es5/properties.mutators":63,"./es6/arrow-functions":64,"./es6/block-scoping":66,"./es6/block-scoping-tdz":65,"./es6/classes":67,"./es6/constants":68,"./es6/destructuring":69,"./es6/for-of":70,"./es6/modules":71,"./es6/object-super":72,"./es6/parameters.default":73,"./es6/parameters.rest":74,"./es6/properties.computed":75,"./es6/properties.shorthand":76,"./es6/spread":77,"./es6/tail-call":78,"./es6/template-literals":79,"./es6/unicode-regex":80,"./es7/abstract-references":81,"./es7/comprehensions":82,"./es7/exponentiation-operator":83,"./es7/object-rest-spread":84,"./internal/alias-functions":86,"./internal/block-hoist":87,"./internal/cleanup":88,"./internal/declarations":89,"./internal/module-formatter":90,"./internal/modules":91,"./internal/use-strict":92,"./minification/dead-code-elimination":93,"./minification/remove-console-calls":94,"./minification/remove-debugger":95,"./minification/rename-local-variables":96,"./other/async-to-generator":97,"./other/bluebird-coroutines":98,"./other/flow":99,"./other/react":101,"./other/react-compat":100,"./other/regenerator":102,"./other/runtime":103,"./other/use-strict":104,"./playground/mallet-operator":105,"./playground/memoization-operator":106,"./playground/method-binding":107,"./playground/object-getter-memoization":108,"./spec/block-scoped-functions":109,"./spec/function-name":110,"./spec/proto-to-assign":111,"./spec/typeof-symbol":112,"./spec/undefined-to-void":113,"./validation/no-for-in-of-assignment":114,"./validation/react":115,"./validation/setters":116,"./validation/undeclared-variable-check":117}],86:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -7910,10 +8006,11 @@ var go = function go(getBody, node, scope) {
 
   var state = {
     getArgumentsId: function getArgumentsId() {
-      return argumentsId = argumentsId || scope.generateUidIdentifier("arguments");
+      return (!argumentsId && (argumentsId = scope.generateUidIdentifier("arguments")), argumentsId);
     },
+
     getThisId: function getThisId() {
-      return thisId = thisId || scope.generateUidIdentifier("this");
+      return (!thisId && (thisId = scope.generateUidIdentifier("this")), thisId);
     }
   };
 
@@ -7924,7 +8021,8 @@ var go = function go(getBody, node, scope) {
   var body;
 
   var pushDeclaration = function pushDeclaration(id, init) {
-    body = body || getBody();
+    if (!body) body = getBody();
+
     body.unshift(t.variableDeclaration("var", [t.variableDeclarator(id, init)]));
   };
 
@@ -7949,7 +8047,7 @@ exports.FunctionDeclaration = exports.FunctionExpression = function (node, paren
     return node.body.body;
   }, node, scope);
 };
-},{"../../../types":123}],86:[function(require,module,exports){
+},{"../../../types":124}],87:[function(require,module,exports){
 "use strict";
 
 var groupBy = require("lodash/collection/groupBy");
@@ -7982,7 +8080,7 @@ exports.BlockStatement = exports.Program = {
     node.body = flatten(values(nodePriorities).reverse());
   }
 };
-},{"lodash/array/flatten":170,"lodash/collection/groupBy":177,"lodash/object/values":277}],87:[function(require,module,exports){
+},{"lodash/array/flatten":171,"lodash/collection/groupBy":178,"lodash/object/values":278}],88:[function(require,module,exports){
 "use strict";
 
 exports.SequenceExpression = function (node) {
@@ -7990,7 +8088,7 @@ exports.SequenceExpression = function (node) {
     return node.expressions[0];
   }
 };
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 "use strict";
 
 var useStrict = require("../../helpers/use-strict");
@@ -8014,7 +8112,10 @@ exports.BlockStatement = exports.Program = function (node, parent, scope, file) 
       if (declar.init) {
         node.body.unshift(file.attachAuxiliaryComment(t.variableDeclaration(kind, [declarNode])));
       } else {
-        kinds[kind] = kinds[kind] || [];
+        var _kinds = kinds;
+        var _kind = kind;
+        if (!_kinds[_kind]) _kinds[_kind] = [];
+
         kinds[kind].push(declarNode);
       }
     }
@@ -8026,7 +8127,7 @@ exports.BlockStatement = exports.Program = function (node, parent, scope, file) 
     node._declarations = null;
   });
 };
-},{"../../../types":123,"../../helpers/use-strict":44}],89:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/use-strict":45}],90:[function(require,module,exports){
 "use strict";
 
 var useStrict = require("../../helpers/use-strict");
@@ -8042,7 +8143,7 @@ exports.Program = function (program, parent, scope, file) {
     file.moduleFormatter.transform(program);
   }
 };
-},{"../../helpers/use-strict":44}],90:[function(require,module,exports){
+},{"../../helpers/use-strict":45}],91:[function(require,module,exports){
 "use strict";
 
 // in this transformer we have to split up classes and function declarations
@@ -8107,7 +8208,7 @@ exports.ExportDeclaration = function (node, parent, scope) {
     }
   }
 };
-},{"../../../types":123}],91:[function(require,module,exports){
+},{"../../../types":124}],92:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8117,7 +8218,7 @@ exports.Program = function (program, parent, scope, file) {
     program.body.unshift(t.expressionStatement(t.literal("use strict")));
   }
 };
-},{"../../../types":123}],92:[function(require,module,exports){
+},{"../../../types":124}],93:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8196,7 +8297,7 @@ exports.IfStatement = {
     }
   }
 };
-},{"../../../types":123}],93:[function(require,module,exports){
+},{"../../../types":124}],94:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8214,7 +8315,7 @@ exports.CallExpression = function (node, parent) {
     }
   }
 };
-},{"../../../types":123}],94:[function(require,module,exports){
+},{"../../../types":124}],95:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8226,7 +8327,7 @@ exports.ExpressionStatement = function (node) {
     this.remove();
   }
 };
-},{"../../../types":123}],95:[function(require,module,exports){
+},{"../../../types":124}],96:[function(require,module,exports){
 "use strict";
 
 //var t = require("../../../types");
@@ -8238,7 +8339,7 @@ exports.Scopable = function () {};
 //for (var name in scope.bindings) {
 //  scope.rename(name, scope.generateUidIdentifier("a").name);
 //}
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 "use strict";
 
 var remapAsyncToGenerator = require("../../helpers/remap-async-to-generator");
@@ -8253,7 +8354,7 @@ exports.Function = function (node, parent, scope, file) {
 
   return remapAsyncToGenerator(node, file.addHelper("async-to-generator"), scope);
 };
-},{"../../helpers/remap-async-to-generator":42,"./bluebird-coroutines":97}],97:[function(require,module,exports){
+},{"../../helpers/remap-async-to-generator":43,"./bluebird-coroutines":98}],98:[function(require,module,exports){
 "use strict";
 
 var remapAsyncToGenerator = require("../../helpers/remap-async-to-generator");
@@ -8271,7 +8372,7 @@ exports.Function = function (node, parent, scope, file) {
 
   return remapAsyncToGenerator(node, t.memberExpression(file.addImport("bluebird", null, true), t.identifier("coroutine")), scope);
 };
-},{"../../../types":123,"../../helpers/remap-async-to-generator":42}],98:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/remap-async-to-generator":43}],99:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8287,7 +8388,7 @@ exports.ImportDeclaration = function (node) {
 exports.ExportDeclaration = function (node) {
   if (t.isTypeAlias(node.declaration)) this.remove();
 };
-},{"../../../types":123}],99:[function(require,module,exports){
+},{"../../../types":124}],100:[function(require,module,exports){
 "use strict";
 
 var react = require("../../helpers/react");
@@ -8310,7 +8411,7 @@ require("../../helpers/build-react-transformer")(exports, {
     }
   }
 });
-},{"../../../types":123,"../../helpers/build-react-transformer":37,"../../helpers/react":41}],100:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/build-react-transformer":37,"../../helpers/react":42}],101:[function(require,module,exports){
 "use strict";
 
 var react = require("../../helpers/react");
@@ -8354,7 +8455,7 @@ require("../../helpers/build-react-transformer")(exports, {
     state.callee = file.get("jsxIdentifier");
   }
 });
-},{"../../../types":123,"../../helpers/build-react-transformer":37,"../../helpers/react":41}],101:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/build-react-transformer":37,"../../helpers/react":42}],102:[function(require,module,exports){
 "use strict";
 
 var regenerator = require("regenerator-babel");
@@ -8370,7 +8471,7 @@ exports.Program = {
     this.stop();
   }
 };
-},{"../../../types":123,"regenerator-babel":290}],102:[function(require,module,exports){
+},{"../../../types":124,"regenerator-babel":291}],103:[function(require,module,exports){
 "use strict";
 
 var includes = require("lodash/collection/includes");
@@ -8466,7 +8567,7 @@ exports.Identifier = function (node, parent, scope, file) {
     return file.get("regeneratorIdentifier");
   }
 };
-},{"../../../types":123,"../../../util":125,"core-js/library":149,"lodash/collection/includes":178,"lodash/object/has":274}],103:[function(require,module,exports){
+},{"../../../types":124,"../../../util":126,"core-js/library":150,"lodash/collection/includes":179,"lodash/object/has":275}],104:[function(require,module,exports){
 "use strict";
 
 var messages = require("../../../messages");
@@ -8492,7 +8593,7 @@ exports.CallExpression = function (node, parent, scope, file) {
     throw file.errorWithNode(node, messages.get("evalInStrictMode"));
   }
 };
-},{"../../../messages":30,"../../../types":123}],104:[function(require,module,exports){
+},{"../../../messages":30,"../../../types":124}],105:[function(require,module,exports){
 "use strict";
 
 var messages = require("../../../messages");
@@ -8527,7 +8628,7 @@ build(exports, {
     return t.unaryExpression("!", node, true);
   }
 });
-},{"../../../messages":30,"../../../types":123,"../../helpers/build-conditional-assignment-operator-transformer":36}],105:[function(require,module,exports){
+},{"../../../messages":30,"../../../types":124,"../../helpers/build-conditional-assignment-operator-transformer":36}],106:[function(require,module,exports){
 "use strict";
 
 var build = require("../../helpers/build-conditional-assignment-operator-transformer");
@@ -8556,7 +8657,7 @@ build(exports, {
     return t.unaryExpression("!", t.callExpression(t.memberExpression(file.addHelper("has-own"), t.identifier("call")), [node.object, node.property]), true);
   }
 });
-},{"../../../types":123,"../../helpers/build-conditional-assignment-operator-transformer":36}],106:[function(require,module,exports){
+},{"../../../types":124,"../../helpers/build-conditional-assignment-operator-transformer":36}],107:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8591,7 +8692,7 @@ exports.BindFunctionExpression = function (node, parent, scope) {
     return t.memberExpression(temp, t.literal(i), true);
   }))]);
 };
-},{"../../../types":123}],107:[function(require,module,exports){
+},{"../../../types":124}],108:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8630,7 +8731,7 @@ exports.Property = exports.MethodDefinition = function (node, parent, scope, fil
 
   return node;
 };
-},{"../../../types":123}],108:[function(require,module,exports){
+},{"../../../types":124}],109:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8657,13 +8758,13 @@ exports.BlockStatement = function (node, parent, scope, file) {
     file.checkNode(declar);
   }
 };
-},{"../../../types":123}],109:[function(require,module,exports){
+},{"../../../types":124}],110:[function(require,module,exports){
 "use strict";
 
 var nameMethod = require("../../helpers/name-method");
 
 exports.FunctionExpression = nameMethod.bare;
-},{"../../helpers/name-method":40}],110:[function(require,module,exports){
+},{"../../helpers/name-method":41}],111:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8726,7 +8827,7 @@ exports.ObjectExpression = function (node, parent, scope, file) {
     return t.callExpression(file.addHelper("extends"), args);
   }
 };
-},{"../../../types":123,"lodash/array/pull":172}],111:[function(require,module,exports){
+},{"../../../types":124,"lodash/array/pull":173}],112:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8746,7 +8847,7 @@ exports.UnaryExpression = function (node, parent, scope, file) {
     }
   }
 };
-},{"../../../types":123}],112:[function(require,module,exports){
+},{"../../../types":124}],113:[function(require,module,exports){
 "use strict";
 
 var t = require("../../../types");
@@ -8758,7 +8859,7 @@ exports.Identifier = function (node, parent) {
     return t.unaryExpression("void", t.literal(0), true);
   }
 };
-},{"../../../types":123}],113:[function(require,module,exports){
+},{"../../../types":124}],114:[function(require,module,exports){
 "use strict";
 
 var messages = require("../../../messages");
@@ -8773,7 +8874,7 @@ exports.ForInStatement = exports.ForOfStatement = function (node, parent, scope,
     if (declar.init) throw file.errorWithNode(declar, messages.get("noAssignmentsInForHead"));
   }
 };
-},{"../../../messages":30,"../../../types":123}],114:[function(require,module,exports){
+},{"../../../messages":30,"../../../types":124}],115:[function(require,module,exports){
 "use strict";
 
 var messages = require("../../../messages");
@@ -8800,7 +8901,7 @@ exports.CallExpression = function (node, parent, scope, file) {
 exports.ImportDeclaration = exports.ExportDeclaration = function (node, parent, scope, file) {
   check(node.source, file);
 };
-},{"../../../messages":30,"../../../types":123}],115:[function(require,module,exports){
+},{"../../../messages":30,"../../../types":124}],116:[function(require,module,exports){
 "use strict";
 
 var messages = require("../../../messages");
@@ -8814,7 +8915,7 @@ exports.MethodDefinition = exports.Property = function (node, parent, scope, fil
     throw file.errorWithNode(node.value, messages.get("settersInvalidParamLength"));
   }
 };
-},{"../../../messages":30}],116:[function(require,module,exports){
+},{"../../../messages":30}],117:[function(require,module,exports){
 "use strict";
 
 var levenshtein = require("leven");
@@ -8855,7 +8956,7 @@ exports.Identifier = function (node, parent, scope, file) {
 
   throw file.errorWithNode(node, msg, ReferenceError);
 };
-},{"../../../messages":30,"../../../types":123,"leven":166}],117:[function(require,module,exports){
+},{"../../../messages":30,"../../../types":124,"leven":167}],118:[function(require,module,exports){
 "use strict";
 
 module.exports = TraversalContext;
@@ -8910,7 +9011,7 @@ TraversalContext.prototype.visit = function (node, key) {
     }
   }
 };
-},{"./path":119,"lodash/array/compact":169,"lodash/array/flatten":170}],118:[function(require,module,exports){
+},{"./path":120,"lodash/array/compact":170,"lodash/array/flatten":171}],119:[function(require,module,exports){
 "use strict";
 
 module.exports = traverse;
@@ -9032,7 +9133,7 @@ traverse.hasType = function (tree, scope, type, blacklistTypes) {
 
   return state.has;
 };
-},{"../types":123,"./context":117,"lodash/collection/includes":178}],119:[function(require,module,exports){
+},{"../types":124,"./context":118,"lodash/collection/includes":179}],120:[function(require,module,exports){
 "use strict";
 
 module.exports = TraversalPath;
@@ -9188,7 +9289,7 @@ TraversalPath.prototype.visit = function () {
 TraversalPath.prototype.isReferencedIdentifier = function () {
   return t.isReferencedIdentifier(this.node);
 };
-},{"../types":123,"./index":118,"./scope":120,"lodash/collection/includes":178}],120:[function(require,module,exports){
+},{"../types":124,"./index":119,"./scope":121,"lodash/collection/includes":179}],121:[function(require,module,exports){
 "use strict";
 
 module.exports = Scope;
@@ -9373,7 +9474,7 @@ Scope.prototype.checkBlockScopedCollisions = function (kind, name, id) {
 };
 
 Scope.prototype.rename = function (oldName, newName) {
-  newName = newName || this.generateUidIdentifier(oldName).name;
+  if (!newName) newName = this.generateUidIdentifier(oldName).name;
 
   var info = this.getBindingInfo(oldName);
   if (!info) return;
@@ -9733,7 +9834,9 @@ Scope.prototype.push = function (opts) {
   }
 
   if (t.isBlockStatement(block) || t.isProgram(block)) {
-    block._declarations = block._declarations || {};
+    var _block = block;
+    if (!_block._declarations) _block._declarations = {};
+
     block._declarations[opts.key] = {
       kind: opts.kind,
       id: opts.id,
@@ -9845,7 +9948,7 @@ Scope.prototype.hasBinding = function (name) {
 Scope.prototype.parentHasBinding = function (name) {
   return this.parent && this.parent.hasBinding(name);
 };
-},{"../helpers/object":27,"../messages":30,"../types":123,"./index":118,"globals":161,"lodash/array/flatten":170,"lodash/collection/each":175,"lodash/collection/includes":178,"lodash/object/defaults":272,"lodash/object/extend":273}],121:[function(require,module,exports){
+},{"../helpers/object":27,"../messages":30,"../types":124,"./index":119,"globals":162,"lodash/array/flatten":171,"lodash/collection/each":176,"lodash/collection/includes":179,"lodash/object/defaults":273,"lodash/object/extend":274}],122:[function(require,module,exports){
 module.exports={
   "ExpressionStatement": ["Statement"],
   "BreakStatement":      ["Statement"],
@@ -9931,7 +10034,7 @@ module.exports={
   "JSXSpreadAttribute":     ["JSX"]
 }
 
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 module.exports={
   "ArrayExpression": {
     "elements": null
@@ -10101,7 +10204,7 @@ module.exports={
   }
 }
 
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 "use strict";
 
 var toFastProperties = require("../helpers/to-fast-properties");
@@ -10128,7 +10231,8 @@ function registerType(type, skipAliasCheck) {
   };
 
   t["assert" + type] = function (node, opts) {
-    opts = opts || {};
+    if (!opts) opts = {};
+
     if (!is(node, opts)) {
       throw new Error("Expected type " + JSON.stringify(type) + " with option " + JSON.stringify(opts));
     }
@@ -10511,7 +10615,8 @@ t.toIdentifier = function (name) {
  */
 
 t.ensureBlock = function (node, key) {
-  key = key || "body";
+  if (!key) key = "body";
+
   return node[key] = t.toBlock(node[key], node);
 };
 
@@ -10907,7 +11012,7 @@ t.isScope = function (node, parent) {
 
 toFastProperties(t);
 toFastProperties(t.VISITOR_KEYS);
-},{"../helpers/object":27,"../helpers/to-fast-properties":29,"./alias-keys":121,"./builder-keys":122,"./visitor-keys":124,"esutils":159,"lodash/array/compact":169,"lodash/array/uniq":173,"lodash/collection/each":175,"lodash/lang/isString":269}],124:[function(require,module,exports){
+},{"../helpers/object":27,"../helpers/to-fast-properties":29,"./alias-keys":122,"./builder-keys":123,"./visitor-keys":125,"esutils":160,"lodash/array/compact":170,"lodash/array/uniq":174,"lodash/collection/each":176,"lodash/lang/isString":270}],125:[function(require,module,exports){
 module.exports={
   "ArrayExpression":           ["elements"],
   "ArrayPattern":              ["elements"],
@@ -11025,7 +11130,7 @@ module.exports={
   "JSXSpreadAttribute":        ["argument"]
 }
 
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 (function (__dirname){
 "use strict";
 
@@ -11165,7 +11270,7 @@ try {
   exports.templates = loadTemplates();
 }
 }).call(this,"/node_modules/babel/lib/babel")
-},{"../../templates.json":317,"./helpers/parse":28,"./patch":31,"./traversal":118,"./types":123,"debug/node":152,"fs":318,"lodash/collection/contains":174,"lodash/collection/each":175,"lodash/lang/cloneDeep":259,"lodash/lang/isBoolean":262,"lodash/lang/isEmpty":263,"lodash/lang/isRegExp":268,"lodash/lang/isString":269,"lodash/object/has":274,"path":327,"util":344}],126:[function(require,module,exports){
+},{"../../templates.json":318,"./helpers/parse":28,"./patch":31,"./traversal":119,"./types":124,"debug/node":153,"fs":319,"lodash/collection/contains":175,"lodash/collection/each":176,"lodash/lang/cloneDeep":260,"lodash/lang/isBoolean":263,"lodash/lang/isEmpty":264,"lodash/lang/isRegExp":269,"lodash/lang/isString":270,"lodash/object/has":275,"path":328,"util":345}],127:[function(require,module,exports){
 // Acorn is a tiny, fast JavaScript parser written in JavaScript.
 //
 // Acorn was written by Marijn Haverbeke and various contributors and
@@ -13455,6 +13560,7 @@ switch(str.length){case 5:switch(str){case "break":case "catch":case "throw":cas
         case "Identifier":
         case "VirtualPropertyExpression":
         case "MemberExpression":
+        case "SpreadProperty":
         case "ObjectPattern":
         case "ArrayPattern":
         case "AssignmentPattern":
@@ -13464,6 +13570,8 @@ switch(str.length){case 5:switch(str){case "break":case "catch":case "throw":cas
           node.type = "ObjectPattern";
           for (var i = 0; i < node.properties.length; i++) {
             var prop = node.properties[i];
+            if (prop.type === "SpreadProperty") continue;
+            
             if (prop.kind !== "init") raise(prop.key.start, "Object pattern can't contain getter or setter");
             toAssignable(prop.value, isBinding);
           }
@@ -15962,7 +16070,7 @@ switch(str.length){case 5:switch(str){case "break":case "catch":case "throw":cas
   }
 });
 
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 var types = require("../lib/types");
 var Type = types.Type;
 var def = Type.def;
@@ -16345,7 +16453,7 @@ def("Line")
     .bases("Comment")
     .build("value", /*optional:*/ "leading", "trailing");
 
-},{"../lib/shared":138,"../lib/types":139}],128:[function(require,module,exports){
+},{"../lib/shared":139,"../lib/types":140}],129:[function(require,module,exports){
 require("./core");
 var types = require("../lib/types");
 var def = types.Type.def;
@@ -16434,7 +16542,7 @@ def("XMLProcessingInstruction")
     .field("target", isString)
     .field("contents", or(isString, null));
 
-},{"../lib/types":139,"./core":127}],129:[function(require,module,exports){
+},{"../lib/types":140,"./core":128}],130:[function(require,module,exports){
 require("./core");
 var types = require("../lib/types");
 var def = types.Type.def;
@@ -16673,7 +16781,7 @@ def("TemplateElement")
     .field("value", {"cooked": isString, "raw": isString})
     .field("tail", isBoolean);
 
-},{"../lib/shared":138,"../lib/types":139,"./core":127}],130:[function(require,module,exports){
+},{"../lib/shared":139,"../lib/types":140,"./core":128}],131:[function(require,module,exports){
 require("./core");
 var types = require("../lib/types");
 var def = types.Type.def;
@@ -16713,7 +16821,7 @@ def("AwaitExpression")
     .field("argument", or(def("Expression"), null))
     .field("all", isBoolean, defaults["false"]);
 
-},{"../lib/shared":138,"../lib/types":139,"./core":127}],131:[function(require,module,exports){
+},{"../lib/shared":139,"../lib/types":140,"./core":128}],132:[function(require,module,exports){
 require("./core");
 var types = require("../lib/types");
 var def = types.Type.def;
@@ -17009,7 +17117,7 @@ def("DeclareModule")
   .field("id", or(def("Identifier"), def("Literal")))
   .field("body", def("BlockStatement"));
 
-},{"../lib/shared":138,"../lib/types":139,"./core":127}],132:[function(require,module,exports){
+},{"../lib/shared":139,"../lib/types":140,"./core":128}],133:[function(require,module,exports){
 require("./core");
 var types = require("../lib/types");
 var def = types.Type.def;
@@ -17050,7 +17158,7 @@ def("GraphIndexExpression")
     .build("index")
     .field("index", geq(0));
 
-},{"../lib/shared":138,"../lib/types":139,"./core":127}],133:[function(require,module,exports){
+},{"../lib/shared":139,"../lib/types":140,"./core":128}],134:[function(require,module,exports){
 var assert = require("assert");
 var types = require("../main");
 var getFieldNames = types.getFieldNames;
@@ -17230,7 +17338,7 @@ function objectsAreEquivalent(a, b, problemPath) {
 
 module.exports = astNodesAreEquivalent;
 
-},{"../main":140,"assert":319}],134:[function(require,module,exports){
+},{"../main":141,"assert":320}],135:[function(require,module,exports){
 var assert = require("assert");
 var types = require("./types");
 var n = types.namedTypes;
@@ -17681,7 +17789,7 @@ function cleanUpIfStatementAfterPrune(ifStatement) {
 
 module.exports = NodePath;
 
-},{"./path":136,"./scope":137,"./types":139,"assert":319,"util":344}],135:[function(require,module,exports){
+},{"./path":137,"./scope":138,"./types":140,"assert":320,"util":345}],136:[function(require,module,exports){
 var assert = require("assert");
 var types = require("./types");
 var NodePath = require("./node-path");
@@ -18053,7 +18161,7 @@ sharedContextProtoMethods.abort = function abort() {
 
 module.exports = PathVisitor;
 
-},{"./node-path":134,"./types":139,"assert":319}],136:[function(require,module,exports){
+},{"./node-path":135,"./types":140,"assert":320}],137:[function(require,module,exports){
 var assert = require("assert");
 var Op = Object.prototype;
 var hasOwn = Op.hasOwnProperty;
@@ -18403,7 +18511,7 @@ Pp.replace = function replace(replacement) {
 
 module.exports = Path;
 
-},{"./types":139,"assert":319}],137:[function(require,module,exports){
+},{"./types":140,"assert":320}],138:[function(require,module,exports){
 var assert = require("assert");
 var types = require("./types");
 var Type = types.Type;
@@ -18686,7 +18794,7 @@ Sp.getGlobalScope = function() {
 
 module.exports = Scope;
 
-},{"./node-path":134,"./types":139,"assert":319}],138:[function(require,module,exports){
+},{"./node-path":135,"./types":140,"assert":320}],139:[function(require,module,exports){
 var types = require("../lib/types");
 var Type = types.Type;
 var builtin = types.builtInTypes;
@@ -18729,7 +18837,7 @@ exports.isPrimitive = new Type(function(value) {
              type === "function");
 }, naiveIsPrimitive.toString());
 
-},{"../lib/types":139}],139:[function(require,module,exports){
+},{"../lib/types":140}],140:[function(require,module,exports){
 var assert = require("assert");
 var Ap = Array.prototype;
 var slice = Ap.slice;
@@ -19461,7 +19569,7 @@ exports.finalize = function() {
     });
 };
 
-},{"assert":319}],140:[function(require,module,exports){
+},{"assert":320}],141:[function(require,module,exports){
 var types = require("./lib/types");
 
 // This core module of AST types captures ES5 as it is parsed today by
@@ -19494,7 +19602,7 @@ exports.NodePath = require("./lib/node-path");
 exports.PathVisitor = require("./lib/path-visitor");
 exports.visit = exports.PathVisitor.visit;
 
-},{"./def/core":127,"./def/e4x":128,"./def/es6":129,"./def/es7":130,"./def/fb-harmony":131,"./def/mozilla":132,"./lib/equiv":133,"./lib/node-path":134,"./lib/path-visitor":135,"./lib/types":139}],141:[function(require,module,exports){
+},{"./def/core":128,"./def/e4x":129,"./def/es6":130,"./def/es7":131,"./def/fb-harmony":132,"./def/mozilla":133,"./lib/equiv":134,"./lib/node-path":135,"./lib/path-visitor":136,"./lib/types":140}],142:[function(require,module,exports){
 (function (process){
 'use strict';
 var escapeStringRegexp = require('escape-string-regexp');
@@ -19598,7 +19706,7 @@ module.exports.stripColor = stripAnsi;
 module.exports.supportsColor = supportsColor;
 
 }).call(this,require('_process'))
-},{"_process":328,"ansi-styles":142,"escape-string-regexp":143,"has-ansi":144,"strip-ansi":146,"supports-color":148}],142:[function(require,module,exports){
+},{"_process":329,"ansi-styles":143,"escape-string-regexp":144,"has-ansi":145,"strip-ansi":147,"supports-color":149}],143:[function(require,module,exports){
 'use strict';
 
 var styles = module.exports = {
@@ -19656,7 +19764,7 @@ Object.keys(styles).forEach(function (groupName) {
 	});
 });
 
-},{}],143:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 'use strict';
 
 var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
@@ -19669,19 +19777,19 @@ module.exports = function (str) {
 	return str.replace(matchOperatorsRe,  '\\$&');
 };
 
-},{}],144:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 'use strict';
 var ansiRegex = require('ansi-regex');
 var re = new RegExp(ansiRegex().source); // remove the `g` flag
 module.exports = re.test.bind(re);
 
-},{"ansi-regex":145}],145:[function(require,module,exports){
+},{"ansi-regex":146}],146:[function(require,module,exports){
 'use strict';
 module.exports = function () {
 	return /(?:(?:\u001b\[)|\u009b)(?:(?:[0-9]{1,3})?(?:(?:;[0-9]{0,3})*)?[A-M|f-m])|\u001b[A-M]/g;
 };
 
-},{}],146:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 'use strict';
 var ansiRegex = require('ansi-regex')();
 
@@ -19689,9 +19797,9 @@ module.exports = function (str) {
 	return typeof str === 'string' ? str.replace(ansiRegex, '') : str;
 };
 
-},{"ansi-regex":147}],147:[function(require,module,exports){
-arguments[4][145][0].apply(exports,arguments)
-},{"dup":145}],148:[function(require,module,exports){
+},{"ansi-regex":148}],148:[function(require,module,exports){
+arguments[4][146][0].apply(exports,arguments)
+},{"dup":146}],149:[function(require,module,exports){
 (function (process){
 'use strict';
 var argv = process.argv;
@@ -19742,7 +19850,7 @@ module.exports = (function () {
 })();
 
 }).call(this,require('_process'))
-},{"_process":328}],149:[function(require,module,exports){
+},{"_process":329}],150:[function(require,module,exports){
 /**
  * Core.js 0.6.1
  * https://github.com/zloirock/core-js
@@ -22082,7 +22190,7 @@ $define(GLOBAL + FORCED, {global: global});
   })});
 }({}, true);
 }(typeof self != 'undefined' && self.Math === Math ? self : Function('return this')(), false);
-},{}],150:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 /**
  * Core.js 0.6.1
  * https://github.com/zloirock/core-js
@@ -24061,7 +24169,7 @@ $define(GLOBAL + BIND, {
   Iterators.NodeList = Iterators[ARRAY];
 }(global.NodeList);
 }(typeof self != 'undefined' && self.Math === Math ? self : Function('return this')(), true);
-},{}],151:[function(require,module,exports){
+},{}],152:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -24260,7 +24368,7 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":153}],152:[function(require,module,exports){
+},{"ms":154}],153:[function(require,module,exports){
 (function (process){
 
 /**
@@ -24473,7 +24581,7 @@ function createWritableStdioStream (fd) {
 exports.enable(load());
 
 }).call(this,require('_process'))
-},{"./debug":151,"_process":328,"fs":318,"net":318,"tty":342,"util":344}],153:[function(require,module,exports){
+},{"./debug":152,"_process":329,"fs":319,"net":319,"tty":343,"util":345}],154:[function(require,module,exports){
 /**
  * Helpers.
  */
@@ -24586,7 +24694,7 @@ function plural(ms, n, name) {
   return Math.ceil(ms / n) + ' ' + name + 's';
 }
 
-},{}],154:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 'use strict';
 var repeating = require('repeating');
 
@@ -24707,7 +24815,7 @@ module.exports = function (str) {
 	};
 };
 
-},{"repeating":299}],155:[function(require,module,exports){
+},{"repeating":300}],156:[function(require,module,exports){
 /*
   Copyright (C) 2012-2013 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2012 Ariya Hidayat <ariya.hidayat@gmail.com>
@@ -25552,7 +25660,7 @@ module.exports = function (str) {
 }));
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],156:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -25698,7 +25806,7 @@ module.exports = function (str) {
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],157:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 /*
   Copyright (C) 2013-2014 Yusuke Suzuki <utatane.tea@gmail.com>
   Copyright (C) 2014 Ivan Nikulin <ifaaan@gmail.com>
@@ -25801,7 +25909,7 @@ module.exports = function (str) {
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{}],158:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -25940,7 +26048,7 @@ module.exports = function (str) {
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./code":157}],159:[function(require,module,exports){
+},{"./code":158}],160:[function(require,module,exports){
 /*
   Copyright (C) 2013 Yusuke Suzuki <utatane.tea@gmail.com>
 
@@ -25975,7 +26083,7 @@ module.exports = function (str) {
 }());
 /* vim: set sw=4 ts=4 et tw=80 : */
 
-},{"./ast":156,"./code":157,"./keyword":158}],160:[function(require,module,exports){
+},{"./ast":157,"./code":158,"./keyword":159}],161:[function(require,module,exports){
 module.exports={
 	"builtin": {
 		"Array": false,
@@ -26709,10 +26817,10 @@ module.exports={
 	}
 }
 
-},{}],161:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
 module.exports = require('./globals.json');
 
-},{"./globals.json":160}],162:[function(require,module,exports){
+},{"./globals.json":161}],163:[function(require,module,exports){
 // https://github.com/paulmillr/es6-shim
 // http://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.isinteger
 var isNaN = require("is-nan");
@@ -26724,7 +26832,7 @@ module.exports = Number.isInteger || function(val) {
 		parseInt(val, 10) === val;
 };
 
-},{"is-finite":163,"is-nan":164}],163:[function(require,module,exports){
+},{"is-finite":164,"is-nan":165}],164:[function(require,module,exports){
 'use strict';
 module.exports = Number.isFinite || function (val) {
 	// Number.isNaN() => val !== val
@@ -26735,7 +26843,7 @@ module.exports = Number.isFinite || function (val) {
 	return true;
 };
 
-},{}],164:[function(require,module,exports){
+},{}],165:[function(require,module,exports){
 "use strict";
 
 /* https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.isnan */
@@ -26745,7 +26853,7 @@ module.exports = function isNaN(value) {
 };
 
 
-},{}],165:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 // Copyright 2014, 2015 Simon Lydell
 // X11 (“MIT”) Licensed. (See LICENSE.)
 
@@ -26767,7 +26875,7 @@ module.exports.matchToToken = function(match) {
   return token
 }
 
-},{}],166:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 // intentionally commented out as it makes it slower...
 //'use strict';
 
@@ -26817,7 +26925,7 @@ module.exports = function (a, b) {
 	return ret;
 };
 
-},{}],167:[function(require,module,exports){
+},{}],168:[function(require,module,exports){
 // Copyright 2014, 2015 Simon Lydell
 // X11 (“MIT”) Licensed. (See LICENSE.)
 
@@ -26851,7 +26959,7 @@ function lineNumbers(code, options) {
 
 module.exports = lineNumbers
 
-},{"left-pad":168}],168:[function(require,module,exports){
+},{"left-pad":169}],169:[function(require,module,exports){
 module.exports = leftpad;
 
 function leftpad (str, len, ch) {
@@ -26870,7 +26978,7 @@ function leftpad (str, len, ch) {
   return str;
 }
 
-},{}],169:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 /**
  * Creates an array with all falsey values removed. The values `false`, `null`,
  * `0`, `""`, `undefined`, and `NaN` are falsey.
@@ -26902,7 +27010,7 @@ function compact(array) {
 
 module.exports = compact;
 
-},{}],170:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 var baseFlatten = require('../internal/baseFlatten'),
     isIterateeCall = require('../internal/isIterateeCall');
 
@@ -26936,7 +27044,7 @@ function flatten(array, isDeep, guard) {
 
 module.exports = flatten;
 
-},{"../internal/baseFlatten":200,"../internal/isIterateeCall":246}],171:[function(require,module,exports){
+},{"../internal/baseFlatten":201,"../internal/isIterateeCall":247}],172:[function(require,module,exports){
 /**
  * Gets the last element of `array`.
  *
@@ -26957,7 +27065,7 @@ function last(array) {
 
 module.exports = last;
 
-},{}],172:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 var baseIndexOf = require('../internal/baseIndexOf');
 
 /** Used for native method references. */
@@ -27012,7 +27120,7 @@ function pull() {
 
 module.exports = pull;
 
-},{"../internal/baseIndexOf":205}],173:[function(require,module,exports){
+},{"../internal/baseIndexOf":206}],174:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseUniq = require('../internal/baseUniq'),
     isIterateeCall = require('../internal/isIterateeCall'),
@@ -27088,13 +27196,13 @@ function uniq(array, isSorted, iteratee, thisArg) {
 
 module.exports = uniq;
 
-},{"../internal/baseCallback":193,"../internal/baseUniq":219,"../internal/isIterateeCall":246,"../internal/sortedUniq":256}],174:[function(require,module,exports){
+},{"../internal/baseCallback":194,"../internal/baseUniq":220,"../internal/isIterateeCall":247,"../internal/sortedUniq":257}],175:[function(require,module,exports){
 module.exports = require('./includes');
 
-},{"./includes":178}],175:[function(require,module,exports){
+},{"./includes":179}],176:[function(require,module,exports){
 module.exports = require('./forEach');
 
-},{"./forEach":176}],176:[function(require,module,exports){
+},{"./forEach":177}],177:[function(require,module,exports){
 var arrayEach = require('../internal/arrayEach'),
     baseEach = require('../internal/baseEach'),
     bindCallback = require('../internal/bindCallback'),
@@ -27138,7 +27246,7 @@ function forEach(collection, iteratee, thisArg) {
 
 module.exports = forEach;
 
-},{"../internal/arrayEach":187,"../internal/baseEach":198,"../internal/bindCallback":221,"../lang/isArray":261}],177:[function(require,module,exports){
+},{"../internal/arrayEach":188,"../internal/baseEach":199,"../internal/bindCallback":222,"../lang/isArray":262}],178:[function(require,module,exports){
 var createAggregator = require('../internal/createAggregator');
 
 /** Used for native method references. */
@@ -27199,7 +27307,7 @@ var groupBy = createAggregator(function(result, value, key) {
 
 module.exports = groupBy;
 
-},{"../internal/createAggregator":228}],178:[function(require,module,exports){
+},{"../internal/createAggregator":229}],179:[function(require,module,exports){
 var baseIndexOf = require('../internal/baseIndexOf'),
     isArray = require('../lang/isArray'),
     isLength = require('../internal/isLength'),
@@ -27262,7 +27370,7 @@ function includes(collection, target, fromIndex) {
 
 module.exports = includes;
 
-},{"../internal/baseIndexOf":205,"../internal/isLength":247,"../lang/isArray":261,"../lang/isString":269,"../object/values":277}],179:[function(require,module,exports){
+},{"../internal/baseIndexOf":206,"../internal/isLength":248,"../lang/isArray":262,"../lang/isString":270,"../object/values":278}],180:[function(require,module,exports){
 var arrayMap = require('../internal/arrayMap'),
     baseCallback = require('../internal/baseCallback'),
     baseMap = require('../internal/baseMap'),
@@ -27332,7 +27440,7 @@ function map(collection, iteratee, thisArg) {
 
 module.exports = map;
 
-},{"../internal/arrayMap":188,"../internal/baseCallback":193,"../internal/baseMap":210,"../lang/isArray":261}],180:[function(require,module,exports){
+},{"../internal/arrayMap":189,"../internal/baseCallback":194,"../internal/baseMap":211,"../lang/isArray":262}],181:[function(require,module,exports){
 var arrayReduceRight = require('../internal/arrayReduceRight'),
     baseCallback = require('../internal/baseCallback'),
     baseEachRight = require('../internal/baseEachRight'),
@@ -27368,7 +27476,7 @@ function reduceRight(collection, iteratee, accumulator, thisArg) {
 
 module.exports = reduceRight;
 
-},{"../internal/arrayReduceRight":189,"../internal/baseCallback":193,"../internal/baseEachRight":199,"../internal/baseReduce":214,"../lang/isArray":261}],181:[function(require,module,exports){
+},{"../internal/arrayReduceRight":190,"../internal/baseCallback":194,"../internal/baseEachRight":200,"../internal/baseReduce":215,"../lang/isArray":262}],182:[function(require,module,exports){
 var arraySome = require('../internal/arraySome'),
     baseCallback = require('../internal/baseCallback'),
     baseSome = require('../internal/baseSome'),
@@ -27433,7 +27541,7 @@ function some(collection, predicate, thisArg) {
 
 module.exports = some;
 
-},{"../internal/arraySome":190,"../internal/baseCallback":193,"../internal/baseSome":216,"../lang/isArray":261}],182:[function(require,module,exports){
+},{"../internal/arraySome":191,"../internal/baseCallback":194,"../internal/baseSome":217,"../lang/isArray":262}],183:[function(require,module,exports){
 var baseCallback = require('../internal/baseCallback'),
     baseEach = require('../internal/baseEach'),
     baseSortBy = require('../internal/baseSortBy'),
@@ -27507,7 +27615,7 @@ function sortBy(collection, iteratee, thisArg) {
 
 module.exports = sortBy;
 
-},{"../internal/baseCallback":193,"../internal/baseEach":198,"../internal/baseSortBy":217,"../internal/compareAscending":225,"../internal/isIterateeCall":246,"../internal/isLength":247}],183:[function(require,module,exports){
+},{"../internal/baseCallback":194,"../internal/baseEach":199,"../internal/baseSortBy":218,"../internal/compareAscending":226,"../internal/isIterateeCall":247,"../internal/isLength":248}],184:[function(require,module,exports){
 var isNative = require('../lang/isNative');
 
 /* Native method references for those with the same name as other `lodash` methods. */
@@ -27533,7 +27641,7 @@ var now = nativeNow || function() {
 
 module.exports = now;
 
-},{"../lang/isNative":265}],184:[function(require,module,exports){
+},{"../lang/isNative":266}],185:[function(require,module,exports){
 var createWrapper = require('../internal/createWrapper'),
     isIterateeCall = require('../internal/isIterateeCall');
 
@@ -27569,7 +27677,7 @@ function ary(func, n, guard) {
 
 module.exports = ary;
 
-},{"../internal/createWrapper":235,"../internal/isIterateeCall":246}],185:[function(require,module,exports){
+},{"../internal/createWrapper":236,"../internal/isIterateeCall":247}],186:[function(require,module,exports){
 (function (global){
 var cachePush = require('./cachePush'),
     isNative = require('../lang/isNative');
@@ -27602,7 +27710,7 @@ SetCache.prototype.push = cachePush;
 module.exports = SetCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":265,"./cachePush":224}],186:[function(require,module,exports){
+},{"../lang/isNative":266,"./cachePush":225}],187:[function(require,module,exports){
 /**
  * Copies the values of `source` to `array`.
  *
@@ -27624,7 +27732,7 @@ function arrayCopy(source, array) {
 
 module.exports = arrayCopy;
 
-},{}],187:[function(require,module,exports){
+},{}],188:[function(require,module,exports){
 /**
  * A specialized version of `_.forEach` for arrays without support for callback
  * shorthands or `this` binding.
@@ -27648,7 +27756,7 @@ function arrayEach(array, iteratee) {
 
 module.exports = arrayEach;
 
-},{}],188:[function(require,module,exports){
+},{}],189:[function(require,module,exports){
 /**
  * A specialized version of `_.map` for arrays without support for callback
  * shorthands or `this` binding.
@@ -27671,7 +27779,7 @@ function arrayMap(array, iteratee) {
 
 module.exports = arrayMap;
 
-},{}],189:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 /**
  * A specialized version of `_.reduceRight` for arrays without support for
  * callback shorthands or `this` binding.
@@ -27697,7 +27805,7 @@ function arrayReduceRight(array, iteratee, accumulator, initFromArray) {
 
 module.exports = arrayReduceRight;
 
-},{}],190:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 /**
  * A specialized version of `_.some` for arrays without support for callback
  * shorthands or `this` binding.
@@ -27722,7 +27830,7 @@ function arraySome(array, predicate) {
 
 module.exports = arraySome;
 
-},{}],191:[function(require,module,exports){
+},{}],192:[function(require,module,exports){
 /**
  * Used by `_.defaults` to customize its `_.assign` use.
  *
@@ -27737,7 +27845,7 @@ function assignDefaults(objectValue, sourceValue) {
 
 module.exports = assignDefaults;
 
-},{}],192:[function(require,module,exports){
+},{}],193:[function(require,module,exports){
 var baseCopy = require('./baseCopy'),
     keys = require('../object/keys');
 
@@ -27774,7 +27882,7 @@ function baseAssign(object, source, customizer) {
 
 module.exports = baseAssign;
 
-},{"../object/keys":275,"./baseCopy":196}],193:[function(require,module,exports){
+},{"../object/keys":276,"./baseCopy":197}],194:[function(require,module,exports){
 var baseMatches = require('./baseMatches'),
     baseMatchesProperty = require('./baseMatchesProperty'),
     baseProperty = require('./baseProperty'),
@@ -27812,7 +27920,7 @@ function baseCallback(func, thisArg, argCount) {
 
 module.exports = baseCallback;
 
-},{"../utility/identity":281,"./baseMatches":211,"./baseMatchesProperty":212,"./baseProperty":213,"./bindCallback":221,"./isBindable":244}],194:[function(require,module,exports){
+},{"../utility/identity":282,"./baseMatches":212,"./baseMatchesProperty":213,"./baseProperty":214,"./bindCallback":222,"./isBindable":245}],195:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     arrayEach = require('./arrayEach'),
     baseCopy = require('./baseCopy'),
@@ -27944,7 +28052,7 @@ function baseClone(value, isDeep, customizer, key, object, stackA, stackB) {
 
 module.exports = baseClone;
 
-},{"../lang/isArray":261,"../lang/isObject":267,"../object/keys":275,"./arrayCopy":186,"./arrayEach":187,"./baseCopy":196,"./baseForOwn":202,"./initCloneArray":241,"./initCloneByTag":242,"./initCloneObject":243}],195:[function(require,module,exports){
+},{"../lang/isArray":262,"../lang/isObject":268,"../object/keys":276,"./arrayCopy":187,"./arrayEach":188,"./baseCopy":197,"./baseForOwn":203,"./initCloneArray":242,"./initCloneByTag":243,"./initCloneObject":244}],196:[function(require,module,exports){
 /**
  * The base implementation of `compareAscending` which compares values and
  * sorts them in ascending order without guaranteeing a stable sort.
@@ -27971,7 +28079,7 @@ function baseCompareAscending(value, other) {
 
 module.exports = baseCompareAscending;
 
-},{}],196:[function(require,module,exports){
+},{}],197:[function(require,module,exports){
 /**
  * Copies the properties of `source` to `object`.
  *
@@ -27998,7 +28106,7 @@ function baseCopy(source, object, props) {
 
 module.exports = baseCopy;
 
-},{}],197:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 (function (global){
 var isObject = require('../lang/isObject');
 
@@ -28025,7 +28133,7 @@ var baseCreate = (function() {
 module.exports = baseCreate;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isObject":267}],198:[function(require,module,exports){
+},{"../lang/isObject":268}],199:[function(require,module,exports){
 var baseForOwn = require('./baseForOwn'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -28057,7 +28165,7 @@ function baseEach(collection, iteratee) {
 
 module.exports = baseEach;
 
-},{"./baseForOwn":202,"./isLength":247,"./toObject":257}],199:[function(require,module,exports){
+},{"./baseForOwn":203,"./isLength":248,"./toObject":258}],200:[function(require,module,exports){
 var baseForOwnRight = require('./baseForOwnRight'),
     isLength = require('./isLength'),
     toObject = require('./toObject');
@@ -28087,7 +28195,7 @@ function baseEachRight(collection, iteratee) {
 
 module.exports = baseEachRight;
 
-},{"./baseForOwnRight":203,"./isLength":247,"./toObject":257}],200:[function(require,module,exports){
+},{"./baseForOwnRight":204,"./isLength":248,"./toObject":258}],201:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isLength = require('./isLength'),
@@ -28134,7 +28242,7 @@ function baseFlatten(array, isDeep, isStrict, fromIndex) {
 
 module.exports = baseFlatten;
 
-},{"../lang/isArguments":260,"../lang/isArray":261,"./isLength":247,"./isObjectLike":248}],201:[function(require,module,exports){
+},{"../lang/isArguments":261,"../lang/isArray":262,"./isLength":248,"./isObjectLike":249}],202:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -28166,7 +28274,7 @@ function baseFor(object, iteratee, keysFunc) {
 
 module.exports = baseFor;
 
-},{"./toObject":257}],202:[function(require,module,exports){
+},{"./toObject":258}],203:[function(require,module,exports){
 var baseFor = require('./baseFor'),
     keys = require('../object/keys');
 
@@ -28185,7 +28293,7 @@ function baseForOwn(object, iteratee) {
 
 module.exports = baseForOwn;
 
-},{"../object/keys":275,"./baseFor":201}],203:[function(require,module,exports){
+},{"../object/keys":276,"./baseFor":202}],204:[function(require,module,exports){
 var baseForRight = require('./baseForRight'),
     keys = require('../object/keys');
 
@@ -28204,7 +28312,7 @@ function baseForOwnRight(object, iteratee) {
 
 module.exports = baseForOwnRight;
 
-},{"../object/keys":275,"./baseForRight":204}],204:[function(require,module,exports){
+},{"../object/keys":276,"./baseForRight":205}],205:[function(require,module,exports){
 var toObject = require('./toObject');
 
 /**
@@ -28233,7 +28341,7 @@ function baseForRight(object, iteratee, keysFunc) {
 
 module.exports = baseForRight;
 
-},{"./toObject":257}],205:[function(require,module,exports){
+},{"./toObject":258}],206:[function(require,module,exports){
 var indexOfNaN = require('./indexOfNaN');
 
 /**
@@ -28262,7 +28370,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{"./indexOfNaN":240}],206:[function(require,module,exports){
+},{"./indexOfNaN":241}],207:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep');
 
 /**
@@ -28298,7 +28406,7 @@ function baseIsEqual(value, other, customizer, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"./baseIsEqualDeep":207}],207:[function(require,module,exports){
+},{"./baseIsEqualDeep":208}],208:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -28401,7 +28509,7 @@ function baseIsEqualDeep(object, other, equalFunc, customizer, isWhere, stackA, 
 
 module.exports = baseIsEqualDeep;
 
-},{"../lang/isArray":261,"../lang/isTypedArray":270,"./equalArrays":236,"./equalByTag":237,"./equalObjects":238}],208:[function(require,module,exports){
+},{"../lang/isArray":262,"../lang/isTypedArray":271,"./equalArrays":237,"./equalByTag":238,"./equalObjects":239}],209:[function(require,module,exports){
 /**
  * The base implementation of `_.isFunction` without support for environments
  * with incorrect `typeof` results.
@@ -28418,7 +28526,7 @@ function baseIsFunction(value) {
 
 module.exports = baseIsFunction;
 
-},{}],209:[function(require,module,exports){
+},{}],210:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual');
 
 /** Used for native method references. */
@@ -28478,7 +28586,7 @@ function baseIsMatch(object, props, values, strictCompareFlags, customizer) {
 
 module.exports = baseIsMatch;
 
-},{"./baseIsEqual":206}],210:[function(require,module,exports){
+},{"./baseIsEqual":207}],211:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -28500,7 +28608,7 @@ function baseMap(collection, iteratee) {
 
 module.exports = baseMap;
 
-},{"./baseEach":198}],211:[function(require,module,exports){
+},{"./baseEach":199}],212:[function(require,module,exports){
 var baseIsMatch = require('./baseIsMatch'),
     isStrictComparable = require('./isStrictComparable'),
     keys = require('../object/keys');
@@ -28547,7 +28655,7 @@ function baseMatches(source) {
 
 module.exports = baseMatches;
 
-},{"../object/keys":275,"./baseIsMatch":209,"./isStrictComparable":249}],212:[function(require,module,exports){
+},{"../object/keys":276,"./baseIsMatch":210,"./isStrictComparable":250}],213:[function(require,module,exports){
 var baseIsEqual = require('./baseIsEqual'),
     isStrictComparable = require('./isStrictComparable');
 
@@ -28573,7 +28681,7 @@ function baseMatchesProperty(key, value) {
 
 module.exports = baseMatchesProperty;
 
-},{"./baseIsEqual":206,"./isStrictComparable":249}],213:[function(require,module,exports){
+},{"./baseIsEqual":207,"./isStrictComparable":250}],214:[function(require,module,exports){
 /**
  * The base implementation of `_.property` which does not coerce `key` to a string.
  *
@@ -28589,7 +28697,7 @@ function baseProperty(key) {
 
 module.exports = baseProperty;
 
-},{}],214:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 /**
  * The base implementation of `_.reduce` and `_.reduceRight` without support
  * for callback shorthands or `this` binding, which iterates over `collection`
@@ -28615,7 +28723,7 @@ function baseReduce(collection, iteratee, accumulator, initFromCollection, eachF
 
 module.exports = baseReduce;
 
-},{}],215:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 var identity = require('../utility/identity'),
     metaMap = require('./metaMap');
 
@@ -28634,7 +28742,7 @@ var baseSetData = !metaMap ? identity : function(func, data) {
 
 module.exports = baseSetData;
 
-},{"../utility/identity":281,"./metaMap":251}],216:[function(require,module,exports){
+},{"../utility/identity":282,"./metaMap":252}],217:[function(require,module,exports){
 var baseEach = require('./baseEach');
 
 /**
@@ -28659,7 +28767,7 @@ function baseSome(collection, predicate) {
 
 module.exports = baseSome;
 
-},{"./baseEach":198}],217:[function(require,module,exports){
+},{"./baseEach":199}],218:[function(require,module,exports){
 /**
  * The base implementation of `_.sortBy` and `_.sortByAll` which uses `comparer`
  * to define the sort order of `array` and replaces criteria objects with their
@@ -28682,7 +28790,7 @@ function baseSortBy(array, comparer) {
 
 module.exports = baseSortBy;
 
-},{}],218:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 /**
  * Converts `value` to a string if it is not one. An empty string is returned
  * for `null` or `undefined` values.
@@ -28700,7 +28808,7 @@ function baseToString(value) {
 
 module.exports = baseToString;
 
-},{}],219:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 var baseIndexOf = require('./baseIndexOf'),
     cacheIndexOf = require('./cacheIndexOf'),
     createCache = require('./createCache');
@@ -28759,7 +28867,7 @@ function baseUniq(array, iteratee) {
 
 module.exports = baseUniq;
 
-},{"./baseIndexOf":205,"./cacheIndexOf":223,"./createCache":231}],220:[function(require,module,exports){
+},{"./baseIndexOf":206,"./cacheIndexOf":224,"./createCache":232}],221:[function(require,module,exports){
 /**
  * The base implementation of `_.values` and `_.valuesIn` which creates an
  * array of `object` property values corresponding to the property names
@@ -28783,7 +28891,7 @@ function baseValues(object, props) {
 
 module.exports = baseValues;
 
-},{}],221:[function(require,module,exports){
+},{}],222:[function(require,module,exports){
 var identity = require('../utility/identity');
 
 /**
@@ -28824,7 +28932,7 @@ function bindCallback(func, thisArg, argCount) {
 
 module.exports = bindCallback;
 
-},{"../utility/identity":281}],222:[function(require,module,exports){
+},{"../utility/identity":282}],223:[function(require,module,exports){
 (function (global){
 var constant = require('../utility/constant'),
     isNative = require('../lang/isNative');
@@ -28883,7 +28991,7 @@ if (!bufferSlice) {
 module.exports = bufferClone;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":265,"../utility/constant":280}],223:[function(require,module,exports){
+},{"../lang/isNative":266,"../utility/constant":281}],224:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -28904,7 +29012,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"../lang/isObject":267}],224:[function(require,module,exports){
+},{"../lang/isObject":268}],225:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -28926,7 +29034,7 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"../lang/isObject":267}],225:[function(require,module,exports){
+},{"../lang/isObject":268}],226:[function(require,module,exports){
 var baseCompareAscending = require('./baseCompareAscending');
 
 /**
@@ -28944,7 +29052,7 @@ function compareAscending(object, other) {
 
 module.exports = compareAscending;
 
-},{"./baseCompareAscending":195}],226:[function(require,module,exports){
+},{"./baseCompareAscending":196}],227:[function(require,module,exports){
 /* Native method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
 
@@ -28980,7 +29088,7 @@ function composeArgs(args, partials, holders) {
 
 module.exports = composeArgs;
 
-},{}],227:[function(require,module,exports){
+},{}],228:[function(require,module,exports){
 /* Native method references for those with the same name as other `lodash` methods. */
 var nativeMax = Math.max;
 
@@ -29018,7 +29126,7 @@ function composeArgsRight(args, partials, holders) {
 
 module.exports = composeArgsRight;
 
-},{}],228:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 var baseCallback = require('./baseCallback'),
     baseEach = require('./baseEach'),
     isArray = require('../lang/isArray');
@@ -29057,7 +29165,7 @@ function createAggregator(setter, initializer) {
 
 module.exports = createAggregator;
 
-},{"../lang/isArray":261,"./baseCallback":193,"./baseEach":198}],229:[function(require,module,exports){
+},{"../lang/isArray":262,"./baseCallback":194,"./baseEach":199}],230:[function(require,module,exports){
 var bindCallback = require('./bindCallback'),
     isIterateeCall = require('./isIterateeCall');
 
@@ -29099,7 +29207,7 @@ function createAssigner(assigner) {
 
 module.exports = createAssigner;
 
-},{"./bindCallback":221,"./isIterateeCall":246}],230:[function(require,module,exports){
+},{"./bindCallback":222,"./isIterateeCall":247}],231:[function(require,module,exports){
 var createCtorWrapper = require('./createCtorWrapper');
 
 /**
@@ -29122,7 +29230,7 @@ function createBindWrapper(func, thisArg) {
 
 module.exports = createBindWrapper;
 
-},{"./createCtorWrapper":232}],231:[function(require,module,exports){
+},{"./createCtorWrapper":233}],232:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
     constant = require('../utility/constant'),
@@ -29148,7 +29256,7 @@ var createCache = !(nativeCreate && Set) ? constant(null) : function(values) {
 module.exports = createCache;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":265,"../utility/constant":280,"./SetCache":185}],232:[function(require,module,exports){
+},{"../lang/isNative":266,"../utility/constant":281,"./SetCache":186}],233:[function(require,module,exports){
 var baseCreate = require('./baseCreate'),
     isObject = require('../lang/isObject');
 
@@ -29173,7 +29281,7 @@ function createCtorWrapper(Ctor) {
 
 module.exports = createCtorWrapper;
 
-},{"../lang/isObject":267,"./baseCreate":197}],233:[function(require,module,exports){
+},{"../lang/isObject":268,"./baseCreate":198}],234:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     composeArgs = require('./composeArgs'),
     composeArgsRight = require('./composeArgsRight'),
@@ -29279,7 +29387,7 @@ function createHybridWrapper(func, bitmask, thisArg, partials, holders, partials
 
 module.exports = createHybridWrapper;
 
-},{"./arrayCopy":186,"./composeArgs":226,"./composeArgsRight":227,"./createCtorWrapper":232,"./reorder":252,"./replaceHolders":253}],234:[function(require,module,exports){
+},{"./arrayCopy":187,"./composeArgs":227,"./composeArgsRight":228,"./createCtorWrapper":233,"./reorder":253,"./replaceHolders":254}],235:[function(require,module,exports){
 var createCtorWrapper = require('./createCtorWrapper');
 
 /** Used to compose bitmasks for wrapper metadata. */
@@ -29323,7 +29431,7 @@ function createPartialWrapper(func, bitmask, thisArg, partials) {
 
 module.exports = createPartialWrapper;
 
-},{"./createCtorWrapper":232}],235:[function(require,module,exports){
+},{"./createCtorWrapper":233}],236:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     createBindWrapper = require('./createBindWrapper'),
     createHybridWrapper = require('./createHybridWrapper'),
@@ -29411,7 +29519,7 @@ function createWrapper(func, bitmask, thisArg, partials, holders, argPos, ary, a
 
 module.exports = createWrapper;
 
-},{"./baseSetData":215,"./createBindWrapper":230,"./createHybridWrapper":233,"./createPartialWrapper":234,"./getData":239,"./mergeData":250,"./setData":254}],236:[function(require,module,exports){
+},{"./baseSetData":216,"./createBindWrapper":231,"./createHybridWrapper":234,"./createPartialWrapper":235,"./getData":240,"./mergeData":251,"./setData":255}],237:[function(require,module,exports){
 /**
  * A specialized version of `baseIsEqualDeep` for arrays with support for
  * partial deep comparisons.
@@ -29467,7 +29575,7 @@ function equalArrays(array, other, equalFunc, customizer, isWhere, stackA, stack
 
 module.exports = equalArrays;
 
-},{}],237:[function(require,module,exports){
+},{}],238:[function(require,module,exports){
 /** `Object#toString` result references. */
 var boolTag = '[object Boolean]',
     dateTag = '[object Date]',
@@ -29518,7 +29626,7 @@ function equalByTag(object, other, tag) {
 
 module.exports = equalByTag;
 
-},{}],238:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 var keys = require('../object/keys');
 
 /** Used for native method references. */
@@ -29592,7 +29700,7 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
 
 module.exports = equalObjects;
 
-},{"../object/keys":275}],239:[function(require,module,exports){
+},{"../object/keys":276}],240:[function(require,module,exports){
 var metaMap = require('./metaMap'),
     noop = require('../utility/noop');
 
@@ -29609,7 +29717,7 @@ var getData = !metaMap ? noop : function(func) {
 
 module.exports = getData;
 
-},{"../utility/noop":282,"./metaMap":251}],240:[function(require,module,exports){
+},{"../utility/noop":283,"./metaMap":252}],241:[function(require,module,exports){
 /**
  * Gets the index at which the first occurrence of `NaN` is found in `array`.
  * If `fromRight` is provided elements of `array` are iterated from right to left.
@@ -29635,7 +29743,7 @@ function indexOfNaN(array, fromIndex, fromRight) {
 
 module.exports = indexOfNaN;
 
-},{}],241:[function(require,module,exports){
+},{}],242:[function(require,module,exports){
 /** Used for native method references. */
 var objectProto = Object.prototype;
 
@@ -29663,7 +29771,7 @@ function initCloneArray(array) {
 
 module.exports = initCloneArray;
 
-},{}],242:[function(require,module,exports){
+},{}],243:[function(require,module,exports){
 var bufferClone = require('./bufferClone');
 
 /** `Object#toString` result references. */
@@ -29729,7 +29837,7 @@ function initCloneByTag(object, tag, isDeep) {
 
 module.exports = initCloneByTag;
 
-},{"./bufferClone":222}],243:[function(require,module,exports){
+},{"./bufferClone":223}],244:[function(require,module,exports){
 /**
  * Initializes an object clone.
  *
@@ -29747,7 +29855,7 @@ function initCloneObject(object) {
 
 module.exports = initCloneObject;
 
-},{}],244:[function(require,module,exports){
+},{}],245:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     isNative = require('../lang/isNative'),
     support = require('../support');
@@ -29787,7 +29895,7 @@ function isBindable(func) {
 
 module.exports = isBindable;
 
-},{"../lang/isNative":265,"../support":279,"./baseSetData":215}],245:[function(require,module,exports){
+},{"../lang/isNative":266,"../support":280,"./baseSetData":216}],246:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -29811,7 +29919,7 @@ function isIndex(value, length) {
 
 module.exports = isIndex;
 
-},{}],246:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 var isIndex = require('./isIndex'),
     isLength = require('./isLength'),
     isObject = require('../lang/isObject');
@@ -29845,7 +29953,7 @@ function isIterateeCall(value, index, object) {
 
 module.exports = isIterateeCall;
 
-},{"../lang/isObject":267,"./isIndex":245,"./isLength":247}],247:[function(require,module,exports){
+},{"../lang/isObject":268,"./isIndex":246,"./isLength":248}],248:[function(require,module,exports){
 /**
  * Used as the maximum length of an array-like value.
  * See the [ES spec](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
@@ -29870,7 +29978,7 @@ function isLength(value) {
 
 module.exports = isLength;
 
-},{}],248:[function(require,module,exports){
+},{}],249:[function(require,module,exports){
 /**
  * Checks if `value` is object-like.
  *
@@ -29884,7 +29992,7 @@ function isObjectLike(value) {
 
 module.exports = isObjectLike;
 
-},{}],249:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -29901,7 +30009,7 @@ function isStrictComparable(value) {
 
 module.exports = isStrictComparable;
 
-},{"../lang/isObject":267}],250:[function(require,module,exports){
+},{"../lang/isObject":268}],251:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     composeArgs = require('./composeArgs'),
     composeArgsRight = require('./composeArgsRight'),
@@ -30002,7 +30110,7 @@ function mergeData(data, source) {
 
 module.exports = mergeData;
 
-},{"./arrayCopy":186,"./composeArgs":226,"./composeArgsRight":227,"./replaceHolders":253}],251:[function(require,module,exports){
+},{"./arrayCopy":187,"./composeArgs":227,"./composeArgsRight":228,"./replaceHolders":254}],252:[function(require,module,exports){
 (function (global){
 var isNative = require('../lang/isNative');
 
@@ -30015,7 +30123,7 @@ var metaMap = WeakMap && new WeakMap;
 module.exports = metaMap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../lang/isNative":265}],252:[function(require,module,exports){
+},{"../lang/isNative":266}],253:[function(require,module,exports){
 var arrayCopy = require('./arrayCopy'),
     isIndex = require('./isIndex');
 
@@ -30046,7 +30154,7 @@ function reorder(array, indexes) {
 
 module.exports = reorder;
 
-},{"./arrayCopy":186,"./isIndex":245}],253:[function(require,module,exports){
+},{"./arrayCopy":187,"./isIndex":246}],254:[function(require,module,exports){
 /** Used as the internal argument placeholder. */
 var PLACEHOLDER = '__lodash_placeholder__';
 
@@ -30076,7 +30184,7 @@ function replaceHolders(array, placeholder) {
 
 module.exports = replaceHolders;
 
-},{}],254:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     now = require('../date/now');
 
@@ -30119,7 +30227,7 @@ var setData = (function() {
 
 module.exports = setData;
 
-},{"../date/now":183,"./baseSetData":215}],255:[function(require,module,exports){
+},{"../date/now":184,"./baseSetData":216}],256:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('./isIndex'),
@@ -30163,7 +30271,7 @@ function shimKeys(object) {
 
 module.exports = shimKeys;
 
-},{"../lang/isArguments":260,"../lang/isArray":261,"../object/keysIn":276,"../support":279,"./isIndex":245,"./isLength":247}],256:[function(require,module,exports){
+},{"../lang/isArguments":261,"../lang/isArray":262,"../object/keysIn":277,"../support":280,"./isIndex":246,"./isLength":248}],257:[function(require,module,exports){
 /**
  * An implementation of `_.uniq` optimized for sorted arrays without support
  * for callback shorthands and `this` binding.
@@ -30194,7 +30302,7 @@ function sortedUniq(array, iteratee) {
 
 module.exports = sortedUniq;
 
-},{}],257:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 var isObject = require('../lang/isObject');
 
 /**
@@ -30210,7 +30318,7 @@ function toObject(value) {
 
 module.exports = toObject;
 
-},{"../lang/isObject":267}],258:[function(require,module,exports){
+},{"../lang/isObject":268}],259:[function(require,module,exports){
 var baseClone = require('../internal/baseClone'),
     bindCallback = require('../internal/bindCallback'),
     isIterateeCall = require('../internal/isIterateeCall');
@@ -30281,7 +30389,7 @@ function clone(value, isDeep, customizer, thisArg) {
 
 module.exports = clone;
 
-},{"../internal/baseClone":194,"../internal/bindCallback":221,"../internal/isIterateeCall":246}],259:[function(require,module,exports){
+},{"../internal/baseClone":195,"../internal/bindCallback":222,"../internal/isIterateeCall":247}],260:[function(require,module,exports){
 var baseClone = require('../internal/baseClone'),
     bindCallback = require('../internal/bindCallback');
 
@@ -30337,7 +30445,7 @@ function cloneDeep(value, customizer, thisArg) {
 
 module.exports = cloneDeep;
 
-},{"../internal/baseClone":194,"../internal/bindCallback":221}],260:[function(require,module,exports){
+},{"../internal/baseClone":195,"../internal/bindCallback":222}],261:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -30377,7 +30485,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{"../internal/isLength":247,"../internal/isObjectLike":248}],261:[function(require,module,exports){
+},{"../internal/isLength":248,"../internal/isObjectLike":249}],262:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('./isNative'),
     isObjectLike = require('../internal/isObjectLike');
@@ -30420,7 +30528,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"../internal/isLength":247,"../internal/isObjectLike":248,"./isNative":265}],262:[function(require,module,exports){
+},{"../internal/isLength":248,"../internal/isObjectLike":249,"./isNative":266}],263:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -30458,7 +30566,7 @@ function isBoolean(value) {
 
 module.exports = isBoolean;
 
-},{"../internal/isObjectLike":248}],263:[function(require,module,exports){
+},{"../internal/isObjectLike":249}],264:[function(require,module,exports){
 var isArguments = require('./isArguments'),
     isArray = require('./isArray'),
     isFunction = require('./isFunction'),
@@ -30508,7 +30616,7 @@ function isEmpty(value) {
 
 module.exports = isEmpty;
 
-},{"../internal/isLength":247,"../internal/isObjectLike":248,"../object/keys":275,"./isArguments":260,"./isArray":261,"./isFunction":264,"./isString":269}],264:[function(require,module,exports){
+},{"../internal/isLength":248,"../internal/isObjectLike":249,"../object/keys":276,"./isArguments":261,"./isArray":262,"./isFunction":265,"./isString":270}],265:[function(require,module,exports){
 (function (global){
 var baseIsFunction = require('../internal/baseIsFunction'),
     isNative = require('./isNative');
@@ -30555,7 +30663,7 @@ var isFunction = !(baseIsFunction(/x/) || (Uint8Array && !baseIsFunction(Uint8Ar
 module.exports = isFunction;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../internal/baseIsFunction":208,"./isNative":265}],265:[function(require,module,exports){
+},{"../internal/baseIsFunction":209,"./isNative":266}],266:[function(require,module,exports){
 var escapeRegExp = require('../string/escapeRegExp'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -30612,7 +30720,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{"../internal/isObjectLike":248,"../string/escapeRegExp":278}],266:[function(require,module,exports){
+},{"../internal/isObjectLike":249,"../string/escapeRegExp":279}],267:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -30656,7 +30764,7 @@ function isNumber(value) {
 
 module.exports = isNumber;
 
-},{"../internal/isObjectLike":248}],267:[function(require,module,exports){
+},{"../internal/isObjectLike":249}],268:[function(require,module,exports){
 /**
  * Checks if `value` is the language type of `Object`.
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -30688,7 +30796,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{}],268:[function(require,module,exports){
+},{}],269:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -30726,7 +30834,7 @@ function isRegExp(value) {
 
 module.exports = isRegExp;
 
-},{"../internal/isObjectLike":248}],269:[function(require,module,exports){
+},{"../internal/isObjectLike":249}],270:[function(require,module,exports){
 var isObjectLike = require('../internal/isObjectLike');
 
 /** `Object#toString` result references. */
@@ -30764,7 +30872,7 @@ function isString(value) {
 
 module.exports = isString;
 
-},{"../internal/isObjectLike":248}],270:[function(require,module,exports){
+},{"../internal/isObjectLike":249}],271:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isObjectLike = require('../internal/isObjectLike');
 
@@ -30841,7 +30949,7 @@ function isTypedArray(value) {
 
 module.exports = isTypedArray;
 
-},{"../internal/isLength":247,"../internal/isObjectLike":248}],271:[function(require,module,exports){
+},{"../internal/isLength":248,"../internal/isObjectLike":249}],272:[function(require,module,exports){
 var baseAssign = require('../internal/baseAssign'),
     createAssigner = require('../internal/createAssigner');
 
@@ -30878,7 +30986,7 @@ var assign = createAssigner(baseAssign);
 
 module.exports = assign;
 
-},{"../internal/baseAssign":192,"../internal/createAssigner":229}],272:[function(require,module,exports){
+},{"../internal/baseAssign":193,"../internal/createAssigner":230}],273:[function(require,module,exports){
 var arrayCopy = require('../internal/arrayCopy'),
     assign = require('./assign'),
     assignDefaults = require('../internal/assignDefaults');
@@ -30910,10 +31018,10 @@ function defaults(object) {
 
 module.exports = defaults;
 
-},{"../internal/arrayCopy":186,"../internal/assignDefaults":191,"./assign":271}],273:[function(require,module,exports){
+},{"../internal/arrayCopy":187,"../internal/assignDefaults":192,"./assign":272}],274:[function(require,module,exports){
 module.exports = require('./assign');
 
-},{"./assign":271}],274:[function(require,module,exports){
+},{"./assign":272}],275:[function(require,module,exports){
 /** Used for native method references. */
 var objectProto = Object.prototype;
 
@@ -30943,7 +31051,7 @@ function has(object, key) {
 
 module.exports = has;
 
-},{}],275:[function(require,module,exports){
+},{}],276:[function(require,module,exports){
 var isLength = require('../internal/isLength'),
     isNative = require('../lang/isNative'),
     isObject = require('../lang/isObject'),
@@ -30993,7 +31101,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"../internal/isLength":247,"../internal/shimKeys":255,"../lang/isNative":265,"../lang/isObject":267}],276:[function(require,module,exports){
+},{"../internal/isLength":248,"../internal/shimKeys":256,"../lang/isNative":266,"../lang/isObject":268}],277:[function(require,module,exports){
 var isArguments = require('../lang/isArguments'),
     isArray = require('../lang/isArray'),
     isIndex = require('../internal/isIndex'),
@@ -31060,7 +31168,7 @@ function keysIn(object) {
 
 module.exports = keysIn;
 
-},{"../internal/isIndex":245,"../internal/isLength":247,"../lang/isArguments":260,"../lang/isArray":261,"../lang/isObject":267,"../support":279}],277:[function(require,module,exports){
+},{"../internal/isIndex":246,"../internal/isLength":248,"../lang/isArguments":261,"../lang/isArray":262,"../lang/isObject":268,"../support":280}],278:[function(require,module,exports){
 var baseValues = require('../internal/baseValues'),
     keys = require('./keys');
 
@@ -31095,7 +31203,7 @@ function values(object) {
 
 module.exports = values;
 
-},{"../internal/baseValues":220,"./keys":275}],278:[function(require,module,exports){
+},{"../internal/baseValues":221,"./keys":276}],279:[function(require,module,exports){
 var baseToString = require('../internal/baseToString');
 
 /**
@@ -31129,7 +31237,7 @@ function escapeRegExp(string) {
 
 module.exports = escapeRegExp;
 
-},{"../internal/baseToString":218}],279:[function(require,module,exports){
+},{"../internal/baseToString":219}],280:[function(require,module,exports){
 (function (global){
 var isNative = require('./lang/isNative');
 
@@ -31208,7 +31316,7 @@ var support = {};
 module.exports = support;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lang/isNative":265}],280:[function(require,module,exports){
+},{"./lang/isNative":266}],281:[function(require,module,exports){
 /**
  * Creates a function that returns `value`.
  *
@@ -31233,7 +31341,7 @@ function constant(value) {
 
 module.exports = constant;
 
-},{}],281:[function(require,module,exports){
+},{}],282:[function(require,module,exports){
 /**
  * This method returns the first argument provided to it.
  *
@@ -31255,7 +31363,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],282:[function(require,module,exports){
+},{}],283:[function(require,module,exports){
 /**
  * A no-operation function which returns `undefined` regardless of the
  * arguments it receives.
@@ -31276,7 +31384,7 @@ function noop() {
 
 module.exports = noop;
 
-},{}],283:[function(require,module,exports){
+},{}],284:[function(require,module,exports){
 "use strict";
 
 var originalObject = Object;
@@ -31407,7 +31515,7 @@ function makeAccessor(secretCreatorFn) {
 
 defProp(exports, "makeAccessor", makeAccessor);
 
-},{}],284:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -32601,7 +32709,7 @@ Ep.explodeExpression = function(path, ignoreResult) {
   }
 };
 
-},{"./leap":286,"./meta":287,"./util":288,"assert":319,"ast-types":140}],285:[function(require,module,exports){
+},{"./leap":287,"./meta":288,"./util":289,"assert":320,"ast-types":141}],286:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -32756,7 +32864,7 @@ exports.hoist = function(funPath) {
   return b.variableDeclaration("var", declarations);
 };
 
-},{"assert":319,"ast-types":140}],286:[function(require,module,exports){
+},{"assert":320,"ast-types":141}],287:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -32935,7 +33043,7 @@ LMp.getContinueLoc = function(label) {
   return this._findLeapLocation("continueLoc", label);
 };
 
-},{"./emit":284,"assert":319,"ast-types":140,"util":344}],287:[function(require,module,exports){
+},{"./emit":285,"assert":320,"ast-types":141,"util":345}],288:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -33037,7 +33145,7 @@ for (var type in leapTypes) {
 exports.hasSideEffects = makePredicate("hasSideEffects", sideEffectTypes);
 exports.containsLeap = makePredicate("containsLeap", leapTypes);
 
-},{"assert":319,"ast-types":140,"private":283}],288:[function(require,module,exports){
+},{"assert":320,"ast-types":141,"private":284}],289:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -33139,7 +33247,7 @@ exports.isReference = function(path, name) {
   }
 };
 
-},{"assert":319,"ast-types":140}],289:[function(require,module,exports){
+},{"assert":320,"ast-types":141}],290:[function(require,module,exports){
 /**
  * Copyright (c) 2014, Facebook, Inc.
  * All rights reserved.
@@ -33401,7 +33509,7 @@ var awaitVisitor = types.PathVisitor.fromMethodsObject({
   }
 });
 
-},{"./emit":284,"./hoist":285,"./util":288,"assert":319,"ast-types":140,"fs":318}],290:[function(require,module,exports){
+},{"./emit":285,"./hoist":286,"./util":289,"assert":320,"ast-types":141,"fs":319}],291:[function(require,module,exports){
 (function (__dirname){
 /**
  * Copyright (c) 2014, Facebook, Inc.
@@ -33453,7 +33561,7 @@ runtime.path = path.join(__dirname, "runtime.js");
 exports.transform = transform;
 
 }).call(this,"/node_modules/babel/node_modules/regenerator-babel")
-},{"./lib/util":288,"./lib/visit":289,"./runtime":292,"assert":319,"ast-types":140,"fs":318,"path":327,"through":291}],291:[function(require,module,exports){
+},{"./lib/util":289,"./lib/visit":290,"./runtime":293,"assert":320,"ast-types":141,"fs":319,"path":328,"through":292}],292:[function(require,module,exports){
 (function (process){
 var Stream = require('stream')
 
@@ -33565,7 +33673,7 @@ function through (write, end, opts) {
 
 
 }).call(this,require('_process'))
-},{"_process":328,"stream":340}],292:[function(require,module,exports){
+},{"_process":329,"stream":341}],293:[function(require,module,exports){
 (function (global){
 /**
  * Copyright (c) 2014, Facebook, Inc.
@@ -34106,7 +34214,7 @@ function through (write, end, opts) {
 );
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],293:[function(require,module,exports){
+},{}],294:[function(require,module,exports){
 // Generated by `/scripts/character-class-escape-sets.js`. Do not edit.
 var regenerate = require('regenerate');
 
@@ -34212,7 +34320,7 @@ exports.UNICODE_IGNORE_CASE = {
 		.addRange(0x7B, 0x10FFFF)
 };
 
-},{"regenerate":295}],294:[function(require,module,exports){
+},{"regenerate":296}],295:[function(require,module,exports){
 module.exports={
 	"75": 8490,
 	"83": 383,
@@ -34408,7 +34516,7 @@ module.exports={
 	"71903": 71871
 }
 
-},{}],295:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/regenerate v1.2.0 by @mathias | MIT license */
 ;(function(root) {
@@ -35570,7 +35678,7 @@ module.exports={
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],296:[function(require,module,exports){
+},{}],297:[function(require,module,exports){
 (function (global){
 /*!
  * RegJSGen
@@ -35982,7 +36090,7 @@ module.exports={
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],297:[function(require,module,exports){
+},{}],298:[function(require,module,exports){
 // regjsparser
 //
 // ==================================================================
@@ -36905,7 +37013,7 @@ module.exports={
 
 }());
 
-},{}],298:[function(require,module,exports){
+},{}],299:[function(require,module,exports){
 var generate = require('regjsgen').generate;
 var parse = require('regjsparser').parse;
 var regenerate = require('regenerate');
@@ -37100,7 +37208,7 @@ module.exports = function(pattern, flags) {
 	return generate(tree);
 };
 
-},{"./data/character-class-escape-sets.js":293,"./data/iu-mappings.json":294,"regenerate":295,"regjsgen":296,"regjsparser":297}],299:[function(require,module,exports){
+},{"./data/character-class-escape-sets.js":294,"./data/iu-mappings.json":295,"regenerate":296,"regjsgen":297,"regjsparser":298}],300:[function(require,module,exports){
 'use strict';
 var isFinite = require('is-finite');
 
@@ -37126,13 +37234,13 @@ module.exports = function (str, n) {
 	return ret;
 };
 
-},{"is-finite":300}],300:[function(require,module,exports){
-arguments[4][163][0].apply(exports,arguments)
-},{"dup":163}],301:[function(require,module,exports){
+},{"is-finite":301}],301:[function(require,module,exports){
+arguments[4][164][0].apply(exports,arguments)
+},{"dup":164}],302:[function(require,module,exports){
 'use strict';
 module.exports = /^#!.*/;
 
-},{}],302:[function(require,module,exports){
+},{}],303:[function(require,module,exports){
 'use strict';
 module.exports = function (str) {
 	var isExtendedLengthPath = /^\\\\\?\\/.test(str);
@@ -37145,7 +37253,7 @@ module.exports = function (str) {
 	return str.replace(/\\/g, '/');
 };
 
-},{}],303:[function(require,module,exports){
+},{}],304:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 module.exports = function (val) {
@@ -37154,7 +37262,7 @@ module.exports = function (val) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":320}],304:[function(require,module,exports){
+},{"buffer":321}],305:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -37164,7 +37272,7 @@ exports.SourceMapGenerator = require('./source-map/source-map-generator').Source
 exports.SourceMapConsumer = require('./source-map/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./source-map/source-node').SourceNode;
 
-},{"./source-map/source-map-consumer":310,"./source-map/source-map-generator":311,"./source-map/source-node":312}],305:[function(require,module,exports){
+},{"./source-map/source-map-consumer":311,"./source-map/source-map-generator":312,"./source-map/source-node":313}],306:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -37263,7 +37371,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":313,"amdefine":314}],306:[function(require,module,exports){
+},{"./util":314,"amdefine":315}],307:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -37407,7 +37515,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":307,"amdefine":314}],307:[function(require,module,exports){
+},{"./base64":308,"amdefine":315}],308:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -37451,7 +37559,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":314}],308:[function(require,module,exports){
+},{"amdefine":315}],309:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -37533,7 +37641,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":314}],309:[function(require,module,exports){
+},{"amdefine":315}],310:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2014 Mozilla Foundation and contributors
@@ -37621,7 +37729,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":313,"amdefine":314}],310:[function(require,module,exports){
+},{"./util":314,"amdefine":315}],311:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -38198,7 +38306,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":305,"./base64-vlq":306,"./binary-search":308,"./util":313,"amdefine":314}],311:[function(require,module,exports){
+},{"./array-set":306,"./base64-vlq":307,"./binary-search":309,"./util":314,"amdefine":315}],312:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -38600,7 +38708,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":305,"./base64-vlq":306,"./mapping-list":309,"./util":313,"amdefine":314}],312:[function(require,module,exports){
+},{"./array-set":306,"./base64-vlq":307,"./mapping-list":310,"./util":314,"amdefine":315}],313:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -39016,7 +39124,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":311,"./util":313,"amdefine":314}],313:[function(require,module,exports){
+},{"./source-map-generator":312,"./util":314,"amdefine":315}],314:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -39337,7 +39445,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":314}],314:[function(require,module,exports){
+},{"amdefine":315}],315:[function(require,module,exports){
 (function (process,__filename){
 /** vim: et:ts=4:sw=4:sts=4
  * @license amdefine 0.1.0 Copyright (c) 2011, The Dojo Foundation All Rights Reserved.
@@ -39640,17 +39748,17 @@ function amdefine(module, requireFn) {
 module.exports = amdefine;
 
 }).call(this,require('_process'),"/node_modules/babel/node_modules/source-map/node_modules/amdefine/amdefine.js")
-},{"_process":328,"path":327}],315:[function(require,module,exports){
+},{"_process":329,"path":328}],316:[function(require,module,exports){
 'use strict';
 module.exports = function (str) {
 	return str.replace(/[\s\uFEFF\xA0]+$/g, '');
 };
 
-},{}],316:[function(require,module,exports){
+},{}],317:[function(require,module,exports){
 module.exports={
   "name": "babel",
   "description": "Turn ES6 code into readable vanilla ES5 with source maps",
-  "version": "4.5.1",
+  "version": "4.5.4",
   "author": {
     "name": "Sebastian McKenzie",
     "email": "sebmck@gmail.com"
@@ -39691,7 +39799,7 @@ module.exports={
     "test": "make test"
   },
   "dependencies": {
-    "acorn-babel": "0.11.1-34",
+    "acorn-babel": "0.11.1-35",
     "ast-types": "~0.6.1",
     "chalk": "^1.0.0",
     "chokidar": "^0.12.6",
@@ -39722,24 +39830,22 @@ module.exports={
     "trim-right": "^1.0.0"
   },
   "devDependencies": {
-    "babel": "4.5.0",
+    "babel": "4.5.1",
     "browserify": "^8.1.3",
     "chai": "^2.0.0",
     "esvalid": "^1.1.0",
     "istanbul": "^0.3.5",
-    "jshint": "^2.6.0",
-    "jshint-stylish": "^1.0.0",
     "matcha": "^0.6.0",
     "mocha": "^2.1.0",
     "rimraf": "^2.2.8",
     "uglify-js": "^2.4.16"
   },
-  "gitHead": "f5d963635389178df7958d73ff68bb769d5c2457",
+  "gitHead": "51dff364dbfca2fcd81a7aa4c876451c9ddedd3d",
   "bugs": {
     "url": "https://github.com/babel/babel/issues"
   },
-  "_id": "babel@4.5.1",
-  "_shasum": "5861ca6d9229736b3165c839cd6dbf8491040540",
+  "_id": "babel@4.5.4",
+  "_shasum": "fc4a98c1efb4469497bbfe49de60e8478e119749",
   "_from": "babel@^4.3.0",
   "_npmVersion": "2.1.18",
   "_nodeVersion": "1.0.2",
@@ -39754,18 +39860,18 @@ module.exports={
     }
   ],
   "dist": {
-    "shasum": "5861ca6d9229736b3165c839cd6dbf8491040540",
-    "tarball": "http://registry.npmjs.org/babel/-/babel-4.5.1.tgz"
+    "shasum": "fc4a98c1efb4469497bbfe49de60e8478e119749",
+    "tarball": "http://registry.npmjs.org/babel/-/babel-4.5.4.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/babel/-/babel-4.5.1.tgz"
+  "_resolved": "https://registry.npmjs.org/babel/-/babel-4.5.4.tgz"
 }
 
-},{}],317:[function(require,module,exports){
-module.exports={"abstract-expression-call":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceGet","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"abstract-expression-delete":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceDelete","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"abstract-expression-get":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceGet","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"abstract-expression-set":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceSet","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"apply-constructor":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"args","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"create","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"args","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"object","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"||","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"array-comprehension-container":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ArrayExpression","start":null,"end":null,"loc":null,"range":null,"elements":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"array-from":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"from","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"array-push":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"push","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"STATEMENT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"async-to-generator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"fn","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"gen","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"fn","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Promise","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"resolve","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"reject","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callNext","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"bind","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"next","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callThrow","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"bind","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"throw","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"FunctionDeclaration","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arg","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"TryStatement","start":null,"end":null,"loc":null,"range":null,"block":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"info","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"gen","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arg","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"info","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"handler":{"type":"CatchClause","start":null,"end":null,"loc":null,"range":null,"param":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"error","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"guard":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"reject","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"error","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"guardedHandlers":[],"finalizer":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"info","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"resolve","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Promise","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"resolve","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"then","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callNext","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callThrow","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callNext","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"bind":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Function","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"bind","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"call":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CONTEXT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"class-call-check":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"instanceof","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Cannot call a class as a function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"class-super-constructor-call-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"class-super-constructor-call":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"corejs-is-iterator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CORE_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"$for","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isIterable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"corejs-iterator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CORE_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"$for","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getIterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"default-parameter":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VARIABLE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENT_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"DEFAULT_VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENT_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"let","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"defaults":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defaults","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyNames","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defaults","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyDescriptor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defaults","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"configurable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"define-property":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"enumerable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"configurable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-assign":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-default-assign":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"module","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-module-declaration-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-module-declaration":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"__esModule","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"extends":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"assign","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"||","right":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForInStatement","start":null,"end":null,"loc":null,"range":null,"left":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"hasOwnProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"for-of-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"IS_ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"IS_ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":null,"update":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"IS_ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":">=","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BreakStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BreakStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"for-of":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ITERATOR_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"STEP_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"STEP_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ITERATOR_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"get":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"get","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyDescriptor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getPrototypeOf","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"get","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"value","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"operator":"in","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"get","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"has-own":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"hasOwnProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"inherits":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Super expression must either be null or a function, not ","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"operator":"+","right":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"create","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"enumerable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":false,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"configurable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__proto__","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"interop-require-wildcard":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"default","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"interop-require":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"default","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"let-scoping-return":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"RETURN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"object","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"RETURN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"v","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"named-function":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"FunctionDeclaration","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"GET_OUTER_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"object-destructuring-empty":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Cannot destructure undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"object-without-properties":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForInStatement","start":null,"end":null,"loc":null,"range":null,"left":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"indexOf","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":">=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ContinueStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"hasOwnProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ContinueStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property-method-assignment-wrapper-generator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"regeneratorRuntime","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"mark","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_this","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"regeneratorRuntime","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"wrap","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID$","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"WhileStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"body":{"type":"SwitchStatement","start":null,"end":null,"loc":null,"range":null,"discriminant":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prev","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"cases":[{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"delegateYield","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_this","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"t0","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"abrupt","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"return","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"t0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":2,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"stop","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"end","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property-method-assignment-wrapper":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"prototype-identifier":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CLASS_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"prototype-properties":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"child","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"staticProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instanceProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"staticProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperties","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"child","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"staticProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instanceProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperties","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"child","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instanceProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"require-assign-key":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VARIABLE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"require","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"require":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"require","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"rest":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LEN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY_LEN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"START","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LEN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"self-contained-helpers-head":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"helpers","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"default","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"self-global":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"global","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"self","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"global","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"set":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"set","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyDescriptor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getPrototypeOf","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"set","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"value","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"operator":"in","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"set","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"slice":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"slice","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"sliced-to-array":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"in","right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ArrayExpression","start":null,"end":null,"loc":null,"range":null,"elements":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"push","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BreakStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Invalid attempt to destructure non-iterable instance","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"system":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"System","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"register","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_DEPENDENCIES","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"EXPORT_IDENTIFIER","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setters","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SETTERS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"execute","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"EXECUTE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"tagged-template-literal-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"tagged-template-literal":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"freeze","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperties","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"freeze","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"tail-call-body":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"AGAIN_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"LabeledStatement","start":null,"end":null,"loc":null,"range":null,"body":{"type":"WhileStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"AGAIN_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"BLOCK","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"label":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"temporal-assert-defined":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"val","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"name","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undef","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"val","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undef","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ReferenceError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"name","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"+","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":" is not defined - temporal dead zone","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"temporal-undefined":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test-exports":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test-module":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"module","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"to-array":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"from","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"to-consumable-array":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr2","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr2","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr2","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"from","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"typeof":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"symbol","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"alternate":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"umd-runner-body":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"factory","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"define","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"define","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"amd","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"define","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"AMD_ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"factory","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"COMMON_TEST","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"factory","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"COMMON_ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}}
 },{}],318:[function(require,module,exports){
-
+module.exports={"abstract-expression-call":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceGet","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"abstract-expression-delete":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceDelete","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"abstract-expression-get":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceGet","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"abstract-expression-set":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"PROPERTY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"referenceSet","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"apply-constructor":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"args","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"create","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"args","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"object","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"||","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"result","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"array-comprehension-container":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ArrayExpression","start":null,"end":null,"loc":null,"range":null,"elements":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"array-from":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"from","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"array-push":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"push","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"STATEMENT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"async-to-generator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"fn","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"gen","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"fn","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Promise","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"resolve","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"reject","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callNext","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"bind","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"next","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callThrow","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"bind","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"throw","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"FunctionDeclaration","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arg","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"TryStatement","start":null,"end":null,"loc":null,"range":null,"block":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"info","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"gen","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arg","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"info","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"handler":{"type":"CatchClause","start":null,"end":null,"loc":null,"range":null,"param":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"error","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"guard":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"reject","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"error","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"guardedHandlers":[],"finalizer":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"info","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"resolve","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Promise","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"resolve","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"then","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callNext","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callThrow","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"callNext","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"bind":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Function","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"bind","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"call":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CONTEXT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"class-call-check":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instance","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"instanceof","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Cannot call a class as a function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"class-super-constructor-call-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"class-super-constructor-call":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SUPER_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"corejs-is-iterator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CORE_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"$for","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isIterable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"corejs-iterator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CORE_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"$for","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getIterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"default-parameter":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VARIABLE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENT_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"DEFAULT_VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENT_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"let","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"defaults":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defaults","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyNames","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defaults","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyDescriptor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defaults","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"configurable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"define-property":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"enumerable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"configurable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-assign":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-default-assign":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"module","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VALUE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-module-declaration-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"exports-module-declaration":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"__esModule","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"extends":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"assign","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"||","right":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForInStatement","start":null,"end":null,"loc":null,"range":null,"left":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"hasOwnProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"source","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"key","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"for-of-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"IS_ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"IS_ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":null,"update":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"IS_ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":">=","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BreakStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LOOP_OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BreakStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"INDEX","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"for-of":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ITERATOR_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"OBJECT","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"STEP_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"STEP_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ITERATOR_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"get":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"get","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyDescriptor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getPrototypeOf","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"get","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"value","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"operator":"in","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"get","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"has-own":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"hasOwnProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"inherits":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Super expression must either be null or a function, not ","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"operator":"+","right":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"create","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"enumerable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":false,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"configurable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"subClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__proto__","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"superClass","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"interop-require-wildcard":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"default","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"interop-require":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"default","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"let-scoping-return":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"RETURN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"object","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"RETURN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"v","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"named-function":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"FunctionDeclaration","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"GET_OUTER_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"object-destructuring-empty":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Cannot destructure undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"object-without-properties":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForInStatement","start":null,"end":null,"loc":null,"range":null,"left":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"keys","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"indexOf","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":">=","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ContinueStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"hasOwnProperty","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ContinueStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"target","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property-method-assignment-wrapper-generator":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"regeneratorRuntime","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"mark","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_this","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"regeneratorRuntime","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"wrap","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID$","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"WhileStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"body":{"type":"SwitchStatement","start":null,"end":null,"loc":null,"range":null,"discriminant":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prev","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"cases":[{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"delegateYield","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_this","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"t0","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"abrupt","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"return","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"t0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":1,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":2,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"SwitchCase","start":null,"end":null,"loc":null,"range":null,"consequent":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"context$2$0","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"stop","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"test":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"end","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property-method-assignment-wrapper":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"apply","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"ThisExpression","start":null,"end":null,"loc":null,"range":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arguments","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"toString","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"WRAPPER_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"prototype-identifier":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"CLASS_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"prototype-properties":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"child","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"staticProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instanceProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"staticProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperties","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"child","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"staticProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instanceProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperties","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"child","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"instanceProps","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"require-assign-key":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"VARIABLE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"require","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"require":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"require","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"rest":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LEN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY_LEN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"START","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"LEN","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARRAY_KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"KEY","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"self-contained-helpers-head":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"helpers","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"default","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"__esModule","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"self-global":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"global","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"self","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"global","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"set":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"set","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getOwnPropertyDescriptor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"getPrototypeOf","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":null,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"set","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"parent","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"property","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"value","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"operator":"in","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"writable","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"desc","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"set","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undefined","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setter","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"call","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"receiver","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"slice":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"prototype","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"slice","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"sliced-to-array":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"in","right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"ArrayExpression","start":null,"end":null,"loc":null,"range":null,"elements":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"!","prefix":true,"argument":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_iterator","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"next","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"done","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":null,"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"push","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_step","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BreakStatement","start":null,"end":null,"loc":null,"range":null,"label":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"_arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"TypeError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"Invalid attempt to destructure non-iterable instance","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"system":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"System","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"register","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_NAME","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"MODULE_DEPENDENCIES","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"EXPORT_IDENTIFIER","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"setters","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"SETTERS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"execute","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"EXECUTE","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"tagged-template-literal-loose":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"tagged-template-literal":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"freeze","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"defineProperties","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"strings","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[{"type":"Property","start":null,"end":null,"loc":null,"range":null,"method":false,"shorthand":false,"computed":false,"key":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"value","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"value":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Object","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"freeze","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"raw","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"kind":"init","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"tail-call-body":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"AGAIN_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"LabeledStatement","start":null,"end":null,"loc":null,"range":null,"body":{"type":"WhileStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"AGAIN_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"BLOCK","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"label":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"FUNCTION_ID","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"temporal-assert-defined":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"val","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"name","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undef","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"val","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"undef","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ThrowStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"NewExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"ReferenceError","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"name","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"+","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":" is not defined - temporal dead zone","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":true,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"temporal-undefined":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"ObjectExpression","start":null,"end":null,"loc":null,"range":null,"properties":[],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test-exports":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"exports","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test-module":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"module","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"!==","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"undefined","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"to-array":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"alternate":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"from","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"to-consumable-array":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"isArray","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ForStatement","start":null,"end":null,"loc":null,"range":null,"init":{"type":"VariableDeclaration","start":null,"end":null,"loc":null,"range":null,"declarations":[{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":0,"raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"VariableDeclarator","start":null,"end":null,"loc":null,"range":null,"id":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr2","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"init":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"kind":"var","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"test":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"<","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"length","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"update":{"type":"UpdateExpression","start":null,"end":null,"loc":null,"range":null,"operator":"++","prefix":false,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"body":{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"AssignmentExpression","start":null,"end":null,"loc":null,"range":null,"operator":"=","left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr2","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"i","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":true,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr2","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Array","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"from","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"arr","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"typeof":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ReturnStatement","start":null,"end":null,"loc":null,"range":null,"argument":{"type":"ConditionalExpression","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"constructor","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"Symbol","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"symbol","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"alternate":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"obj","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"umd-runner-body":{"type":"Program","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"FunctionExpression","start":null,"end":null,"loc":null,"range":null,"id":null,"generator":false,"expression":false,"params":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"factory","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"body":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"LogicalExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"BinaryExpression","start":null,"end":null,"loc":null,"range":null,"left":{"type":"UnaryExpression","start":null,"end":null,"loc":null,"range":null,"operator":"typeof","prefix":true,"argument":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"define","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"===","right":{"type":"Literal","start":null,"end":null,"loc":null,"range":null,"value":"function","raw":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"operator":"&&","right":{"type":"MemberExpression","start":null,"end":null,"loc":null,"range":null,"object":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"define","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"property":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"amd","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"computed":false,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"define","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"AMD_ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"factory","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":{"type":"IfStatement","start":null,"end":null,"loc":null,"range":null,"test":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"COMMON_TEST","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"consequent":{"type":"BlockStatement","start":null,"end":null,"loc":null,"range":null,"body":[{"type":"ExpressionStatement","start":null,"end":null,"loc":null,"range":null,"expression":{"type":"CallExpression","start":null,"end":null,"loc":null,"range":null,"callee":{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"factory","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"arguments":[{"type":"Identifier","start":null,"end":null,"loc":null,"range":null,"name":"COMMON_ARGUMENTS","_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"alternate":null,"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_scopeInfo":null,"_declarations":null,"extendedRange":null,"tokens":null,"raw":null},"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}],"_declarations":null,"extendedRange":null,"_scopeInfo":null,"tokens":null,"raw":null}}
 },{}],319:[function(require,module,exports){
+
+},{}],320:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -40126,7 +40232,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":344}],320:[function(require,module,exports){
+},{"util/":345}],321:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -41438,7 +41544,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-},{"base64-js":321,"ieee754":322,"is-array":323}],321:[function(require,module,exports){
+},{"base64-js":322,"ieee754":323,"is-array":324}],322:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -41564,7 +41670,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],322:[function(require,module,exports){
+},{}],323:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -41650,7 +41756,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],323:[function(require,module,exports){
+},{}],324:[function(require,module,exports){
 
 /**
  * isArray
@@ -41685,7 +41791,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],324:[function(require,module,exports){
+},{}],325:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -41988,7 +42094,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],325:[function(require,module,exports){
+},{}],326:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -42013,12 +42119,12 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],326:[function(require,module,exports){
+},{}],327:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],327:[function(require,module,exports){
+},{}],328:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -42246,7 +42352,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":328}],328:[function(require,module,exports){
+},{"_process":329}],329:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -42305,10 +42411,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],329:[function(require,module,exports){
+},{}],330:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":330}],330:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":331}],331:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -42401,7 +42507,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":332,"./_stream_writable":334,"_process":328,"core-util-is":335,"inherits":325}],331:[function(require,module,exports){
+},{"./_stream_readable":333,"./_stream_writable":335,"_process":329,"core-util-is":336,"inherits":326}],332:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -42449,7 +42555,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":333,"core-util-is":335,"inherits":325}],332:[function(require,module,exports){
+},{"./_stream_transform":334,"core-util-is":336,"inherits":326}],333:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -43435,7 +43541,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"_process":328,"buffer":320,"core-util-is":335,"events":324,"inherits":325,"isarray":326,"stream":340,"string_decoder/":341}],333:[function(require,module,exports){
+},{"_process":329,"buffer":321,"core-util-is":336,"events":325,"inherits":326,"isarray":327,"stream":341,"string_decoder/":342}],334:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -43647,7 +43753,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":330,"core-util-is":335,"inherits":325}],334:[function(require,module,exports){
+},{"./_stream_duplex":331,"core-util-is":336,"inherits":326}],335:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -44037,7 +44143,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":330,"_process":328,"buffer":320,"core-util-is":335,"inherits":325,"stream":340}],335:[function(require,module,exports){
+},{"./_stream_duplex":331,"_process":329,"buffer":321,"core-util-is":336,"inherits":326,"stream":341}],336:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -44147,10 +44253,10 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":320}],336:[function(require,module,exports){
+},{"buffer":321}],337:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":331}],337:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":332}],338:[function(require,module,exports){
 var Stream = require('stream'); // hack to fix a circular dependency issue when used with browserify
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = Stream;
@@ -44160,13 +44266,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":330,"./lib/_stream_passthrough.js":331,"./lib/_stream_readable.js":332,"./lib/_stream_transform.js":333,"./lib/_stream_writable.js":334,"stream":340}],338:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":331,"./lib/_stream_passthrough.js":332,"./lib/_stream_readable.js":333,"./lib/_stream_transform.js":334,"./lib/_stream_writable.js":335,"stream":341}],339:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":333}],339:[function(require,module,exports){
+},{"./lib/_stream_transform.js":334}],340:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":334}],340:[function(require,module,exports){
+},{"./lib/_stream_writable.js":335}],341:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -44295,7 +44401,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":324,"inherits":325,"readable-stream/duplex.js":329,"readable-stream/passthrough.js":336,"readable-stream/readable.js":337,"readable-stream/transform.js":338,"readable-stream/writable.js":339}],341:[function(require,module,exports){
+},{"events":325,"inherits":326,"readable-stream/duplex.js":330,"readable-stream/passthrough.js":337,"readable-stream/readable.js":338,"readable-stream/transform.js":339,"readable-stream/writable.js":340}],342:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -44518,7 +44624,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":320}],342:[function(require,module,exports){
+},{"buffer":321}],343:[function(require,module,exports){
 exports.isatty = function () { return false; };
 
 function ReadStream() {
@@ -44531,14 +44637,14 @@ function WriteStream() {
 }
 exports.WriteStream = WriteStream;
 
-},{}],343:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],344:[function(require,module,exports){
+},{}],345:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -45128,7 +45234,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":343,"_process":328,"inherits":325}],345:[function(require,module,exports){
+},{"./support/isBuffer":344,"_process":329,"inherits":326}],346:[function(require,module,exports){
 ((typeof define === "function" && define.amd && function (m) {
     define("expect", ["lodash"], m);
 }) || (typeof module === "object" && function (m) {
@@ -45197,7 +45303,7 @@ function hasOwnProperty(obj, prop) {
     return expect;
 });
 
-},{"lodash":346}],346:[function(require,module,exports){
+},{"lodash":347}],347:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -50184,7 +50290,7 @@ function hasOwnProperty(obj, prop) {
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],347:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 var util = require('./util');
 var format = require('should-format');
 
@@ -50272,7 +50378,7 @@ AssertionError.prototype = Object.create(Error.prototype, {
 });
 
 module.exports = AssertionError;
-},{"./util":363,"should-format":365}],348:[function(require,module,exports){
+},{"./util":364,"should-format":366}],349:[function(require,module,exports){
 var AssertionError = require('./assertion-error');
 var util = require('./util');
 var format = require('should-format');
@@ -50510,13 +50616,13 @@ Assertion.prototype = {
 };
 
 module.exports = Assertion;
-},{"./assertion-error":347,"./util":363,"should-format":365}],349:[function(require,module,exports){
+},{"./assertion-error":348,"./util":364,"should-format":366}],350:[function(require,module,exports){
 var config = {
   checkProtoEql: false
 };
 
 module.exports = config;
-},{}],350:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 // implement assert interface using already written peaces of should.js
 
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
@@ -50798,7 +50904,7 @@ assert.ifError = function(err) {
   }
 };
 
-},{"./../assertion":348,"./../util":363,"should-equal":364}],351:[function(require,module,exports){
+},{"./../assertion":349,"./../util":364,"should-equal":365}],352:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -50869,7 +50975,7 @@ module.exports = function(should) {
     }
   };
 };
-},{"../assertion-error":347,"../util":363,"./_assert":350}],352:[function(require,module,exports){
+},{"../assertion-error":348,"../util":364,"./_assert":351}],353:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -50937,7 +51043,7 @@ module.exports = function(should, Assertion) {
     this.assert(this.obj);
   }, true);
 };
-},{}],353:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 module.exports = function(should, Assertion) {
   /**
    * Simple chaining. It actually do nothing.
@@ -50959,7 +51065,7 @@ module.exports = function(should, Assertion) {
     Assertion.addChain(name);
   });
 };
-},{}],354:[function(require,module,exports){
+},{}],355:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -51124,7 +51230,7 @@ module.exports = function(should, Assertion) {
 
 };
 
-},{"../util":363,"should-equal":364}],355:[function(require,module,exports){
+},{"../util":364,"should-equal":365}],356:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -51200,7 +51306,7 @@ module.exports = function(should, Assertion) {
 
   Assertion.alias('equal', 'exactly');
 };
-},{"../util":363,"should-equal":364,"should-type":366}],356:[function(require,module,exports){
+},{"../util":364,"should-equal":365,"should-type":367}],357:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -51301,7 +51407,7 @@ module.exports = function(should, Assertion) {
 
   Assertion.alias('throw', 'throwError');
 };
-},{"../util":363}],357:[function(require,module,exports){
+},{"../util":364}],358:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -51467,7 +51573,7 @@ module.exports = function(should, Assertion) {
     }, this);
   });
 };
-},{"../util":363,"should-equal":364}],358:[function(require,module,exports){
+},{"../util":364,"should-equal":365}],359:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -51592,7 +51698,7 @@ module.exports = function(should, Assertion) {
 
 };
 
-},{}],359:[function(require,module,exports){
+},{}],360:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -51961,7 +52067,7 @@ module.exports = function(should, Assertion) {
   });
 };
 
-},{"../util":363,"should-equal":364}],360:[function(require,module,exports){
+},{"../util":364,"should-equal":365}],361:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -52003,7 +52109,7 @@ module.exports = function(should, Assertion) {
     this.assert(this.obj.indexOf(str, this.obj.length - str.length) >= 0);
   });
 };
-},{}],361:[function(require,module,exports){
+},{}],362:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -52189,7 +52295,7 @@ module.exports = function(should, Assertion) {
   Assertion.alias('undefined', 'Undefined');
 };
 
-},{"../util":363}],362:[function(require,module,exports){
+},{"../util":364}],363:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -52356,7 +52462,7 @@ var defaultProperty = 'should';
 //Expose api via `Object#should`.
 var prevShould = should.extend(defaultProperty, defaultProto);
 
-},{"./assertion":348,"./assertion-error":347,"./config":349,"./ext/assert":351,"./ext/bool":352,"./ext/chain":353,"./ext/contain":354,"./ext/eql":355,"./ext/error":356,"./ext/match":357,"./ext/number":358,"./ext/property":359,"./ext/string":360,"./ext/type":361,"./util":363,"should-format":365,"should-type":366}],363:[function(require,module,exports){
+},{"./assertion":349,"./assertion-error":348,"./config":350,"./ext/assert":352,"./ext/bool":353,"./ext/chain":354,"./ext/contain":355,"./ext/eql":356,"./ext/error":357,"./ext/match":358,"./ext/number":359,"./ext/property":360,"./ext/string":361,"./ext/type":362,"./util":364,"should-format":366,"should-type":367}],364:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -52458,7 +52564,7 @@ exports.length = function(obj) {
       return obj.length;
   }
 }
-},{"should-format":365,"should-type":366}],364:[function(require,module,exports){
+},{"should-format":366,"should-type":367}],365:[function(require,module,exports){
 var getType = require('should-type');
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -52687,7 +52793,7 @@ module.exports = eq;
 
 eq.r = REASON;
 
-},{"should-type":366}],365:[function(require,module,exports){
+},{"should-type":367}],366:[function(require,module,exports){
 var getType = require('should-type');
 
 function genKeysFunc(f) {
@@ -52940,7 +53046,7 @@ add('document', function(value) {
 add('window', function(value) {
   return '[Window]';
 });
-},{"should-type":366}],366:[function(require,module,exports){
+},{"should-type":367}],367:[function(require,module,exports){
 (function (Buffer){
 var toString = Object.prototype.toString;
 
@@ -53099,7 +53205,7 @@ Object.keys(types).forEach(function(typeName) {
 });
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":320}],367:[function(require,module,exports){
+},{"buffer":321}],368:[function(require,module,exports){
 var expect = require('referee/lib/expect');
 var should = require('should');
 var assert = require('assert');
@@ -53136,4 +53242,4 @@ window.addEventListener('message', consumeMessage, false);
 
 
 
-},{"assert":319,"babel":1,"referee/lib/expect":345,"should":362}]},{},[367]);
+},{"assert":320,"babel":1,"referee/lib/expect":346,"should":363}]},{},[368]);
