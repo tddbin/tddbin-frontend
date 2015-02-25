@@ -1,4 +1,3 @@
-/** @jsx React.DOM */
 var NavigationBar = require('../navigation-bar/navigation-bar-view');
 var KeyboardShortcutOverlay = require('../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view');
 
