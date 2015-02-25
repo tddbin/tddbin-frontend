@@ -37,8 +37,8 @@
   "dependencies": {},
   "devDependencies": {
     "ace-with-plugins": "git://github.com/uxebu/ace-with-plugins.git",
-    "browserify": "^8.1.3",
-    "jsxcs": "0.0.3",
+    "browserify": "^9.0.3",
+    "jsxcs": "^0.2.1",
     "reactify": "^1.0.0",
     "watchify": "^2.3.0",
     "referee": "^1.1.1",
