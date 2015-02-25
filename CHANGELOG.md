@@ -3,6 +3,7 @@
 - upgraded some dependencies (broke the build)
 - ensure a breaking build doesn't get deployed
 - write useful things on the index.html that gets shown when a broken site gets deployed
+- updated README
 
 1.1.0  2015-02-22
 =================
