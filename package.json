@@ -4,10 +4,10 @@
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
   "scripts": {
-    "build": "./scripts/build.sh",
+    "build": "./scripts/build/build.sh",
     "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify",
     "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
-    "build-css": "./scripts/copy-media-files.sh",
+    "build-css": "./scripts/build/copy-media-files.sh",
     "build-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify",
     "lint": "jsxcs --preset google src",
     "start": "watchify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify -v",
