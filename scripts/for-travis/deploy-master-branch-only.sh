@@ -10,8 +10,6 @@ CURRENT_BRANCH=$(git branch | sed -n -e 's/^\  \(.*\)/\1/p')
 echo "deploy: current branch is '$CURRENT_BRANCH'"
 
 if [ "$CURRENT_BRANCH" == "master" ]; then
-  echo "deploy: build via 'npm run build'"
-  npm run build
   echo "deploy: run 'deploy-to-ghpages.sh'"
   ./scripts/deploy-to-ghpages.sh
 else

@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# clean up
-rm -rf tmp || exit 0;
-
-# build
-npm run build;
-
 TMP_CHECKOUT_DIR=tmp/origin-gh-pages
 (
   git clone --branch=gh-pages "https://${GH_TOKEN}@${GH_REF}" $TMP_CHECKOUT_DIR
