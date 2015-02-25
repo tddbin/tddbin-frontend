@@ -21,10 +21,11 @@ In order to run this project locally do the following:
 - `npm test` runs all the tests of the project
 
 Now you can 
-- `npm start` starts [webpack-dev-server](https://github.com/webpack/webpack-dev-server)
+- once you need to do `npm run build` and
+- `npm start` starts [watchify](https://github.com/substack/watchify) which continuously updates the built files 
 
 and you can 
-- at [http://localhost:8080](http://localhost:8080)
+- served 
   or [http://localhost:8080/webpack-dev-server/](http://localhost:8080/webpack-dev-server/)
   get a directory listing where you can go into the `examples` folder and run any of them
 - or go directly to any of
