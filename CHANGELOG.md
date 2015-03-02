@@ -4,6 +4,7 @@
 - ensure a breaking build doesn't get deployed
 - write useful things on the index.html that gets shown when a broken site gets deployed
 - updated README
+- add links to twitter, github, trello and uxebu
 
 1.1.0  2015-02-22
 =================
