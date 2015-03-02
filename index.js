@@ -24693,7 +24693,7 @@ var React = require("react");
 var View = React.createClass({ displayName: "View",
 
   render: function render() {
-    return React.createElement("header", { className: "navigation-bar" }, React.createElement("button", { className: "logo" }), React.createElement("button", { className: "icon save", title: "Run tests (⌘S)", onClick: this.props.onSave }, "Run tests (", this.props.metaKeySymbol, "S)"));
+    return React.createElement("header", { className: "navigation-bar" }, React.createElement("button", { className: "logo" }), React.createElement("button", { className: "icon save", title: "Run tests (⌘S)", onClick: this.props.onSave }, "Run tests (", this.props.metaKeySymbol, "S)"), React.createElement("a", { href: "http://uxebu.com", className: "icon uxebu", title: "Made by uxebu." }), React.createElement("a", { href: "http://twitter.com/tddbin", className: "icon twitter", title: "Get in touch." }), React.createElement("a", { href: "http://github.com/tddbin/tddbin-frontend", className: "icon github", title: "Get (into) the code and constribute." }), React.createElement("a", { href: "https://trello.com/b/FW1gUVxe/tddbin-com", className: "icon trello", title: "Vote, add features, discuss, ..." }));
   }
 
 });

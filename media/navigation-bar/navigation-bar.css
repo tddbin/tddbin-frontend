@@ -8,6 +8,7 @@
   overflow: hidden;
 }
 
+.navigation-bar a,
 .navigation-bar button {
   background-color: #384355;
   border: none;
@@ -19,7 +20,7 @@
   outline: none;
 }
 
-.navigation-bar button:hover {
+.navigation-bar :hover {
   background-color: #475263;
 }
 
@@ -49,3 +50,30 @@
 .navigation-bar .icon.save {
   background-image: url(./img/icon-reload.png);
 }
+
+.navigation-bar .icon.twitter,
+.navigation-bar .icon.trello,
+.navigation-bar .icon.github,
+.navigation-bar .icon.uxebu {
+  background-size: 50%;
+  background-position: center center;
+  float: right;
+}
+
+.navigation-bar .icon.uxebu {
+  background-image: url(./img/uxebu-logo.png);
+}
+
+.navigation-bar .icon.trello {
+  background-image: url(./img/trello-logo.png);
+}
+
+.navigation-bar .icon.github {
+  background-image: url(./img/GitHub-Mark-Light-64px.png);
+}
+
+.navigation-bar .icon.twitter {
+  background-image: url(./img/Twitter_logo_white.png);
+}
+
+
