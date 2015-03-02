@@ -5,6 +5,7 @@
 - write useful things on the index.html that gets shown when a broken site gets deployed
 - updated README
 - add links to twitter, github, trello and uxebu
+- use the full screen height
 
 1.1.0  2015-02-22
 =================
