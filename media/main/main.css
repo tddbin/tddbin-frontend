@@ -6,6 +6,10 @@ body {
   font-family: sans-serif;
 }
 
+html, body, #tddbin, #main {
+  height: 100%;
+}
+
 /*
  *  Refactor renaming highlight style
  */
@@ -23,18 +27,26 @@ body {
 
 
 
+.editor-and-runner {
+  position: fixed;
+  /* 50px - the height of the navigation bar, variables would be nice :) */
+  top: 50px;
+}
+
 .editor-and-runner .editor {
+  position: fixed;
   width: 50%;
-  height: 500px;
+  height: calc(100% - 50px);
   float: left;
   background-color: lightyellow;
   border: none;
 }
 
 .editor-and-runner .runner {
-  width: 49%;
-  height: 500px;
-  float: right;
+  position: fixed;
+  left: 50%;
+  width: 50%;
+  height: calc(100% - 50px);
   background-color: #EEE;
 }
 

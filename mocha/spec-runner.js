@@ -39648,8 +39648,23 @@ define(function (require, exports, module) {
       return -1;
     }
 
-    return recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack, aCompare,
-                           aBias || exports.GREATEST_LOWER_BOUND);
+    var index = recursiveSearch(-1, aHaystack.length, aNeedle, aHaystack,
+                                aCompare, aBias || exports.GREATEST_LOWER_BOUND);
+    if (index < 0) {
+      return -1;
+    }
+
+    // We have found either the exact element, or the next-closest element than
+    // the one we are searching for. However, there may be more than one such
+    // element. Make sure we always return the smallest of these.
+    while (index - 1 >= 0) {
+      if (aCompare(aHaystack[index], aHaystack[index - 1], true) !== 0) {
+        break;
+      }
+      --index;
+    }
+
+    return index;
   };
 
 });
@@ -40097,7 +40112,7 @@ define(function (require, exports, module) {
       var index = 0;
       var cachedValues = {};
       var temp = {};
-      var mapping, str, values, end;
+      var mapping, str, values, end, value;
 
       while (index < length) {
         if (aStr.charAt(index) === ';') {
@@ -41774,7 +41789,7 @@ define(function (require, exports, module) {
       return cmp;
     }
 
-    cmp = strcmp(mappingA.name, mappingB.name);
+    cmp = mappingA.generatedColumn - mappingB.generatedColumn;
     if (cmp) {
       return cmp;
     }
@@ -41784,7 +41799,7 @@ define(function (require, exports, module) {
       return cmp;
     }
 
-    return mappingA.generatedColumn - mappingB.generatedColumn;
+    return strcmp(mappingA.name, mappingB.name);
   };
   exports.compareByOriginalPositions = compareByOriginalPositions;
 

@@ -3,9 +3,13 @@
 .navigation-bar {
   background-color: #2E3949;
   color: white;
+  position: fixed;
+  top: 0;
   height: 50px;
+  width: 100%;
   border-bottom: 1px solid #000;
   overflow: hidden;
+  z-index: 1000; /* we have to make sure that it is above ace, this is not the best way :( */
 }
 
 .navigation-bar a,
