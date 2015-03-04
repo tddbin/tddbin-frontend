@@ -19,7 +19,7 @@ export class RuntimeError {
       return LinePrefix.getPrefix(lineNumber, maxDigits) + sourceLine;
     });
     var neew = markedLines.splice(0, line);
-    neew = neew.concat(getSpaces(2+3+column) + COLUMN_HIGHLIGHT_CHARACTER).concat(markedLines);
+    neew = neew.concat(getSpaces(6 + column-1) + COLUMN_HIGHLIGHT_CHARACTER).concat(markedLines);
     return neew.join('\n');
   }
 }
