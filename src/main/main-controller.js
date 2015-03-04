@@ -1,10 +1,8 @@
 import React from 'react';
-
-import {View} from './main-view';
+import View from './main-view';
+import MochaRunner from '../test-runner/mocha/runner';
+import ShortcutProcessor from '../keyboard-shortcut/shortcut-processor';
 var editor = require('ace-with-plugins');
-import {MochaRunner} from '../test-runner/mocha/runner';
-
-var ShortcutProcessor = require('../keyboard-shortcut/shortcut-processor');
 
 export function Controller(domNode, config) {
   this._domNode = domNode;

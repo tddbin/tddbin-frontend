@@ -1,6 +1,6 @@
 import React from 'react';
 
-export class Iframe extends React.Component {
+export default class Iframe extends React.Component {
 
   getIframeRef() {
     return this.refs.iframe.getDOMNode();

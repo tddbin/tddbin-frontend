@@ -2,7 +2,7 @@ var expect = require('referee/lib/expect');
 var should = require('should');
 var assert = require('assert');
 var babel = require('babel'); // the es6 transpiler
-import {RuntimeError} from '../runtime-error'
+import RuntimeError from '../runtime-error'
 
 function es6ToEs5(sourceCode) {
   return babel.transform(sourceCode).code

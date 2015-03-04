@@ -1,7 +1,7 @@
 import React from 'react';
-import {Iframe} from './iframe';
+import Iframe from './iframe';
 
-export class MochaRunner {
+export default class MochaRunner {
 
   constructor(domNode, eventReceiver) {
     this._onStats = null;

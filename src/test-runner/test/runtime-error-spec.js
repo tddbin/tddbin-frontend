@@ -1,5 +1,5 @@
 import {assert} from '../../_test-helper/assert';
-import {RuntimeError} from '../runtime-error';
+import RuntimeError from '../runtime-error';
 
 describe('runtime error', function() {
   let sourceCode;

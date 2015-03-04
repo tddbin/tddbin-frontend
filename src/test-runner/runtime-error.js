@@ -3,7 +3,7 @@ import {LinePrefix} from './line-prefix.js';
 import {MarkedLinePrefix} from './marked-line-prefix.js';
 
 const COLUMN_HIGHLIGHT_CHARACTER = '^';
-export class RuntimeError {
+export default class RuntimeError {
   static prettyPrint(dump, sourceCode){
     let stackTrace = new StackTrace(dump);
     let line = stackTrace.lineOfOrigin();

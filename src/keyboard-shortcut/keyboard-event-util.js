@@ -1,6 +1,4 @@
-'use strict';
-
-export var keyboardEventUtil = {
+export const keyboardEventUtil = {
 
   PREVENT_DEFAULT_ACTION: 'preventDefault',
 

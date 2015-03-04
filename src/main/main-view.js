@@ -1,8 +1,8 @@
 import React from 'react';
-import {View as NavigationBar} from '../navigation-bar/navigation-bar-view';
-import {Overlay as KeyboardShortcutOverlay} from '../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view';
+import NavigationBar from '../navigation-bar/navigation-bar-view';
+import KeyboardShortcutOverlay from '../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view';
 
-export class View extends React.Component {
+export default class View extends React.Component {
 
   render() {
     var props = this.props;
