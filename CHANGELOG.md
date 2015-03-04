@@ -6,6 +6,7 @@
 - updated README
 - add links to twitter, github, trello and uxebu
 - use the full screen height
+- catch errors that might go to the console and show them in the result window
 
 1.1.0  2015-02-22
 =================
