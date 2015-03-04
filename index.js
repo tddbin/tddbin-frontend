@@ -24715,7 +24715,7 @@ var Iframe = React.createClass({ displayName: "Iframe",
   },
 
   render: function render() {
-    return React.createElement("iframe", { ref: "iframe", src: this.props.iframeSrc, width: "100%", height: "400" });
+    return React.createElement("iframe", { ref: "iframe", src: this.props.iframeSrc, width: "100%", height: "100%" });
   }
 
 });

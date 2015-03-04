@@ -457,6 +457,7 @@ exports.ThisExpression = ThisExpression;
 exports.CallExpression = CallExpression;
 exports.EmptyStatement = EmptyStatement;
 exports.ExpressionStatement = ExpressionStatement;
+exports.AssignmentExpression = AssignmentExpression;
 exports.MemberExpression = MemberExpression;
 
 var isInteger = _interopRequire(require("is-integer"));
@@ -572,14 +573,18 @@ function ExpressionStatement(node, print) {
   this.semicolon();
 }
 
-exports.BinaryExpression = exports.LogicalExpression = exports.AssignmentPattern = exports.AssignmentExpression = function (node, print) {
+function AssignmentExpression(node, print) {
   // todo: add cases where the spaces can be dropped when in compact mode
   print(node.left);
   this.push(" ");
   this.push(node.operator);
   this.push(" ");
   print(node.right);
-};
+}
+
+exports.BinaryExpression = AssignmentExpression;
+exports.LogicalExpression = AssignmentExpression;
+exports.AssignmentPattern = AssignmentExpression;
 
 var SCIENTIFIC_NOTATION = /e/i;
 
@@ -980,6 +985,7 @@ var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["defau
 
 exports._params = _params;
 exports._method = _method;
+exports.FunctionExpression = FunctionExpression;
 exports.ArrowFunctionExpression = ArrowFunctionExpression;
 
 var t = _interopRequire(require("../../types"));
@@ -1030,7 +1036,7 @@ function _method(node, print) {
   print(value.body);
 }
 
-exports.FunctionDeclaration = exports.FunctionExpression = function (node, print) {
+function FunctionExpression(node, print) {
   if (node.async) this.push("async ");
   this.push("function");
   if (node.generator) this.push("*");
@@ -1045,7 +1051,9 @@ exports.FunctionDeclaration = exports.FunctionExpression = function (node, print
   this._params(node, print);
   this.space();
   print(node.body);
-};
+}
+
+exports.FunctionDeclaration = FunctionExpression;
 
 function ArrowFunctionExpression(node, print) {
   if (node.async) this.push("async ");
@@ -1081,7 +1089,7 @@ function ImportSpecifier(node, print) {
   if (t.isSpecifierDefault(node)) {
     print(t.getSpecifierName(node));
   } else {
-    return exports.ExportSpecifier.apply(this, arguments);
+    return ExportSpecifier.apply(this, arguments);
   }
 }
 
@@ -1482,8 +1490,11 @@ exports.__esModule = true;
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 exports.Identifier = Identifier;
+exports.RestElement = RestElement;
 exports.VirtualPropertyExpression = VirtualPropertyExpression;
+exports.ObjectExpression = ObjectExpression;
 exports.Property = Property;
+exports.ArrayExpression = ArrayExpression;
 exports.Literal = Literal;
 exports._stringLiteral = _stringLiteral;
 
@@ -1493,10 +1504,13 @@ function Identifier(node) {
   this.push(node.name);
 }
 
-exports.RestElement = exports.SpreadElement = exports.SpreadProperty = function (node, print) {
+function RestElement(node, print) {
   this.push("...");
   print(node.argument);
-};
+}
+
+exports.SpreadElement = RestElement;
+exports.SpreadProperty = RestElement;
 
 function VirtualPropertyExpression(node, print) {
   print(node.object);
@@ -1504,7 +1518,7 @@ function VirtualPropertyExpression(node, print) {
   print(node.property);
 }
 
-exports.ObjectExpression = exports.ObjectPattern = function (node, print) {
+function ObjectExpression(node, print) {
   var props = node.properties;
 
   if (props.length) {
@@ -1518,7 +1532,9 @@ exports.ObjectExpression = exports.ObjectPattern = function (node, print) {
   } else {
     this.push("{}");
   }
-};
+}
+
+exports.ObjectPattern = ObjectExpression;
 
 function Property(node, print) {
   if (node.method || node.kind === "get" || node.kind === "set") {
@@ -1539,7 +1555,7 @@ function Property(node, print) {
   }
 }
 
-exports.ArrayExpression = exports.ArrayPattern = function (node, print) {
+function ArrayExpression(node, print) {
   var _this = this;
 
   var elems = node.elements;
@@ -1563,7 +1579,9 @@ exports.ArrayExpression = exports.ArrayPattern = function (node, print) {
   });
 
   this.push("]");
-};
+}
+
+exports.ArrayPattern = ArrayExpression;
 
 function Literal(node) {
   var val = node.value;
@@ -2787,7 +2805,7 @@ module.exports = function (lines, lineNumber, colNumber) {
         return;
       }
       if (colNumber) {
-        params.line += "\n" + params.before + repeating(" ", params.width) + params.after + repeating(" ", colNumber - 1) + "^";
+        params.line += "\n" + params.before + "" + repeating(" ", params.width) + "" + params.after + "" + repeating(" ", colNumber - 1) + "^";
       }
       params.before = params.before.replace(/^./, ">");
     }
@@ -2855,7 +2873,7 @@ module.exports = function (opts, code, callback) {
   } catch (err) {
     if (!err._babel) {
       err._babel = true;
-      var message = opts.filename + ": " + err.message;
+      var message = "" + opts.filename + ": " + err.message;
 
       var loc = err.loc;
       if (loc) {
@@ -2920,14 +2938,14 @@ var messages = exports.messages = {
 };
 
 function get(key) {
-  var msg = exports.messages[key];
-  if (!msg) throw new ReferenceError("Unknown message `" + key + "`");
+  var msg = messages[key];
+  if (!msg) throw new ReferenceError("Unknown message " + JSON.stringify(key));
 
   var args = [];
   for (var i = 1; i < arguments.length; i++) {
     args.push(arguments[i]);
   }
-  args = exports.parseArgs(args);
+  args = parseArgs(args);
 
   return msg.replace(/\$(\d+)/g, function (str, i) {
     return args[--i];
@@ -3427,6 +3445,13 @@ var File = (function () {
 
     return _checkNodeWrapper;
   })(function (node, scope) {
+    if (Array.isArray(node)) {
+      for (var i = 0; i < node.length; i++) {
+        this.checkNode(node[i], scope);
+      }
+      return;
+    }
+
     var stack = this.transformerStack;
     if (!scope) scope = this.scope;
 
@@ -3470,7 +3495,7 @@ var File = (function () {
 
     if (this.shebang) {
       // add back shebang
-      result.code = this.shebang + "\n" + result.code;
+      result.code = "" + this.shebang + "\n" + result.code;
     }
 
     if (opts.sourceMap === "inline") {
@@ -4615,7 +4640,7 @@ function has(node) {
 
 function wrap(node, callback) {
   var useStrictNode;
-  if (exports.has(node)) {
+  if (has(node)) {
     useStrictNode = node.body.shift();
   }
 
@@ -5961,12 +5986,10 @@ function BlockStatement(node, parent, scope, file) {
   var letRefs = node._letReferences;
   if (!letRefs) return;
 
-  var state = {
+  scope.traverse(node, visitor, {
     letRefs: letRefs,
     file: file
-  };
-
-  scope.traverse(node, visitor, state);
+  });
 }
 
 exports.Program = BlockStatement;
@@ -6183,7 +6206,7 @@ var loopVisitor = {
           return;
         }
 
-        loopText = loopText + "|" + node.label.name;
+        loopText = "" + loopText + "|" + node.label.name;
       } else {
         // we shouldn't be transforming these statements because
         // they don't refer to the actual loop we're scopifying
@@ -6744,7 +6767,7 @@ var ClassTransformer = (function () {
     }
 
     // we have no constructor, we have a super, and the super doesn't appear to be falsy
-    if (!this.hasConstructor && this.hasSuper && t.evaluateTruthy(superName) !== false) {
+    if (!this.hasConstructor && this.hasSuper && t.evaluateTruthy(superName, this.scope) !== false) {
       var helperName = "class-super-constructor-call";
       if (this.isLoose) helperName += "-loose";
       constructor.body.body.push(util.template(helperName, {
@@ -6994,12 +7017,12 @@ exports.ForInStatement = ForOfStatement;
 exports.Function = function (node, parent, scope, file) {
   var nodes = [];
 
-  var hasDestructuringTransformer = false;
+  var hasDestructuring = false;
 
   node.params = node.params.map(function (pattern, i) {
     if (!t.isPattern(pattern)) return pattern;
 
-    hasDestructuringTransformer = true;
+    hasDestructuring = true;
     var ref = scope.generateUidIdentifier("ref");
 
     var destructuring = new DestructuringTransformer({
@@ -7007,14 +7030,16 @@ exports.Function = function (node, parent, scope, file) {
       nodes: nodes,
       scope: scope,
       file: file,
-      kind: "var" });
+      kind: "let"
+    });
     destructuring.init(pattern, ref);
 
     return ref;
   });
 
-  if (!hasDestructuringTransformer) return;
+  if (!hasDestructuring) return;
 
+  file.checkNode(nodes);
   t.ensureBlock(node);
 
   var block = node.body;
@@ -7535,7 +7560,6 @@ var loose = function loose(node, parent, scope, file) {
 };
 
 var spec = function spec(node, parent, scope, file) {
-
   var left = node.left;
   var declar;
 
@@ -7774,7 +7798,7 @@ exports.Function = function (node, parent, scope, file) {
         scope.traverse(param, iifeVisitor, state);
       }
 
-      if (file.transformers["es6.blockScopingTDZ"].canRun()) {
+      if (file.transformers["es6.blockScopingTDZ"].canRun() && t.isIdentifier(param)) {
         pushDefNode(param, t.identifier("undefined"), i);
       }
 
@@ -7881,7 +7905,7 @@ var hasRest = function hasRest(node) {
   return t.isRestElement(node.params[node.params.length - 1]);
 };
 
-exports.Function = function (node, parent, scope) {
+exports.Function = function (node, parent, scope, file) {
   if (!hasRest(node)) return;
 
   var rest = node.params.pop().argument;
@@ -7895,10 +7919,12 @@ exports.Function = function (node, parent, scope) {
   if (t.isPattern(rest)) {
     var pattern = rest;
     rest = scope.generateUidIdentifier("ref");
-    var declar = t.variableDeclaration("var", pattern.elements.map(function (elem, index) {
+
+    var declar = t.variableDeclaration("let", pattern.elements.map(function (elem, index) {
       var accessExpr = t.memberExpression(rest, t.literal(index), true);
       return t.variableDeclarator(elem, accessExpr);
     }));
+    file.checkNode(declar);
     node.body.body.unshift(declar);
   }
 
@@ -10142,8 +10168,8 @@ function toStatements(node) {
 
 var optional = exports.optional = true;
 
-function ConditionalExpression(node) {
-  var evaluateTest = t.evaluateTruthy(node.test);
+function ConditionalExpression(node, parent, scope) {
+  var evaluateTest = t.evaluateTruthy(node.test, scope);
   if (evaluateTest === true) {
     return node.consequent;
   } else if (evaluateTest === false) {
@@ -10152,12 +10178,12 @@ function ConditionalExpression(node) {
 }
 
 var IfStatement = exports.IfStatement = {
-  exit: function exit(node) {
+  exit: function exit(node, parent, scope) {
     var consequent = node.consequent;
     var alternate = node.alternate;
     var test = node.test;
 
-    var evaluateTest = t.evaluateTruthy(test);
+    var evaluateTest = t.evaluateTruthy(test, scope);
 
     // we can check if a test will be truthy 100% and if so then we can inline
     // the consequent and completely ignore the alternate
@@ -10200,7 +10226,7 @@ var IfStatement = exports.IfStatement = {
     //   if (foo) {} else { bar; } -> if (!foo) { bar; }
     //
 
-    if (t.blockStatement(consequent) && !consequent.body.length && t.isBlockStatement(alternate) && alternate.body.length) {
+    if (t.isBlockStatement(consequent) && !consequent.body.length && t.isBlockStatement(alternate) && alternate.body.length) {
       node.consequent = node.alternate;
       node.alternate = null;
       node.test = t.unaryExpression("!", test, true);
@@ -10239,17 +10265,22 @@ exports.__esModule = true;
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 exports.Expression = Expression;
+exports.Identifier = Identifier;
 
 var t = _interopRequire(require("../../../types"));
 
 var optional = exports.optional = true;
 
-function Expression(node) {
-  var res = t.evaluate(node);
+function Expression(node, parent, scope) {
+  var res = t.evaluate(node, scope);
   if (res.confident) return t.valueToNode(res.value);
 }
 
+function Identifier() {}
+
 exports.__esModule = true;
+
+// override Expression
 },{"../../../types":128}],116:[function(require,module,exports){
 "use strict";
 
@@ -11253,7 +11284,7 @@ var Scope = (function () {
   Scope.prototype.registerVariableDeclaration = function registerVariableDeclaration(declar) {
     var declars = declar.declarations;
     for (var i = 0; i < declars.length; i++) {
-      this.registerBinding(declars[i], declar.kind);
+      this.registerBinding(declar.kind, declars[i]);
     }
   };
 
@@ -11464,6 +11495,36 @@ var Scope = (function () {
   Scope.prototype.getOwnBindingIdentifier = function getOwnBindingIdentifier(name) {
     var binding = this.bindings[name];
     return binding && binding.identifier;
+  };
+
+  Scope.prototype.getOwnImmutableBindingValue = function getOwnImmutableBindingValue(name) {
+    return this._immutableBindingInfoToValue(this.getOwnBindingInfo(name));
+  };
+
+  Scope.prototype.getImmutableBindingValue = function getImmutableBindingValue(name) {
+    return this._immutableBindingInfoToValue(this.getBindingInfo(name));
+  };
+
+  Scope.prototype._immutableBindingInfoToValue = function _immutableBindingInfoToValue(info) {
+    if (!info) return;
+
+    // can't guarantee this value is the same
+    if (info.reassigned) return;
+
+    var node = info.node;
+    if (t.isVariableDeclarator(node)) {
+      if (t.isIdentifier(node.id)) {
+        node = node.init;
+      } else {
+        // otherwise it's probably a destructuring like:
+        // var { foo } = "foo";
+        return;
+      }
+    }
+
+    if (t.isImmutable(node)) {
+      return node;
+    }
   };
 
   // has
@@ -12613,6 +12674,35 @@ t.isScope = function (node, parent) {
 };
 
 /**
+ * Description
+ *
+ * @param {Node} node
+ * @returns {Boolean}
+ */
+
+t.isImmutable = function (node) {
+  if (t.isLiteral(node)) {
+    if (node.regex) {
+      // regexes are mutable
+      return false;
+    } else {
+      // immutable!
+      return true;
+    }
+  } else if (t.isIdentifier(node)) {
+    if (node.name === "undefined") {
+      // immutable!
+      return true;
+    } else {
+      // no idea...
+      return false;
+    }
+  }
+
+  return false;
+};
+
+/**
  * Walk the input `node` and statically evaluate if it's truthy.
  *
  * Returning `true` when we're sure that the expression will evaluate to a
@@ -12629,11 +12719,12 @@ t.isScope = function (node, parent) {
  *   if (!t.evaluateTruthy(node)) falsyLogic();
  *
  * @param {Node} node
+ * @param {Scope} scope
  * @returns {Boolean}
  */
 
-t.evaluateTruthy = function (node) {
-  var res = t.evaluate(node);
+t.evaluateTruthy = function (node, scope) {
+  var res = t.evaluate(node, scope);
   if (res.confident) return !!res.value;
 };
 
@@ -12651,10 +12742,11 @@ t.evaluateTruthy = function (node) {
  *   t.evaluate(parse("foo + foo")) // { confident: false, value: undefined }
  *
  * @param {Node} node
+ * @param {Scope} scope
  * @returns {Object}
  */
 
-t.evaluate = function (node) {
+t.evaluate = function (node, scope) {
   var confident = true;
 
   var value = evaluate(node);
@@ -12685,8 +12777,12 @@ t.evaluate = function (node) {
       }
     }
 
-    if (t.isIdentifier(node, { name: "undefined" })) {
-      return undefined;
+    if (t.isIdentifier(node)) {
+      if (node.name === "undefined") {
+        return undefined;
+      } else {
+        return evaluate(scope.getImmutableBindingValue(node.name));
+      }
     }
 
     if (t.isUnaryExpression(node, { prefix: true })) {
@@ -12969,7 +13065,7 @@ exports.inspect = _util.inspect;
 var debug = exports.debug = buildDebug("babel");
 
 function canCompile(filename, altExts) {
-  var exts = altExts || exports.canCompile.EXTENSIONS;
+  var exts = altExts || canCompile.EXTENSIONS;
   var ext = path.extname(filename);
   return contains(exts, ext);
 }
@@ -12999,7 +13095,7 @@ function regexify(val) {
 function arrayify(val) {
   if (!val) return [];
   if (isBoolean(val)) return [val];
-  if (isString(val)) return exports.list(val);
+  if (isString(val)) return list(val);
   if (Array.isArray(val)) return val;
   throw new TypeError("illegal type for arrayify");
 }
@@ -18395,7 +18491,7 @@ def("ArrowFunctionExpression")
     .field("id", null, defaults["null"])
     // The current spec forbids arrow generators, so I have taken the
     // liberty of enforcing that. TODO Report this.
-    .field("generator", false);
+    .field("generator", false, defaults["false"]);
 
 def("YieldExpression")
     .bases("Expression")
@@ -42159,7 +42255,7 @@ module.exports = function (str) {
 module.exports={
   "name": "babel",
   "description": "Turn ES6 code into readable vanilla ES5 with source maps",
-  "version": "4.6.5",
+  "version": "4.6.6",
   "author": {
     "name": "Sebastian McKenzie",
     "email": "sebmck@gmail.com"
@@ -42243,12 +42339,12 @@ module.exports={
     "rimraf": "^2.2.8",
     "uglify-js": "^2.4.16"
   },
-  "gitHead": "1b046a6ecb3e54b2f9885ce5761b4b4e65697447",
+  "gitHead": "864169c1eb1a98313125ad5d4fff900eaaa83c48",
   "bugs": {
     "url": "https://github.com/babel/babel/issues"
   },
-  "_id": "babel@4.6.5",
-  "_shasum": "2c256f51c19a86a69e44d4ac4464420aa6d79dc1",
+  "_id": "babel@4.6.6",
+  "_shasum": "ab51616656db7e0af8f3c85ef176a3fdd17d57d8",
   "_from": "babel@^4.3.0",
   "_npmVersion": "2.6.0",
   "_nodeVersion": "1.4.1",
@@ -42263,11 +42359,11 @@ module.exports={
     }
   ],
   "dist": {
-    "shasum": "2c256f51c19a86a69e44d4ac4464420aa6d79dc1",
-    "tarball": "http://registry.npmjs.org/babel/-/babel-4.6.5.tgz"
+    "shasum": "ab51616656db7e0af8f3c85ef176a3fdd17d57d8",
+    "tarball": "http://registry.npmjs.org/babel/-/babel-4.6.6.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/babel/-/babel-4.6.5.tgz"
+  "_resolved": "https://registry.npmjs.org/babel/-/babel-4.6.6.tgz"
 }
 
 },{}],325:[function(require,module,exports){
@@ -55669,13 +55765,103 @@ Object.keys(types).forEach(function(typeName) {
 
 }).call(this,require("buffer").Buffer)
 },{"buffer":329}],376:[function(require,module,exports){
-var expect = require('referee/lib/expect');
-var should = require('should');
-var assert = require('assert');
-var babel = require('babel'); // the es6 transpiler
+"use strict";
+
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var LinePrefix = exports.LinePrefix = (function () {
+  function LinePrefix() {
+    _classCallCheck(this, LinePrefix);
+  }
+
+  _prototypeProperties(LinePrefix, {
+    getPrefix: {
+      value: function getPrefix(lineNumber, maxDigits) {
+        var leadingSpaces = getLeadingSpaces(lineNumber, maxDigits);
+        return "" + getSpaces(leadingSpaces) + "" + lineNumber + " | ";
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return LinePrefix;
+})();
+
+var DEFAULT_LEADING_SPACE = 2;
+
+var getLeadingSpaces = function (number, maxDigits) {
+  var numberLength = number.toString().length;
+  return DEFAULT_LEADING_SPACE + maxDigits - numberLength;
+};
+
+var getSpaces = function (howMany) {
+  return new Array(howMany + 1).join(" ");
+};
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+},{}],377:[function(require,module,exports){
+"use strict";
+
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var LinePrefix = require("./line-prefix.js").LinePrefix;
+
+var MarkedLinePrefix = exports.MarkedLinePrefix = (function (LinePrefix) {
+  function MarkedLinePrefix() {
+    _classCallCheck(this, MarkedLinePrefix);
+
+    if (LinePrefix != null) {
+      LinePrefix.apply(this, arguments);
+    }
+  }
+
+  _inherits(MarkedLinePrefix, LinePrefix);
+
+  _prototypeProperties(MarkedLinePrefix, {
+    getPrefix: {
+      value: function getPrefix() {
+        var defaultPrefix = LinePrefix.getPrefix.apply(LinePrefix, arguments).substr(1);
+        return ">" + defaultPrefix;
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return MarkedLinePrefix;
+})(LinePrefix);
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+
+
+},{"./line-prefix.js":376}],378:[function(require,module,exports){
+"use strict";
+
+var expect = require("referee/lib/expect");
+var should = require("should");
+var assert = require("assert");
+var babel = require("babel"); // the es6 transpiler
+
+var RuntimeError = require("../runtime-error").RuntimeError;
 
 function es6ToEs5(sourceCode) {
-  return babel.transform(sourceCode).code
+  return babel.transform(sourceCode).code;
 }
 
 function consumeMessage(messageData) {
@@ -55683,26 +55869,150 @@ function consumeMessage(messageData) {
   var specCode = messageData.data;
 
   // Reset mocha env
-  document.getElementById('mocha').innerHTML = '';
-  var mocha = new Mocha({reporter: 'html', ui: 'bdd'});
-  mocha.suite.emit('pre-require', this, null, this);
+  document.getElementById("mocha").innerHTML = "";
+  var mocha = new Mocha({ reporter: "html", ui: "bdd" });
+  mocha.suite.emit("pre-require", this, null, this);
 
   // Run the spec source code, this calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
-  eval(es6ToEs5(specCode));
+  document.getElementById("errorOutput").innerText = "";
+  var es5Code;
+  try {
+    es5Code = es6ToEs5(specCode);
+  } catch (e) {
+    document.getElementById("errorOutput").innerText = "Syntax or ES6 transpile error\n\n" + e;
+    return;
+  }
+  try {
+    eval(es5Code);
+  } catch (e) {
+    document.getElementById("errorOutput").innerText = "Runtime error\n\n" + e + "\n\n" + RuntimeError.prettyPrint(e.stack, es5Code);
+    return;
+  }
 
   // Let mocha run and report the stats back to the actual sender.
   mocha.checkLeaks();
-  var runner = mocha.run(function() {}); // if there is no callback given mocha will fail and not work again :(
+  var runner = mocha.run(function () {}); // if there is no callback given mocha will fail and not work again :(
   function onRan() {
     var stats = runner.stats;
-    sender.postMessage(stats, '*');
+    sender.postMessage(stats, "*");
   }
-  runner.on('end', onRan);
+  runner.on("end", onRan);
 }
 
-window.addEventListener('message', consumeMessage, false);
+window.addEventListener("message", consumeMessage, false);
 
 
 
-},{"assert":327,"babel":1,"referee/lib/expect":354,"should":371}]},{},[376]);
+
+},{"../runtime-error":379,"assert":327,"babel":1,"referee/lib/expect":354,"should":371}],379:[function(require,module,exports){
+"use strict";
+
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var StackTrace = require("./stack-trace.js").StackTrace;
+
+var LinePrefix = require("./line-prefix.js").LinePrefix;
+
+var MarkedLinePrefix = require("./marked-line-prefix.js").MarkedLinePrefix;
+
+var COLUMN_HIGHLIGHT_CHARACTER = "^";
+
+var RuntimeError = exports.RuntimeError = (function () {
+  function RuntimeError() {
+    _classCallCheck(this, RuntimeError);
+  }
+
+  _prototypeProperties(RuntimeError, {
+    prettyPrint: {
+      value: function prettyPrint(dump, sourceCode) {
+        var stackTrace = new StackTrace(dump);
+        var line = stackTrace.lineOfOrigin();
+        var column = stackTrace.columnOfOrigin();
+
+        var sourceLines = sourceCode.split("\n");
+        var maxDigits = sourceLines.length.toString().length;
+        var markedLines = sourceLines.map(function (sourceLine, idx) {
+          var lineNumber = idx + 1;
+          if (lineNumber === line) {
+            return MarkedLinePrefix.getPrefix(lineNumber, maxDigits) + sourceLine;
+          }
+          return LinePrefix.getPrefix(lineNumber, maxDigits) + sourceLine;
+        });
+        var neew = markedLines.splice(0, line);
+        neew = neew.concat(getSpaces(7 + column - 1) + COLUMN_HIGHLIGHT_CHARACTER).concat(markedLines);
+        return neew.join("\n");
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return RuntimeError;
+})();
+
+var getSpaces = function (howMany) {
+  return new Array(howMany + 1).join(" ");
+};
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+},{"./line-prefix.js":376,"./marked-line-prefix.js":377,"./stack-trace.js":380}],380:[function(require,module,exports){
+"use strict";
+
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+var StackTrace = exports.StackTrace = (function () {
+  function StackTrace(dump) {
+    _classCallCheck(this, StackTrace);
+
+    this.dump = dump;
+  }
+
+  _prototypeProperties(StackTrace, null, {
+    lineOfOrigin: {
+      value: function lineOfOrigin() {
+        var lineNumber = this.firstLineOfDump().split(":");
+        return parseInt(lineNumber[lineNumber.length - 2]);
+      },
+      writable: true,
+      configurable: true
+    },
+    columnOfOrigin: {
+      value: function columnOfOrigin() {
+        var lineNumber = this.firstLineOfDump().split(":");
+        return parseInt(lineNumber[lineNumber.length - 1]);
+      },
+      writable: true,
+      configurable: true
+    },
+    firstLineOfDump: {
+      value: function firstLineOfDump() {
+        // may look something like this:
+        //    at eval (eval at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:10), <anonymous>:11:22)
+        return this.dump.split("\n")[1];
+      },
+      writable: true,
+      configurable: true
+    }
+  });
+
+  return StackTrace;
+})();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+
+
+
+},{}]},{},[378]);
