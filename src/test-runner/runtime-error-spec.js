@@ -41,26 +41,26 @@ describe('StackTrace', function() {
     at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:5)
 `;
 
-    it('line shall be 42', () => assert.equal(getFirstCodeLine(stackTrace), 42));
-    it('line shall be 11', () => assert.equal(getFirstCodeLine(stackTrace1), 11));
-    it('columne shall be 23', () => assert.equal(getFirstCodeColumn(stackTrace), 23));
-    //it('line shall be 11', () => assert.equal(getFirstCodeLine(stackTrace1), 11));
+    it('line shall be 42', () => assert.equal(getLineOfOrigin(stackTrace), 42));
+    it('line shall be 11', () => assert.equal(getLineOfOrigin(stackTrace1), 11));
+    it('columne shall be 23', () => assert.equal(getColumnOfOrigin(stackTrace), 23));
+    //it('line shall be 11', () => assert.equal(getLineOfOrigin(stackTrace1), 11));
   });
 });
 
-const getFirstCodeLine = (stackTrace) => new StackTrace(stackTrace).getFirstCodeLine();
-const getFirstCodeColumn = (stackTrace) => new StackTrace(stackTrace).getFirstCodeColumn();
+const getLineOfOrigin = (stackTrace) => new StackTrace(stackTrace).getLineOfOrigin();
+const getColumnOfOrigin = (stackTrace) => new StackTrace(stackTrace).getColumnOfOrigin();
 
 class StackTrace {
   constructor(stackTrace) {
     this.stackTrace = stackTrace;
   }
-  getFirstCodeLine() {
+  getLineOfOrigin() {
     var firstLine = this.stackTrace.split('\n')[1];
     var lineNumber = firstLine.split(':');
     return lineNumber[lineNumber.length - 2];
   }
-  getFirstCodeColumn() {
+  getColumnOfOrigin() {
     var firstLine = this.stackTrace.split('\n')[1];
     var lineNumber = firstLine.split(':');
     return parseInt(lineNumber[lineNumber.length - 1]);
