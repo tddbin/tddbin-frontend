@@ -29,11 +29,11 @@ Controller.prototype = {
     this._editor = editor(editorDomNodeId);
     this._runner = new MochaRunner(document.getElementById(runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
-    this._setEditorContent(this._config.initialContent);
+    this.setEditorContent(this._config.initialContent);
     this._registerShortcuts(this._config.shortcuts);
   },
 
-  _setEditorContent: function(sourceCode) {
+  setEditorContent: function(sourceCode) {
     this._editor.setContent(sourceCode);
   },
 
