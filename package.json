@@ -47,6 +47,7 @@
     "react": "^0.12.2",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
-    "should": "^5.0.1"
+    "should": "^5.0.1",
+    "atomic": "git+https://github.com/toddmotto/atomic.git"
   }
 }
