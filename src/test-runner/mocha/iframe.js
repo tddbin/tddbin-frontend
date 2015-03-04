@@ -8,7 +8,7 @@ var Iframe = React.createClass({
 
   render: function() {
     return (
-      <iframe ref="iframe" src={this.props.iframeSrc} width="100%" height="400"></iframe>
+      <iframe ref="iframe" src={this.props.iframeSrc} width="100%" height="100%"></iframe>
     );
   }
 
