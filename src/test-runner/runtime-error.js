@@ -2,6 +2,7 @@ import {StackTrace} from './stack-trace.js';
 import {LinePrefix} from './line-prefix.js';
 import {MarkedLinePrefix} from './marked-line-prefix.js';
 
+const COLUMN_HIGHLIGHT_CHARACTER = '^';
 export class RuntimeError {
   static prettyPrint(dump, sourceCode){
     let stackTrace = new StackTrace(dump);
@@ -18,7 +19,11 @@ export class RuntimeError {
       return LinePrefix.getPrefix(lineNumber, maxDigits) + sourceLine;
     });
     var neew = markedLines.splice(0, line);
-    neew = neew.concat('      ^').concat(markedLines);
+    neew = neew.concat(getSpaces(2+3+column) + COLUMN_HIGHLIGHT_CHARACTER).concat(markedLines);
     return neew.join('\n');
   }
 }
+
+const getSpaces = (howMany) => {
+  return new Array(howMany + 1).join(' ');
+};
