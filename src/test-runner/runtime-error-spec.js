@@ -36,10 +36,13 @@ RuntimeError.toReadableString = function(stackTraceDump, sourceCode) {
 
 describe('StackTrace', function() {
 
-  const lineOfOrigin = (stackTrace) => new StackTrace(stackTrace).lineOfOrigin();
-  const columnOfOrigin = (stackTrace) => new StackTrace(stackTrace).columnOfOrigin();
+describe('StackTrace', function() {
 
   describe('get first code position', function() {
+
+    const lineOfOrigin = (stackTrace) => new StackTrace(stackTrace).lineOfOrigin();
+    const columnOfOrigin = (stackTrace) => new StackTrace(stackTrace).columnOfOrigin();
+
         var stackTraceDump =
 `ReferenceError: y is not defined
     at eval (eval at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:10), <anonymous>:42:23)
