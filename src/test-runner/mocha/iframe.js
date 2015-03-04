@@ -1,17 +1,15 @@
-var React = require('react');
+import React from 'react';
 
-var Iframe = React.createClass({
+export class Iframe extends React.Component {
 
-  getIframeRef: function() {
+  getIframeRef() {
     return this.refs.iframe.getDOMNode();
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       <iframe ref="iframe" src={this.props.iframeSrc} width="100%" height="100%"></iframe>
     );
   }
 
-});
-
-module.exports = Iframe;
+}

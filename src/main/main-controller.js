@@ -1,7 +1,8 @@
-var React = require('react');
-var ViewComponent = require('./main-view');
+import React from 'react';
+
+import {View} from './main-view';
 var editor = require('ace-with-plugins');
-var MochaRunner = require('../test-runner/mocha/runner');
+import {MochaRunner} from '../test-runner/mocha/runner';
 
 var ShortcutProcessor = require('../keyboard-shortcut/shortcut-processor');
 
@@ -25,7 +26,7 @@ Controller.prototype = {
       onSave: this.runEditorContent.bind(this),
       shortcuts: []
     };
-    this._component = React.render(ViewComponent(props), this._domNode);
+    this._component = React.render(<View {...props}/>, this._domNode);
     this._editor = editor(editorDomNodeId);
     this._runner = new MochaRunner(document.getElementById(runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
@@ -53,7 +54,8 @@ Controller.prototype = {
   },
 
   _hideOverlayView: function() {
-    this._component.setProps({shortcuts: []});
+    this._component.props = {shortcuts: []};
+    //this._component.setProps({shortcuts: []});
   },
 
   _updateOverlayView: function(pressedKeys) {
@@ -61,7 +63,9 @@ Controller.prototype = {
     var applicableShortcuts = allShortcuts.filter(function(shortcut) {
       return shortcut.isStartOfKeyCombo(pressedKeys);
     });
-    this._component.setProps({shortcuts: applicableShortcuts});
+    //this._component.props = {shortcuts: applicableShortcuts};
+    this._component.props.shortcuts = applicableShortcuts;
+    //this._component.setProps({shortcuts: applicableShortcuts});
   }
 
 };

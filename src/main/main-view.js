@@ -1,11 +1,10 @@
-var NavigationBar = require('../navigation-bar/navigation-bar-view');
-var KeyboardShortcutOverlay = require('../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view');
+import React from 'react';
+import {View as NavigationBar} from '../navigation-bar/navigation-bar-view';
+import {Overlay as KeyboardShortcutOverlay} from '../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view';
 
-var React = require('react');
+export class View extends React.Component {
 
-var View = React.createClass({
-
-  render: function() {
+  render() {
     var props = this.props;
     return (
       <div>
@@ -27,6 +26,4 @@ var View = React.createClass({
     );
   }
 
-});
-
-module.exports = View;
+}

@@ -1,8 +1,8 @@
-var React = require('react');
+import React from 'react';
 
-var View = React.createClass({
+export class View extends React.Component {
 
-  render: function() {
+  render() {
     return (
       <header className="navigation-bar">
         <button className="logo"></button>
@@ -16,6 +16,4 @@ var View = React.createClass({
     );
   }
 
-});
-
-module.exports = View;
+}

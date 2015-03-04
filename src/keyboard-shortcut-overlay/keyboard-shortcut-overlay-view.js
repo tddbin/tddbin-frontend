@@ -1,21 +1,21 @@
-var React = require('react');
+import React from 'react';
 
-var Overlay = React.createClass({
+export class Overlay extends React.Component {
 
-  _renderShortcut: function(shortcut) {
+  _renderShortcut(shortcut) {
     return (
       <div>
         <span className="shortcut">{shortcut.getPrintableKeys()} </span>
         {shortcut.getHelpText()}
       </div>
     );
-  },
+  }
 
-  _renderShortcuts: function(shortcuts) {
+  _renderShortcuts(shortcuts) {
     return shortcuts.map(this._renderShortcut);
-  },
+  }
 
-  render: function() {
+  render() {
     var props = this.props;
     var shortcuts = props.shortcuts;
     var isVisible = props.shortcuts.length > 0;
@@ -44,6 +44,4 @@ var Overlay = React.createClass({
 //      <br/>
   }
 
-});
-
-module.exports = Overlay;
+}
