@@ -48,20 +48,24 @@ describe('StackTrace', function() {
   });
 });
 
-const getFirstCodeLine = (stackTrace) => StackTrace.getFirstCodeLine(stackTrace);
-const getFirstCodeColumn = (stackTrace) => StackTrace.getFirstCodeColumn(stackTrace);
+const getFirstCodeLine = (stackTrace) => new StackTrace(stackTrace).getFirstCodeLine();
+const getFirstCodeColumn = (stackTrace) => new StackTrace(stackTrace).getFirstCodeColumn();
 
-class StackTrace{}
+class StackTrace {
+  constructor(stackTrace) {
+    this.stackTrace = stackTrace;
+  }
+  getFirstCodeLine() {
+    var firstLine = this.stackTrace.split('\n')[1];
+    var lineNumber = firstLine.split(':');
+    return lineNumber[lineNumber.length - 2];
+  }
+  getFirstCodeColumn() {
+    var firstLine = this.stackTrace.split('\n')[1];
+    var lineNumber = firstLine.split(':');
+    return parseInt(lineNumber[lineNumber.length - 1]);
+  }
+}
 StackTrace.getFirstCodePosition = () => {
 
-};
-StackTrace.getFirstCodeLine = (stackTrace) => {
-  var firstLine = stackTrace.split('\n')[1];
-  var lineNumber = firstLine.split(':');
-  return lineNumber[lineNumber.length - 2];
-};
-StackTrace.getFirstCodeColumn = (stackTrace) => {
-  var firstLine = stackTrace.split('\n')[1];
-  var lineNumber = firstLine.split(':');
-  return parseInt(lineNumber[lineNumber.length - 1]);
 };
