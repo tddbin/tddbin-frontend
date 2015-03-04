@@ -4,7 +4,7 @@ export class StackTrace {
   }
   lineOfOrigin() {
     var lineNumber = this.firstLineOfDump().split(':');
-    return lineNumber[lineNumber.length - 2];
+    return parseInt(lineNumber[lineNumber.length - 2]);
   }
   columnOfOrigin() {
     var lineNumber = this.firstLineOfDump().split(':');

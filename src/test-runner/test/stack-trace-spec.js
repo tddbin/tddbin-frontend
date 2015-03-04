@@ -1,5 +1,5 @@
-import {assert} from '../_test-helper/assert';
-import {StackTrace} from './stack-trace';
+import {assert} from '../../_test-helper/assert';
+import {StackTrace} from '../stack-trace';
 
 describe('StackTrace', function() {
 
@@ -19,9 +19,9 @@ describe('StackTrace', function() {
     at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:5)
 `;
 
-    it('line shall be 42', () => assert.equal(lineOfOrigin(stackTraceDump), 42));
-    it('line shall be 11', () => assert.equal(lineOfOrigin(stackTraceDump1), 11));
-    it('columne shall be 23', () => assert.equal(columnOfOrigin(stackTraceDump), 23));
-    it('columne shall be 22', () => assert.equal(columnOfOrigin(stackTraceDump1), 22));
+    it('line shall be 42', () => assert.strictEqual(lineOfOrigin(stackTraceDump), 42));
+    it('line shall be 11', () => assert.strictEqual(lineOfOrigin(stackTraceDump1), 11));
+    it('columne shall be 23', () => assert.strictEqual(columnOfOrigin(stackTraceDump), 23));
+    it('columne shall be 22', () => assert.strictEqual(columnOfOrigin(stackTraceDump1), 22));
   });
 });
