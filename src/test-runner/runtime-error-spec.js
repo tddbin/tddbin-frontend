@@ -29,6 +29,10 @@ RuntimeError.toReadableString = function(stackTrace, sourceCode) {
 };
 
 describe('StackTrace', function() {
+
+  const lineOfOrigin = (stackTrace) => new StackTrace(stackTrace).lineOfOrigin();
+  const columnOfOrigin = (stackTrace) => new StackTrace(stackTrace).columnOfOrigin();
+
   describe('get first code position', function() {
         var stackTraceDump =
 `ReferenceError: y is not defined
@@ -48,9 +52,6 @@ describe('StackTrace', function() {
   });
 });
 
-const lineOfOrigin = (stackTrace) => new StackTrace(stackTrace).lineOfOrigin();
-const columnOfOrigin = (stackTrace) => new StackTrace(stackTrace).columnOfOrigin();
-
 class StackTrace {
   constructor(dump) {
     this.dump = dump;
@@ -69,6 +70,3 @@ class StackTrace {
     return this.dump.split('\n')[1];
   }
 }
-StackTrace.getFirstCodePosition = () => {
-
-};
