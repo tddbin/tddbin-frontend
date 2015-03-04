@@ -99,7 +99,7 @@ const getSpaces = (howMany) => {
   return new Array(howMany + 1).join(' ');
 };
 
-describe('LinePrefix', function() { // there must be a function here so we don't inherit `this` from global :)
+describe('get a line prefix for pretty printing', function() { // there must be `function` here so we don't inherit `this` from global :)
 
   const getPrefix = LinePrefix.getPrefix;
 
@@ -119,6 +119,8 @@ describe('LinePrefix', function() { // there must be a function here so we don't
     it('line number 99', () => assert.equal(getPrefix(99, this.maxDigits), '   99 | '));
     it('line number 100', () => assert.equal(getPrefix(100, this.maxDigits), '  100 | '));
   });
+  it('maxDigits = 4, line number 1', () => assert.equal(getPrefix(1, 4), '     1 | '));
+  it('maxDigits = 4, line number 1234', () => assert.equal(getPrefix(1234, 4), '  1234 | '));
 });
 
 
