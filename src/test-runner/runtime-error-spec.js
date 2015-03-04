@@ -23,8 +23,14 @@ describe('runtime error', function() {
 });
 
 class RuntimeError{}
-RuntimeError.toReadableString = function(stackTrace, sourceCode) {
-  //var position = getPositionFromStackTrace();
+RuntimeError.toReadableString = function(stackTraceDump, sourceCode) {
+  var stackTrace = new StackTrace(stackTraceDump);
+  var line = stackTrace.lineOfOrigin();
+  var column = stackTrace.columnOfOrigin();
+  var position = {line, column};
+
+  markError(sourceCode, position);
+
   return '';
 };
 
