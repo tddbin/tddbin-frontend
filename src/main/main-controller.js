@@ -1,6 +1,6 @@
 import React from 'react';
 import View from './main-view';
-import MochaRunner from '../test-runner/mocha/runner';
+import TestRunner from '../test-runner/runner';
 import ShortcutProcessor from '../keyboard-shortcut/shortcut-processor';
 var editor = require('ace-with-plugins');
 
@@ -26,7 +26,7 @@ Controller.prototype = {
     };
     this._component = React.render(<View {...props}/>, this._domNode);
     this._editor = editor(editorDomNodeId);
-    this._runner = new MochaRunner(document.getElementById(runnerDomNodeId));
+    this._runner = new TestRunner(document.getElementById(runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
     this._setEditorContent(this._config.initialContent);
     this._registerShortcuts(this._config.shortcuts);
