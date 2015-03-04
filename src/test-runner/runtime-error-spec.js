@@ -44,7 +44,7 @@ describe('StackTrace', function() {
     it('line shall be 42', () => assert.equal(lineOfOrigin(stackTraceDump), 42));
     it('line shall be 11', () => assert.equal(lineOfOrigin(stackTraceDump1), 11));
     it('columne shall be 23', () => assert.equal(columnOfOrigin(stackTraceDump), 23));
-    //it('line shall be 11', () => assert.equal(lineOfOrigin(stackTraceDump1), 11));
+    it('columne shall be 22', () => assert.equal(columnOfOrigin(stackTraceDump1), 22));
   });
 });
 
