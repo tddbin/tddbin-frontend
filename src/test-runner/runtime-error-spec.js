@@ -2,7 +2,7 @@ import {assert} from '../_test-helper/assert';
 
 describe('runtime error', function() {
 //  it('format it readably', function() {
-//    var stackTrace =
+//    var dump =
 //`ReferenceError: y is not defined
 //    at eval (eval at consumeMessage (http://u/tddbin-frontend/dist/mocha/spec-runner.js:53280:10), <anonymous>:3:1)
 //    at consumeMessage (http://u/tddbin-frontend/dist/mocha/spec-runner.js:53280:5)
@@ -18,7 +18,7 @@ describe('runtime error', function() {
 //> 3 | y++;
 //    | ^`;
 //
-//    assert.equal(RuntimeError.toReadableString(stackTrace, es5Code), expected);
+//    assert.equal(RuntimeError.toReadableString(dump, es5Code), expected);
 //  });
 });
 
@@ -30,40 +30,43 @@ RuntimeError.toReadableString = function(stackTrace, sourceCode) {
 
 describe('StackTrace', function() {
   describe('get first code position', function() {
-        var stackTrace =
+        var stackTraceDump =
 `ReferenceError: y is not defined
     at eval (eval at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:10), <anonymous>:42:23)
     at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:5)
 `;
-        var stackTrace1 =
+        var stackTraceDump1 =
 `ReferenceError: y is not defined
     at eval (eval at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:10), <anonymous>:11:22)
     at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:5)
 `;
 
-    it('line shall be 42', () => assert.equal(getLineOfOrigin(stackTrace), 42));
-    it('line shall be 11', () => assert.equal(getLineOfOrigin(stackTrace1), 11));
-    it('columne shall be 23', () => assert.equal(getColumnOfOrigin(stackTrace), 23));
-    //it('line shall be 11', () => assert.equal(getLineOfOrigin(stackTrace1), 11));
+    it('line shall be 42', () => assert.equal(lineOfOrigin(stackTraceDump), 42));
+    it('line shall be 11', () => assert.equal(lineOfOrigin(stackTraceDump1), 11));
+    it('columne shall be 23', () => assert.equal(columnOfOrigin(stackTraceDump), 23));
+    //it('line shall be 11', () => assert.equal(lineOfOrigin(stackTraceDump1), 11));
   });
 });
 
-const getLineOfOrigin = (stackTrace) => new StackTrace(stackTrace).getLineOfOrigin();
-const getColumnOfOrigin = (stackTrace) => new StackTrace(stackTrace).getColumnOfOrigin();
+const lineOfOrigin = (stackTrace) => new StackTrace(stackTrace).lineOfOrigin();
+const columnOfOrigin = (stackTrace) => new StackTrace(stackTrace).columnOfOrigin();
 
 class StackTrace {
-  constructor(stackTrace) {
-    this.stackTrace = stackTrace;
+  constructor(dump) {
+    this.dump = dump;
   }
-  getLineOfOrigin() {
-    var firstLine = this.stackTrace.split('\n')[1];
-    var lineNumber = firstLine.split(':');
+  lineOfOrigin() {
+    var lineNumber = this.firstLineOfDump().split(':');
     return lineNumber[lineNumber.length - 2];
   }
-  getColumnOfOrigin() {
-    var firstLine = this.stackTrace.split('\n')[1];
-    var lineNumber = firstLine.split(':');
+  columnOfOrigin() {
+    var lineNumber = this.firstLineOfDump().split(':');
     return parseInt(lineNumber[lineNumber.length - 1]);
+  }
+  firstLineOfDump() {
+    // may look something like this:
+    //    at eval (eval at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:10), <anonymous>:11:22)
+    return this.dump.split('\n')[1];
   }
 }
 StackTrace.getFirstCodePosition = () => {
