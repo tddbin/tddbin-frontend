@@ -8,16 +8,8 @@ describe('runtime error', function() {
     at eval (eval at consumeMessage (http://u/tddbin-frontend/dist/mocha/spec-runner.js:53280:10), <anonymous>:3:1)
     at consumeMessage (http://u/tddbin-frontend/dist/mocha/spec-runner.js:53280:5)
 `;
-    var sourceCode =
-`"use strict";
-
-y++;`;
-
-    var expected =
-`  1 | "use strict";
-  2 |
-> 3 | y++;
-      ^`;
+    var sourceCode = ['"use strict";','','y++;'].join('\n');
+    var expected =   ['  1 | "use strict";', '  2 | ', '> 3 | y++;', '      ^'].join('\n');
 
     assert.equal(RuntimeError.prettyPrint(stackTraceDump, sourceCode), expected);
   });
