@@ -12,7 +12,7 @@ describe('runtime error', function() {
     at consumeMessage (http://u/tddbin-frontend/dist/mocha/spec-runner.js:53280:5)
 `;
     sourceCode = ['"use strict";', '', 'y++;'];
-    expected = ['  1 | "use strict";', '  2 | ', '> 3 | y++;', '      ^'];
+    expected = ['  1 | "use strict";', '  2 | ', '> 3 | y++;', '       ^'];
     result = RuntimeError.prettyPrint(stackTraceDump, sourceCode.join('\n'))
   });
 
