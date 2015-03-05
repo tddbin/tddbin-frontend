@@ -19,7 +19,7 @@ Controller.prototype = {
     this._runnerDomNodeId = 'runnerId';
     this._render();
     this._editor = editor(this._editorDomNodeId);
-    this._runner = new MochaRunner(document.getElementById(this._runnerDomNodeId));
+    this._runner = new TestRunner(document.getElementById(this._runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
     this._setEditorContent(this._config.initialContent);
     this._registerShortcuts(this._config.shortcuts);
