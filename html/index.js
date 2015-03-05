@@ -7,6 +7,8 @@ import url from 'url';
 import atomic from 'atomic';
 atomic = atomic(window);
 
+var queryString = window.location.search;
+
 var shortcuts = aceDefaultShortcuts.concat([
   util.getShortcutObject([util.metaKey, 'S'], executeTestCode, 'Save+Run'),
   util.getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
@@ -27,19 +29,22 @@ function refactoringRename() {
   main.turnOnRenameMode();
 }
 function getSourceCode() {
-  var kataName = url.parse(window.location.href, true).query.kata;
-  var kataUrl = `http://u/katas-service/katas/${kataName}.js`;
-  atomic.get(kataUrl)
-    .success(function(data) {
-      main.setEditorContent(data);
-    })
-    .error(function() {});
+  var kataName = queryString.match(/kata=(\w+)/);
+  if (kataName && kataName.length === 2) {
+    var kataUrl = `http://katas.tddbin.com/katas/mocha-assert-api.js`;
+    atomic.get(kataUrl)
+      .success(function(data) {
+        main.setEditorContent(data);
+      })
+      .error(function() {});
+  } else {
+    main.setEditorContent(simplePassingTestCode);
+  }
 }
 getSourceCode();
 
 function getTestRunner() {
   var validTestRunners = ['mocha', 'jasmine'];
-  var queryString = window.location.search;
   var testRunner = queryString.match(/test-runner=(\w+)/);
   if (testRunner && testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
     return testRunner[1];
