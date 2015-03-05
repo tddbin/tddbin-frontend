@@ -28,7 +28,7 @@ function getTestRunner() {
   var validTestRunners = ['mocha', 'jasmine'];
   var queryString = window.location.search;
   var testRunner = queryString.match(/test-runner=(\w+)/);
-  if (testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
+  if (testRunner && testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
     return testRunner[1];
   }
   return 'mocha';
