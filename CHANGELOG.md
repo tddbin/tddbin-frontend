@@ -7,6 +7,7 @@
 - add links to twitter, github, trello and uxebu
 - use the full screen height
 - catch errors that might go to the console and show them in the result window
+- use ES6 and compatible react with it, to be able to easier move forward using ES6
 
 1.1.0  2015-02-22
 =================
