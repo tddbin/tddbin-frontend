@@ -7,29 +7,33 @@ var editor = require('ace-with-plugins');
 export function Controller(domNode, config) {
   this._domNode = domNode;
   this._config = config;
-  this._render();
+  this.render();
 }
 
 Controller.prototype = {
 
   _component: null,
 
-  _render: function() {
-    var editorDomNodeId = 'editorId';
-    var runnerDomNodeId = 'runnerId';
-    var props = {
-      metaKeySymbol: '⌘',
-      editorId: editorDomNodeId,
-      runnerId: runnerDomNodeId,
-      onSave: this.runEditorContent.bind(this),
-      shortcuts: []
-    };
-    this._component = React.render(<View {...props}/>, this._domNode);
-    this._editor = editor(editorDomNodeId);
-    this._runner = new TestRunner(document.getElementById(runnerDomNodeId));
+  render: function() {
+    this._editorDomNodeId = 'editorId';
+    this._runnerDomNodeId = 'runnerId';
+    this._render();
+    this._editor = editor(this._editorDomNodeId);
+    this._runner = new MochaRunner(document.getElementById(this._runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
     this._setEditorContent(this._config.initialContent);
     this._registerShortcuts(this._config.shortcuts);
+  },
+
+  _render: function(shortcuts=[]) {
+    var props = {
+      metaKeySymbol: '⌘',
+      editorId: this._editorDomNodeId,
+      runnerId: this._runnerDomNodeId,
+      onSave: this.runEditorContent.bind(this),
+      shortcuts: shortcuts
+    };
+    this._component = React.render(<View {...props}/>, this._domNode);
   },
 
   _setEditorContent: function(sourceCode) {
@@ -52,8 +56,9 @@ Controller.prototype = {
   },
 
   _hideOverlayView: function() {
-    this._component.props = {shortcuts: []};
+    //this._component.props = {shortcuts: []};
     //this._component.setProps({shortcuts: []});
+    this._render([]);
   },
 
   _updateOverlayView: function(pressedKeys) {
@@ -61,8 +66,9 @@ Controller.prototype = {
     var applicableShortcuts = allShortcuts.filter(function(shortcut) {
       return shortcut.isStartOfKeyCombo(pressedKeys);
     });
+    this._render(applicableShortcuts);
     //this._component.props = {shortcuts: applicableShortcuts};
-    this._component.props.shortcuts = applicableShortcuts;
+    //this._component.props.shortcuts = applicableShortcuts;
     //this._component.setProps({shortcuts: applicableShortcuts});
   }
 
