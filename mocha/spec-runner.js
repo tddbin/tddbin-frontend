@@ -42364,7 +42364,6 @@ module.exports={
     "shasum": "ab51616656db7e0af8f3c85ef176a3fdd17d57d8",
     "tarball": "http://registry.npmjs.org/babel/-/babel-4.6.6.tgz"
   },
-  "directories": {},
   "_resolved": "https://registry.npmjs.org/babel/-/babel-4.6.6.tgz"
 }
 
