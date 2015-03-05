@@ -6,6 +6,7 @@
 - [code] enable loading katas from http://katas.tddbin.com by building the URL, using a
   parameter `kata` http://tddbin.com/?kata=kataname (currently any name will always return the same kata)
   add your kata via a PR at https://github.com/tddbin/katas-service
+- [ux] make a slow loading page not show the "oh, sorry" message  
 
 # 1.1.1  2015-03-05
 
