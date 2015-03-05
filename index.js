@@ -108,9 +108,11 @@ var aceDefaultShortcuts = require("./_aceDefaultShortcuts").shortcuts;
 
 var shortcuts = aceDefaultShortcuts.concat([util.getShortcutObject([util.metaKey, "S"], executeTestCode, "Save+Run"), util.getShortcutObject(["Shift", "F6"], refactoringRename, "Rename (refactoring)")]);
 
+var testRunner = getTestRunner();
+
 var main = new Main($("tddbin"), {
   initialContent: simplePassingTestCode,
-  iframeSrcUrl: "./mocha/spec-runner.html",
+  iframeSrcUrl: "./" + testRunner + "/spec-runner.html",
   shortcuts: shortcuts
 });
 
@@ -119,6 +121,16 @@ function executeTestCode() {
 }
 function refactoringRename() {
   main.turnOnRenameMode();
+}
+
+function getTestRunner() {
+  var validTestRunners = ["mocha", "jasmine"];
+  var queryString = window.location.search;
+  var testRunner = queryString.match(/test-runner=(\w+)/);
+  if (testRunner && testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
+    return testRunner[1];
+  }
+  return "mocha";
 }
 
 
@@ -6000,6 +6012,7 @@ process.browser = true;
 process.env = {};
 process.argv = [];
 process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
 function noop() {}
 
@@ -26080,7 +26093,7 @@ var React = _interopRequire(require("react"));
 
 var View = _interopRequire(require("./main-view"));
 
-var MochaRunner = _interopRequire(require("../test-runner/mocha/runner"));
+var TestRunner = _interopRequire(require("../test-runner/runner"));
 
 var ShortcutProcessor = _interopRequire(require("../keyboard-shortcut/shortcut-processor"));
 
@@ -26101,7 +26114,7 @@ Controller.prototype = {
     this._runnerDomNodeId = "runnerId";
     this._render();
     this._editor = editor(this._editorDomNodeId);
-    this._runner = new MochaRunner(document.getElementById(this._runnerDomNodeId));
+    this._runner = new TestRunner(document.getElementById(this._runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
     this._setEditorContent(this._config.initialContent);
     this._registerShortcuts(this._config.shortcuts);
@@ -26164,7 +26177,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 
-},{"../keyboard-shortcut/shortcut-processor":178,"../test-runner/mocha/runner":185,"./main-view":182,"ace-with-plugins":14,"react":174}],182:[function(require,module,exports){
+},{"../keyboard-shortcut/shortcut-processor":178,"../test-runner/runner":185,"./main-view":182,"ace-with-plugins":14,"react":174}],182:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -26319,16 +26332,16 @@ var React = _interopRequire(require("react"));
 
 var Iframe = _interopRequire(require("./iframe"));
 
-var MochaRunner = (function () {
-  function MochaRunner(domNode, eventReceiver) {
-    _classCallCheck(this, MochaRunner);
+var TestRunner = (function () {
+  function TestRunner(domNode, eventReceiver) {
+    _classCallCheck(this, TestRunner);
 
     this._onStats = null;
     this._domNode = domNode;
     (eventReceiver || window).addEventListener("message", this.handleDataReceived.bind(this), false);
   }
 
-  _prototypeProperties(MochaRunner, null, {
+  _prototypeProperties(TestRunner, null, {
     render: {
       value: function render(iframeSrc) {
         var iframe = React.render(React.createElement(Iframe, { iframeSrc: iframeSrc }), this._domNode);
@@ -26364,10 +26377,10 @@ var MochaRunner = (function () {
     }
   });
 
-  return MochaRunner;
+  return TestRunner;
 })();
 
-module.exports = MochaRunner;
+module.exports = TestRunner;
 
 
 
