@@ -1,4 +1,8 @@
-1.1.1  2015-??-??
+# 1.2.0  2015-??-??
+
+- add basic jasmine support back in (just cleaning the results page doesnt is still broken)
+
+1.1.1  2015-03-05
 =================
 - upgraded some dependencies (broke the build)
 - ensure a breaking build doesn't get deployed
