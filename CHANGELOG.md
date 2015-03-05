@@ -1,6 +1,8 @@
 # 1.2.0  2015-??-??
 
-- add basic jasmine support back in (just cleaning the results page doesnt is still broken)
+- add basic jasmine support back in (just cleaning the results page is still broken)
+  try http://tddbin.com/?test-runner=jasmine or for the mocha runner
+  http://tddbin.com/?test-runner=mocha (mocha runner is default when nothing is given)
 
 1.1.1  2015-03-05
 =================
