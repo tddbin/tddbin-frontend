@@ -9,9 +9,7 @@ export class Shortcut {
 
   isStartOfKeyCombo(pressedKeys) {
     var shortcut = this._keys;
-    return pressedKeys.every(function(key, idx) {
-      return shortcut[idx] === key;
-    });
+    return pressedKeys.every((key, idx) => shortcut[idx] === key);
   }
 
   isKeyCombo(pressedKeys) {

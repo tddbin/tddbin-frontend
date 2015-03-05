@@ -1,6 +1,4 @@
-'use strict';
-
-export var browserEventUtil = {
+export const browserEventUtil = {
 
   onWindowBlur: function(fn) {
     window.addEventListener('blur', fn);

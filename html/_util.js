@@ -12,7 +12,7 @@ function format(keys) {
   return toPrintableKeys(keys, map);
 }
 
-export var util = {
+export const util = {
 
   getShortcutObject: function(keys, fn, helpText) {
     var shortcut = new Shortcut(keys, fn, helpText);

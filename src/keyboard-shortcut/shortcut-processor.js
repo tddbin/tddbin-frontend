@@ -1,64 +1,59 @@
-'use strict';
-
 import {keyboardEventUtil} from './keyboard-event-util';
 import {browserEventUtil} from './browser-event-util';
 
-function ShortcutProcessor() {
-  this._pressedKeys = [];
-  this._registeredShortcuts = [];
-  keyboardEventUtil.addKeyDownListener(this._keyDown.bind(this));
-  keyboardEventUtil.addKeyUpListener(this._keyUp.bind(this));
-  browserEventUtil.onWindowBlur(this._fireOnShortcutEndCallback.bind(this));
-}
+export default class ShortcutProcessor {
+  constructor() {
+    this._pressedKeys = [];
+    this._registeredShortcuts = [];
+    keyboardEventUtil.addKeyDownListener(this._keyDown.bind(this));
+    keyboardEventUtil.addKeyUpListener(this._keyUp.bind(this));
+    browserEventUtil.onWindowBlur(this._fireOnShortcutEndCallback.bind(this));
 
-ShortcutProcessor.prototype = {
+    this._firstKeyOfCurrentShortcut = null;
+    this._onKeyDownCallback = null;
+    this._onShortcutEndCallback = null;
+  }
 
-  _pressedKeys: null,
-  _registeredShortcuts: null,
-  _firstKeyOfCurrentShortcut: null,
-  _onKeyDownCallback: null,
-  _onShortcutEndCallback: null,
-
-  registerShortcut: function(shortcut) {
+  registerShortcut(shortcut) {
     this._registeredShortcuts.push(shortcut);
-  },
+  }
 
-  registerShortcuts: function(shortcuts) {
+  registerShortcuts(shortcuts) {
     var self = this;
     shortcuts.forEach(function(shortcut) {
       self.registerShortcut(shortcut);
     });
-  },
+  }
 
-  onKeyDown: function(callback) {
+  onKeyDown(callback) {
     this._onKeyDownCallback = callback;
-  },
+  }
 
-  onShortcutEnd: function(callback) {
+  onShortcutEnd(callback) {
     this._onShortcutEndCallback = callback;
-  },
+  }
 
-  _fireOnKeyDownCallback: function() {
+  _fireOnKeyDownCallback() {
     if (this._onKeyDownCallback) {
       this._onKeyDownCallback(this._pressedKeys);
     }
-  },
+  }
 
-  _fireOnShortcutEndCallback: function() {
+  _fireOnShortcutEndCallback() {
     if (this._onShortcutEndCallback) {
       this._onShortcutEndCallback();
     }
-  },
+  }
 
-  _keyDown: function(keyName) {
+  _keyDown(keyName) {
     var isStartOfShortcut = this._pressedKeys.length === 0;
     if (isStartOfShortcut) {
       return this._handlePossibleShortcutStart(keyName);
     }
     return this._handleConsecutiveKey(keyName);
-  },
+  }
 
-  _handlePossibleShortcutStart: function(keyName) {
+  _handlePossibleShortcutStart(keyName) {
     var isFirstKeyOfRegisteredShortcut = this._registeredShortcuts.some(function(shortcut) {
       return shortcut.isStartOfKeyCombo([keyName]);
     });
@@ -67,9 +62,9 @@ ShortcutProcessor.prototype = {
       this._firstKeyOfCurrentShortcut = keyName;
       this._fireOnKeyDownCallback();
     }
-  },
+  }
 
-  _handleConsecutiveKey: function(keyName) {
+  _handleConsecutiveKey(keyName) {
     var isFirstKeyRepition = this._pressedKeys.length === 1 && this._pressedKeys[0] === keyName;
     if (isFirstKeyRepition) {
       return;
@@ -81,21 +76,21 @@ ShortcutProcessor.prototype = {
     if (this._isRegisteredShortcut(this._pressedKeys)) {
       return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
     }
-  },
+  }
 
-  _keyUp: function(keyName) {
+  _keyUp(keyName) {
     if (this._isEndOfCurrentShortcut(keyName)) {
       this._processFirstMatchingShortcut(this._pressedKeys);
       this._fireOnShortcutEndCallback();
       this._pressedKeys = [];
     }
-  },
+  }
 
-  _isEndOfCurrentShortcut: function(keyName) {
+  _isEndOfCurrentShortcut(keyName) {
     return keyName === this._firstKeyOfCurrentShortcut;
-  },
+  }
 
-  _processFirstMatchingShortcut: function(pressedKeys) {
+  _processFirstMatchingShortcut(pressedKeys) {
     this._registeredShortcuts.some(function(shortcut) {
       if (shortcut.isKeyCombo(pressedKeys)) {
         shortcut.fireAssignedCallback();
@@ -103,13 +98,11 @@ ShortcutProcessor.prototype = {
       }
       return false;
     });
-  },
+  }
 
-  _isRegisteredShortcut: function(pressedKeys) {
+  _isRegisteredShortcut(pressedKeys) {
     return this._registeredShortcuts.some(function(shortcut) {
       return shortcut.isKeyCombo(pressedKeys);
     });
   }
-};
-
-module.exports = ShortcutProcessor;
+}
