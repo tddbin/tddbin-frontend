@@ -9,9 +9,11 @@ var shortcuts = aceDefaultShortcuts.concat([
   util.getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
 ]);
 
+var testRunner = getTestRunner();
+
 var main = new Main($('tddbin'), {
   initialContent: simplePassingTestCode,
-  iframeSrcUrl: './mocha/spec-runner.html',
+  iframeSrcUrl: `./${testRunner}/spec-runner.html`,
   shortcuts: shortcuts
 });
 
@@ -20,4 +22,14 @@ function executeTestCode() {
 }
 function refactoringRename() {
   main.turnOnRenameMode();
+}
+
+function getTestRunner() {
+  var validTestRunners = ['mocha', 'jasmine'];
+  var queryString = window.location.search;
+  var testRunner = queryString.match(/test-runner=(\w+)/);
+  if (testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
+    return testRunner[1];
+  }
+  return 'mocha';
 }
