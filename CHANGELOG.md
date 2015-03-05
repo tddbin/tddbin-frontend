@@ -3,6 +3,9 @@
 - [ux] add basic jasmine support back in (just cleaning the results page is still broken)
   try http://tddbin.com/?test-runner=jasmine or for the mocha runner
   http://tddbin.com/?test-runner=mocha (mocha runner is default when nothing is given)
+- [code] enable loading katas from http://katas.tddbin.com by building the URL, using a
+  parameter `kata` http://tddbin.com/?kata=kataname (currently any name will always return the same kata)
+  add your kata via a PR at https://github.com/tddbin/katas-service
 
 # 1.1.1  2015-03-05
 
