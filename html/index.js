@@ -32,7 +32,7 @@ function getSourceCode() {
   var kataName = queryString.match(/kata=(\w+)/);
   if (kataName && kataName.length === 2) {
     var kataUrl = `http://katas.tddbin.com/katas/mocha-assert-api.js`;
-    document.domain = 'tddbin.com';
+    document.domain = 'katas.tddbin.com';
     atomic.get(kataUrl)
       .success(function(data) {
         main.setEditorContent(data);
