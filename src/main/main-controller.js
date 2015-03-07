@@ -30,10 +30,21 @@ Controller.prototype = {
       metaKeySymbol: '⌘',
       editorId: this._editorDomNodeId,
       runnerId: this._runnerDomNodeId,
-      onSave: this.runEditorContent.bind(this),
+      onSave: this.onSave.bind(this),
+      onResetCode: this._onResetCode,
       shortcuts: shortcuts
     };
     this._component = React.render(<View {...props}/>, this._domNode);
+  },
+
+  onSave: function() {
+    window.localStorage.setItem('code', this._editor.getContent());
+    this.runEditorContent();
+  },
+
+  _onResetCode: function() {
+    window.localStorage.removeItem('code');
+    window.location.reload();
   },
 
   setEditorContent: function(sourceCode) {

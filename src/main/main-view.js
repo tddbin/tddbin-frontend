@@ -11,6 +11,7 @@ export default class View extends React.Component {
         <NavigationBar
           metaKeySymbol={props.metaKeySymbol}
           onSave={props.onSave}
+          onResetCode={props.onResetCode}
         />
 
         <div className="editor-and-runner">

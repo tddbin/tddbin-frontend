@@ -10,7 +10,7 @@ atomic = atomic(window);
 var queryString = window.location.search;
 
 var shortcuts = aceDefaultShortcuts.concat([
-  util.getShortcutObject([util.metaKey, 'S'], executeTestCode, 'Save+Run'),
+  util.getShortcutObject([util.metaKey, 'S'], onSave, 'Save+Run'),
   util.getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
 ]);
 
@@ -21,14 +21,21 @@ var main = new Main($('tddbin'), {
   shortcuts: shortcuts
 });
 
-function executeTestCode() {
-  main.runEditorContent();
+function onSave() {
+  main.onSave();
 }
 
 function refactoringRename() {
   main.turnOnRenameMode();
 }
 function getSourceCode() {
+
+  var sourceCode = localStorage.getItem('code');
+  if(sourceCode) {
+    main.setEditorContent(sourceCode);
+    return;
+  }
+
   var kataName = queryString.match(/kata=(\w+)/);
   if (kataName && kataName.length === 2) {
     var kataUrl = `http://katas.tddbin.com/katas/mocha-assert-api.js`;
@@ -43,6 +50,7 @@ function getSourceCode() {
   }
 }
 getSourceCode();
+
 
 function getTestRunner() {
   var validTestRunners = ['mocha', 'jasmine'];
