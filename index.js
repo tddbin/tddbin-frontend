@@ -133,7 +133,7 @@ atomic = atomic(window);
 
 var queryString = window.location.search;
 
-var shortcuts = aceDefaultShortcuts.concat([util.getShortcutObject([util.metaKey, "S"], executeTestCode, "Save+Run"), util.getShortcutObject(["Shift", "F6"], refactoringRename, "Rename (refactoring)")]);
+var shortcuts = aceDefaultShortcuts.concat([util.getShortcutObject([util.metaKey, "S"], onSave, "Save+Run"), util.getShortcutObject(["Shift", "F6"], refactoringRename, "Rename (refactoring)")]);
 
 var testRunner = getTestRunner();
 
@@ -142,14 +142,21 @@ var main = new Main($("tddbin"), {
   shortcuts: shortcuts
 });
 
-function executeTestCode() {
-  main.runEditorContent();
+function onSave() {
+  main.onSave();
 }
 
 function refactoringRename() {
   main.turnOnRenameMode();
 }
 function getSourceCode() {
+
+  var sourceCode = localStorage.getItem("code");
+  if (sourceCode) {
+    main.setEditorContent(sourceCode);
+    return;
+  }
+
   var kataName = queryString.match(/kata=(\w+)/);
   if (kataName && kataName.length === 2) {
     var kataUrl = "http://katas.tddbin.com/katas/mocha-assert-api.js";
@@ -27585,10 +27592,21 @@ Controller.prototype = {
       metaKeySymbol: "⌘",
       editorId: this._editorDomNodeId,
       runnerId: this._runnerDomNodeId,
-      onSave: this.runEditorContent.bind(this),
+      onSave: this.onSave.bind(this),
+      onResetCode: this._onResetCode,
       shortcuts: shortcuts
     };
     this._component = React.render(React.createElement(View, React.__spread({}, props)), this._domNode);
+  },
+
+  onSave: function onSave() {
+    window.localStorage.setItem("code", this._editor.getContent());
+    this.runEditorContent();
+  },
+
+  _onResetCode: function _onResetCode() {
+    window.localStorage.removeItem("code");
+    window.location.reload();
   },
 
   setEditorContent: function setEditorContent(sourceCode) {
@@ -27667,7 +27685,8 @@ var View = (function (_React$Component) {
         var props = this.props;
         return React.createElement("div", null, React.createElement(NavigationBar, {
           metaKeySymbol: props.metaKeySymbol,
-          onSave: props.onSave }), React.createElement("div", { className: "editor-and-runner" }, React.createElement("div", { id: this.props.editorId, className: "editor" }), React.createElement("div", { id: this.props.runnerId, className: "runner" })), React.createElement(KeyboardShortcutOverlay, {
+          onSave: props.onSave,
+          onResetCode: props.onResetCode }), React.createElement("div", { className: "editor-and-runner" }, React.createElement("div", { id: this.props.editorId, className: "editor" }), React.createElement("div", { id: this.props.runnerId, className: "runner" })), React.createElement(KeyboardShortcutOverlay, {
           metaKeySymbol: props.metaKeySymbol,
           shortcuts: props.shortcuts }));
       }
@@ -27707,7 +27726,7 @@ var View = (function (_React$Component) {
   _createClass(View, {
     render: {
       value: function render() {
-        return React.createElement("header", { className: "navigation-bar" }, React.createElement("button", { className: "logo" }), React.createElement("button", { className: "icon save", title: "Run tests (⌘S)", onClick: this.props.onSave }, "Run tests (", this.props.metaKeySymbol, "S)"), React.createElement("a", { href: "http://uxebu.com", className: "icon uxebu", title: "Made by uxebu." }), React.createElement("a", { href: "http://twitter.com/tddbin", className: "icon twitter", title: "Get in touch." }), React.createElement("a", { href: "http://github.com/tddbin/tddbin-frontend", className: "icon github", title: "Get (into) the code and contribute." }), React.createElement("a", { href: "https://trello.com/b/FW1gUVxe/tddbin-com", className: "icon trello", title: "Vote, add features, discuss, ..." }));
+        return React.createElement("header", { className: "navigation-bar" }, React.createElement("button", { className: "logo" }), React.createElement("button", { className: "icon save", title: "Run tests (⌘S)", onClick: this.props.onSave }, "Run tests (", this.props.metaKeySymbol, "S)"), React.createElement("button", { title: "Reset code", onClick: this.props.onResetCode }, "Reset code"), React.createElement("a", { href: "http://uxebu.com", className: "icon uxebu", title: "Made by uxebu." }), React.createElement("a", { href: "http://twitter.com/tddbin", className: "icon twitter", title: "Get in touch." }), React.createElement("a", { href: "http://github.com/tddbin/tddbin-frontend", className: "icon github", title: "Get (into) the code and contribute." }), React.createElement("a", { href: "https://trello.com/b/FW1gUVxe/tddbin-com", className: "icon trello", title: "Vote, add features, discuss, ..." }));
       }
     }
   });
