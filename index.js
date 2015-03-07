@@ -6,8 +6,6 @@ var util = require("./_util").util;
 var noop = function noop() {};
 
 var shortcuts = exports.shortcuts = [util.getShortcutObject([util.metaKey, "D"], noop, "Delete line"), util.getShortcutObject([util.metaKey, "Z"], noop, "Undo"), util.getShortcutObject([util.metaKey, "Shift", "D"], noop, "Duplicate line"), util.getShortcutObject([util.metaKey, "Shift", "Z"], noop, "Redo"), util.getShortcutObject([util.metaKey, "/"], noop, "Comment in/out line")];
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -46,8 +44,6 @@ var util = exports.util = {
 
   metaKey: isMac ? "Meta" : "Control"
 };
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -58,7 +54,23 @@ Object.defineProperty(exports, "__esModule", {
 
 var simplePassingTestCode = exports.simplePassingTestCode = [
 //',
-"// !!!! this is a new version !!!!", "// this runner below is mocha, with should and assert as assertion libs", "// for any problem, etc. please tweet to @tddbin", "//", "describe('test embedded mocha', function() {", "  // doesnt work anymore since we use mocha from the CDN, which we have to do due to", "  // browserify failing when bundling mocha :(", "  //it('should run jasmine-style tests (using referee)', function() {", "  //  var expected = 1;", "  //  expect(expected)", "  //    .toBe(expected);", "  //});", "  it('should run should-style tests', function() {", "    var expected = 1;", "    should(expected).ok;", "  });", "  it('should run assert-style tests', function() {", "    var expected = 1;", "    assert.equal(expected, 1);", "  });", "  it('ES6 class works?', () => {", "    assert.equal(new Es6Class().x, 42);", "  });", "});", "", "class Es6Class {", "  constructor() {", "    this.x = 42;", "  }", "}"].join("\n");
+"describe('test embedded mocha', function() {",
+//'  // doesnt work anymore since we use mocha from the CDN, which we have to do due to',
+//'  // browserify failing when bundling mocha :(',
+//'  //it(\'should run jasmine-style tests (using referee)\', function() {',
+//'  //  var expected = 1;',
+//'  //  expect(expected)',
+//'  //    .toBe(expected);',
+//'  //});',
+//'  it(\'should run should-style tests\', function() {',
+//'    var expected = 1;',
+//'    should(expected).ok;',
+//'  });',
+"  it('should run assert-style tests', function() {", "    assert.equal(1, 2);", "  });",
+//'  it(\'ES6 class works?\', () => {',
+//'    assert.equal(new Es6Class().x, 42);',
+//'  });',
+"});"].join("\n");
 
 function simpleFailing() {
   describe("test embedded mocha", function () {
@@ -86,11 +98,16 @@ function getSourceFrom(func) {
 }
 
 var simpleFailingTestCode = exports.simpleFailingTestCode = getSourceFrom(simpleFailing);
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+//'',
+//'class Es6Class {',
+//'  constructor() {',
+//'    this.x = 42;',
+//'  }',
+//'}'
 
 
 },{}],4:[function(require,module,exports){
@@ -154,8 +171,6 @@ function getTestRunner() {
   }
   return "mocha";
 }
-
-
 
 
 },{"../src/main/main-controller":187,"./_aceDefaultShortcuts":1,"./_util":2,"./example-tests":3,"atomic":19,"url":25}],5:[function(require,module,exports){
@@ -27179,7 +27194,7 @@ module.exports = require('./lib/React');
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
@@ -27198,20 +27213,16 @@ var Overlay = (function (_React$Component) {
 
   _inherits(Overlay, _React$Component);
 
-  _prototypeProperties(Overlay, null, {
+  _createClass(Overlay, {
     _renderShortcut: {
       value: function _renderShortcut(shortcut) {
         return React.createElement("div", null, React.createElement("span", { className: "shortcut" }, shortcut.getPrintableKeys(), " "), shortcut.getHelpText());
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _renderShortcuts: {
       value: function _renderShortcuts(shortcuts) {
         return shortcuts.map(this._renderShortcut);
-      },
-      writable: true,
-      configurable: true
+      }
     },
     render: {
       value: function render() {
@@ -27232,9 +27243,7 @@ var Overlay = (function (_React$Component) {
         //      <span className="shortcut"> meta_key "S" </span><span className="run">Run tests (and save)</span><br/>
         //      <span className="shortcut"> meta_key "/" </span>Toggle comment<br/>
         //      <br/>
-      },
-      writable: true,
-      configurable: true
+      }
     }
   });
 
@@ -27242,8 +27251,6 @@ var Overlay = (function (_React$Component) {
 })(React.Component);
 
 module.exports = Overlay;
-
-
 
 
 },{"react":180}],182:[function(require,module,exports){
@@ -27255,8 +27262,6 @@ var browserEventUtil = exports.browserEventUtil = {
     window.addEventListener("blur", fn);
   }
 };
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27311,8 +27316,6 @@ var keyboardEventUtil = exports.keyboardEventUtil = {
     });
   }
 };
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27321,7 +27324,7 @@ Object.defineProperty(exports, "__esModule", {
 },{}],184:[function(require,module,exports){
 "use strict";
 
-var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
@@ -27344,13 +27347,11 @@ var ShortcutProcessor = (function () {
     this._onShortcutEndCallback = null;
   }
 
-  _prototypeProperties(ShortcutProcessor, null, {
+  _createClass(ShortcutProcessor, {
     registerShortcut: {
       value: function registerShortcut(shortcut) {
         this._registeredShortcuts.push(shortcut);
-      },
-      writable: true,
-      configurable: true
+      }
     },
     registerShortcuts: {
       value: function registerShortcuts(shortcuts) {
@@ -27358,41 +27359,31 @@ var ShortcutProcessor = (function () {
         shortcuts.forEach(function (shortcut) {
           self.registerShortcut(shortcut);
         });
-      },
-      writable: true,
-      configurable: true
+      }
     },
     onKeyDown: {
       value: function onKeyDown(callback) {
         this._onKeyDownCallback = callback;
-      },
-      writable: true,
-      configurable: true
+      }
     },
     onShortcutEnd: {
       value: function onShortcutEnd(callback) {
         this._onShortcutEndCallback = callback;
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _fireOnKeyDownCallback: {
       value: function _fireOnKeyDownCallback() {
         if (this._onKeyDownCallback) {
           this._onKeyDownCallback(this._pressedKeys);
         }
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _fireOnShortcutEndCallback: {
       value: function _fireOnShortcutEndCallback() {
         if (this._onShortcutEndCallback) {
           this._onShortcutEndCallback();
         }
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _keyDown: {
       value: function _keyDown(keyName) {
@@ -27401,9 +27392,7 @@ var ShortcutProcessor = (function () {
           return this._handlePossibleShortcutStart(keyName);
         }
         return this._handleConsecutiveKey(keyName);
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _handlePossibleShortcutStart: {
       value: function _handlePossibleShortcutStart(keyName) {
@@ -27415,9 +27404,7 @@ var ShortcutProcessor = (function () {
           this._firstKeyOfCurrentShortcut = keyName;
           this._fireOnKeyDownCallback();
         }
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _handleConsecutiveKey: {
       value: function _handleConsecutiveKey(keyName) {
@@ -27432,9 +27419,7 @@ var ShortcutProcessor = (function () {
         if (this._isRegisteredShortcut(this._pressedKeys)) {
           return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
         }
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _keyUp: {
       value: function _keyUp(keyName) {
@@ -27443,16 +27428,12 @@ var ShortcutProcessor = (function () {
           this._fireOnShortcutEndCallback();
           this._pressedKeys = [];
         }
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _isEndOfCurrentShortcut: {
       value: function _isEndOfCurrentShortcut(keyName) {
         return keyName === this._firstKeyOfCurrentShortcut;
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _processFirstMatchingShortcut: {
       value: function _processFirstMatchingShortcut(pressedKeys) {
@@ -27463,18 +27444,14 @@ var ShortcutProcessor = (function () {
           }
           return false;
         });
-      },
-      writable: true,
-      configurable: true
+      }
     },
     _isRegisteredShortcut: {
       value: function _isRegisteredShortcut(pressedKeys) {
         return this._registeredShortcuts.some(function (shortcut) {
           return shortcut.isKeyCombo(pressedKeys);
         });
-      },
-      writable: true,
-      configurable: true
+      }
     }
   });
 
@@ -27484,12 +27461,10 @@ var ShortcutProcessor = (function () {
 module.exports = ShortcutProcessor;
 
 
-
-
 },{"./browser-event-util":182,"./keyboard-event-util":183}],185:[function(require,module,exports){
 "use strict";
 
-var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
@@ -27503,37 +27478,29 @@ var Shortcut = exports.Shortcut = (function () {
     this._printableKeysFormatter = null;
   }
 
-  _prototypeProperties(Shortcut, null, {
+  _createClass(Shortcut, {
     isStartOfKeyCombo: {
       value: function isStartOfKeyCombo(pressedKeys) {
         var shortcut = this._keys;
         return pressedKeys.every(function (key, idx) {
           return shortcut[idx] === key;
         });
-      },
-      writable: true,
-      configurable: true
+      }
     },
     isKeyCombo: {
       value: function isKeyCombo(pressedKeys) {
         return pressedKeys.join("+") === this._keys.join("+");
-      },
-      writable: true,
-      configurable: true
+      }
     },
     fireAssignedCallback: {
       value: function fireAssignedCallback() {
         this._fn();
-      },
-      writable: true,
-      configurable: true
+      }
     },
     setPrintableKeysFormatter: {
       value: function setPrintableKeysFormatter(formatterFunction) {
         this._printableKeysFormatter = formatterFunction;
-      },
-      writable: true,
-      configurable: true
+      }
     },
     getPrintableKeys: {
       value: function getPrintableKeys() {
@@ -27543,16 +27510,12 @@ var Shortcut = exports.Shortcut = (function () {
           keys = format(this._keys);
         }
         return keys.join("+");
-      },
-      writable: true,
-      configurable: true
+      }
     },
     getHelpText: {
       value: function getHelpText() {
         return this._helpText;
-      },
-      writable: true,
-      configurable: true
+      }
     }
   });
 
@@ -27564,8 +27527,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 
-
-
 },{}],186:[function(require,module,exports){
 "use strict";
 
@@ -27574,8 +27535,6 @@ var toPrintableKeys = exports.toPrintableKeys = function toPrintableKeys(keys, m
     return map[key] || key;
   });
 };
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27669,8 +27628,6 @@ Controller.prototype = {
   }
 
 };
-
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27681,7 +27638,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
@@ -27704,7 +27661,7 @@ var View = (function (_React$Component) {
 
   _inherits(View, _React$Component);
 
-  _prototypeProperties(View, null, {
+  _createClass(View, {
     render: {
       value: function render() {
         var props = this.props;
@@ -27713,9 +27670,7 @@ var View = (function (_React$Component) {
           onSave: props.onSave }), React.createElement("div", { className: "editor-and-runner" }, React.createElement("div", { id: this.props.editorId, className: "editor" }), React.createElement("div", { id: this.props.runnerId, className: "runner" })), React.createElement(KeyboardShortcutOverlay, {
           metaKeySymbol: props.metaKeySymbol,
           shortcuts: props.shortcuts }));
-      },
-      writable: true,
-      configurable: true
+      }
     }
   });
 
@@ -27725,14 +27680,12 @@ var View = (function (_React$Component) {
 module.exports = View;
 
 
-
-
 },{"../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view":181,"../navigation-bar/navigation-bar-view":189,"react":180}],189:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
@@ -27751,13 +27704,11 @@ var View = (function (_React$Component) {
 
   _inherits(View, _React$Component);
 
-  _prototypeProperties(View, null, {
+  _createClass(View, {
     render: {
       value: function render() {
         return React.createElement("header", { className: "navigation-bar" }, React.createElement("button", { className: "logo" }), React.createElement("button", { className: "icon save", title: "Run tests (⌘S)", onClick: this.props.onSave }, "Run tests (", this.props.metaKeySymbol, "S)"), React.createElement("a", { href: "http://uxebu.com", className: "icon uxebu", title: "Made by uxebu." }), React.createElement("a", { href: "http://twitter.com/tddbin", className: "icon twitter", title: "Get in touch." }), React.createElement("a", { href: "http://github.com/tddbin/tddbin-frontend", className: "icon github", title: "Get (into) the code and contribute." }), React.createElement("a", { href: "https://trello.com/b/FW1gUVxe/tddbin-com", className: "icon trello", title: "Vote, add features, discuss, ..." }));
-      },
-      writable: true,
-      configurable: true
+      }
     }
   });
 
@@ -27767,14 +27718,12 @@ var View = (function (_React$Component) {
 module.exports = View;
 
 
-
-
 },{"react":180}],190:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
 
@@ -27793,20 +27742,16 @@ var Iframe = (function (_React$Component) {
 
   _inherits(Iframe, _React$Component);
 
-  _prototypeProperties(Iframe, null, {
+  _createClass(Iframe, {
     getIframeRef: {
       value: function getIframeRef() {
         return this.refs.iframe.getDOMNode();
-      },
-      writable: true,
-      configurable: true
+      }
     },
     render: {
       value: function render() {
         return React.createElement("iframe", { ref: "iframe", src: this.props.iframeSrc, width: "100%", height: "100%" });
-      },
-      writable: true,
-      configurable: true
+      }
     }
   });
 
@@ -27816,14 +27761,12 @@ var Iframe = (function (_React$Component) {
 module.exports = Iframe;
 
 
-
-
 },{"react":180}],191:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
@@ -27840,29 +27783,23 @@ var TestRunner = (function () {
     (eventReceiver || window).addEventListener("message", this.handleDataReceived.bind(this), false);
   }
 
-  _prototypeProperties(TestRunner, null, {
+  _createClass(TestRunner, {
     render: {
       value: function render(iframeSrc) {
         var iframe = React.render(React.createElement(Iframe, { iframeSrc: iframeSrc }), this._domNode);
         this._iframeRef = iframe.getIframeRef();
-      },
-      writable: true,
-      configurable: true
+      }
     },
     send: {
       value: function send(sourceCode) {
         var iframe = this._iframeRef.contentWindow;
         iframe.postMessage(sourceCode, "*");
-      },
-      writable: true,
-      configurable: true
+      }
     },
     onStats: {
       value: function onStats(fn) {
         this._onStats = fn;
-      },
-      writable: true,
-      configurable: true
+      }
     },
     handleDataReceived: {
       value: function handleDataReceived(data) {
@@ -27870,9 +27807,7 @@ var TestRunner = (function () {
           var stats = data.data;
           this._onStats(stats);
         }
-      },
-      writable: true,
-      configurable: true
+      }
     }
   });
 
@@ -27880,8 +27815,6 @@ var TestRunner = (function () {
 })();
 
 module.exports = TestRunner;
-
-
 
 
 },{"./iframe":190,"react":180}]},{},[4]);
