@@ -8,7 +8,7 @@
 
     "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify",
     "watch-app": "watchify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify -v",
-    "start": "watchify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify -v",
+    "start": "npm run watch-app",
 
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=reactify --transform=babelify",
     "watch-jasmine-spec-runners": "watchify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=reactify --transform=babelify -v",
