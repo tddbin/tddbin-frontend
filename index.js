@@ -5,7 +5,8 @@ var util = require("./_util").util;
 
 var noop = function noop() {};
 
-var shortcuts = exports.shortcuts = [util.getShortcutObject([util.metaKey, "D"], noop, "Delete line"), util.getShortcutObject([util.metaKey, "Z"], noop, "Undo"), util.getShortcutObject([util.metaKey, "Shift", "D"], noop, "Duplicate line"), util.getShortcutObject([util.metaKey, "Shift", "Z"], noop, "Redo"), util.getShortcutObject([util.metaKey, "/"], noop, "Comment in/out line")];
+var shortcuts = [util.getShortcutObject([util.metaKey, "D"], noop, "Delete line"), util.getShortcutObject([util.metaKey, "Z"], noop, "Undo"), util.getShortcutObject([util.metaKey, "Shift", "D"], noop, "Duplicate line"), util.getShortcutObject([util.metaKey, "Shift", "Z"], noop, "Redo"), util.getShortcutObject([util.metaKey, "/"], noop, "Comment in/out line")];
+exports.shortcuts = shortcuts;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -34,7 +35,7 @@ function format(keys) {
   return toPrintableKeys(keys, map);
 }
 
-var util = exports.util = {
+var util = {
 
   getShortcutObject: function getShortcutObject(keys, fn, helpText) {
     var shortcut = new Shortcut(keys, fn, helpText);
@@ -44,6 +45,7 @@ var util = exports.util = {
 
   metaKey: isMac ? "Meta" : "Control"
 };
+exports.util = util;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -52,7 +54,7 @@ Object.defineProperty(exports, "__esModule", {
 },{"../src/keyboard-shortcut/shortcut":185,"../src/keyboard-shortcut/util":186}],3:[function(require,module,exports){
 "use strict";
 
-var simplePassingTestCode = exports.simplePassingTestCode = [
+var simplePassingTestCode = [
 //',
 "describe('test embedded mocha', function() {",
 //'  // doesnt work anymore since we use mocha from the CDN, which we have to do due to',
@@ -72,6 +74,7 @@ var simplePassingTestCode = exports.simplePassingTestCode = [
 //'  });',
 "});"].join("\n");
 
+exports.simplePassingTestCode = simplePassingTestCode;
 function simpleFailing() {
   describe("test embedded mocha", function () {
     it("should fail", function () {
@@ -97,7 +100,8 @@ function getSourceFrom(func) {
   return lines.slice(1, -1).join("\n");
 }
 
-var simpleFailingTestCode = exports.simpleFailingTestCode = getSourceFrom(simpleFailing);
+var simpleFailingTestCode = getSourceFrom(simpleFailing);
+exports.simpleFailingTestCode = simpleFailingTestCode;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27263,12 +27267,13 @@ module.exports = Overlay;
 },{"react":180}],182:[function(require,module,exports){
 "use strict";
 
-var browserEventUtil = exports.browserEventUtil = {
+var browserEventUtil = {
 
   onWindowBlur: function onWindowBlur(fn) {
     window.addEventListener("blur", fn);
   }
 };
+exports.browserEventUtil = browserEventUtil;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27277,7 +27282,7 @@ Object.defineProperty(exports, "__esModule", {
 },{}],183:[function(require,module,exports){
 "use strict";
 
-var keyboardEventUtil = exports.keyboardEventUtil = {
+var keyboardEventUtil = {
 
   PREVENT_DEFAULT_ACTION: "preventDefault",
 
@@ -27323,6 +27328,7 @@ var keyboardEventUtil = exports.keyboardEventUtil = {
     });
   }
 };
+exports.keyboardEventUtil = keyboardEventUtil;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -27537,11 +27543,12 @@ Object.defineProperty(exports, "__esModule", {
 },{}],186:[function(require,module,exports){
 "use strict";
 
-var toPrintableKeys = exports.toPrintableKeys = function toPrintableKeys(keys, map) {
+var toPrintableKeys = function toPrintableKeys(keys, map) {
   return keys.map(function (key) {
     return map[key] || key;
   });
 };
+exports.toPrintableKeys = toPrintableKeys;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
