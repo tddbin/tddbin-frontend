@@ -7,6 +7,7 @@
   parameter `kata` http://tddbin.com/?kata=kataname (currently any name will always return the same kata)
   add your kata via a PR at https://github.com/tddbin/katas-service
 - [ux] make a slow loading page not show the "oh, sorry" message  
+- [ux] store code in localstorage, and allow to reset it with new button (thx Matthieu for PR #1)
 
 # 1.1.1  2015-03-05
 
