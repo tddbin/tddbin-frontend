@@ -1,7 +1,7 @@
 import assert from '../../_test-helper/assert';
 import {toPrintableKeys} from '../util';
 
-var keyToSignMap = {
+const keyToSignMap = {
   Meta: 'Meta',
   Shift: 'Shift'
 };

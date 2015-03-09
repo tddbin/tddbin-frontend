@@ -5,7 +5,7 @@ import {keyboardEventUtil} from '../keyboard-event-util';
 import {browserEventUtil} from '../browser-event-util';
 import {KeyPressEmulation} from './util';
 
-var noop = function() {};
+const noop = function() {};
 
 describe('registering multiple shortcuts', function() {
   it('shall work', function() {

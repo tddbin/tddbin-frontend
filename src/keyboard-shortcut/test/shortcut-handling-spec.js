@@ -5,7 +5,7 @@ import {keyboardEventUtil} from '../keyboard-event-util';
 import {browserEventUtil} from '../browser-event-util';
 import {KeyPressEmulation} from './util';
 
-var noop = function() {};
+const noop = function() {};
 
 // the shortcut-processor requires browser-event-util which uses `window` that
 // fails for those tests ... not fixing it now, skipping tests :(

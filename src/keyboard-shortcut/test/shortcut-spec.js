@@ -9,8 +9,8 @@ import Shortcut from '../shortcut';
 - get help text method
  */
 
-var someFunction = function() {};
-var someString = '';
+const someFunction = function() {};
+const someString = '';
 
 function createShortcut(shortcut, callback, helpText) {
   return new Shortcut(shortcut, callback, helpText);
