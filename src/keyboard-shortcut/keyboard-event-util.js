@@ -1,10 +1,11 @@
-export const PREVENT_DEFAULT_ACTION = 'preventDefault';
 export const keyboardEventUtil = {
+
+  PREVENT_DEFAULT_ACTION: 'preventDefault',
 
   addKeyDownListener: function(fn) {
     document.addEventListener('keydown', function(evt) {
       var whatToDo = fn(getKeyNameFromEvent(evt));
-      if (whatToDo === PREVENT_DEFAULT_ACTION) {
+      if (whatToDo === keyboardEventUtil.PREVENT_DEFAULT_ACTION) {
         evt.preventDefault();
       }
     });
