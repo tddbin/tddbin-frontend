@@ -1,5 +1,3 @@
-'use strict';
-
 import sinon from 'sinon';
 
 beforeEach(function() {

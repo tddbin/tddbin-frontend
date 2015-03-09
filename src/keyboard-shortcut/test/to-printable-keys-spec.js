@@ -1,5 +1,3 @@
-'use strict';
-
 import assert from '../../_test-helper/assert';
 /*
   - pre-process shortcuts into ui-shortcuts (or alike) where 'Meta' is replace by '⌘' etc.

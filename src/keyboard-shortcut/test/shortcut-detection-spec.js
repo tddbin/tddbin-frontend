@@ -1,5 +1,3 @@
-'use strict';
-
 import assert from '../../_test-helper/assert';
 import {Shortcut} from '../shortcut';
 var ShortcutProcessor = require('../shortcut-processor');

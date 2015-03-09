@@ -1,5 +1,3 @@
-'use strict';
-
 import './sinon-cleanup';
 import nodeAssert from 'assert';
 import sinon from 'sinon';
