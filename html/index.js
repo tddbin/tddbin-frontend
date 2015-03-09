@@ -1,23 +1,20 @@
 var $ = document.getElementById.bind(document);
 import {simplePassingTestCode} from './example-tests';
 import {Controller as Main} from '../src/main/main-controller';
-import {util} from './_util';
+import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
-import url from 'url';
 import atomic from 'atomic';
 atomic = atomic(window);
 
-var queryString = window.location.search;
+const queryString = window.location.search;
 
-var shortcuts = aceDefaultShortcuts.concat([
-  util.getShortcutObject([util.metaKey, 'S'], onSave, 'Save+Run'),
-  util.getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
+const shortcuts = aceDefaultShortcuts.concat([
+  getShortcutObject([metaKey, 'S'], onSave, 'Save+Run'),
+  getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
 ]);
 
-var testRunner = getTestRunner();
-
 var main = new Main($('tddbin'), {
-  iframeSrcUrl: `./${testRunner}/spec-runner.html`,
+  iframeSrcUrl: `./${getTestRunner()}/spec-runner.html`,
   shortcuts: shortcuts
 });
 

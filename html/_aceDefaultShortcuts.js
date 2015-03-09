@@ -1,15 +1,15 @@
-import {util} from './_util';
+import {getShortcutObject, metaKey} from './_util';
 
 var noop = function() {};
 
 export var shortcuts = [
-  util.getShortcutObject([util.metaKey, 'D'], noop, 'Delete line'),
-  util.getShortcutObject([util.metaKey, 'Z'], noop, 'Undo'),
-  util.getShortcutObject([util.metaKey, 'Shift', 'D'], noop, 'Duplicate line'),
-  util.getShortcutObject([util.metaKey, 'Shift', 'Z'], noop, 'Redo'),
-  util.getShortcutObject([util.metaKey, '/'], noop, 'Comment in/out line'),
+  getShortcutObject([metaKey, 'D'], noop, 'Delete line'),
+  getShortcutObject([metaKey, 'Z'], noop, 'Undo'),
+  getShortcutObject([metaKey, 'Shift', 'D'], noop, 'Duplicate line'),
+  getShortcutObject([metaKey, 'Shift', 'Z'], noop, 'Redo'),
+  getShortcutObject([metaKey, '/'], noop, 'Comment in/out line'),
   //
-  //util.getShortcutObject([util.metaKey, 'I', 'E'], noop, '???'),
-  //util.getShortcutObject([util.metaKey, 'I', 'I'], noop, '???'),
-  //util.getShortcutObject([util.metaKey, 'I', 'E', 'E'], noop, '???')
+  //getShortcutObject([metaKey, 'I', 'E'], noop, '???'),
+  //getShortcutObject([metaKey, 'I', 'I'], noop, '???'),
+  //getShortcutObject([metaKey, 'I', 'E', 'E'], noop, '???')
 ];
