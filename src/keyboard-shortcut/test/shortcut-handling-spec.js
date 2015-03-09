@@ -1,21 +1,21 @@
 import assert from '../../_test-helper/assert';
 import Shortcut from '../shortcut';
 import ShortcutProcessor from '../shortcut-processor';
-var keyboardEventUtil = require('../keyboard-event-util');
-var browserEventUtil = require('../browser-event-util');
-var util = require('./util');
+import {keyboardEventUtil} from '../keyboard-event-util';
+import {browserEventUtil} from '../browser-event-util';
+import {KeyPressEmulation} from './util';
 
 var noop = function() {};
 
 // the shortcut-processor requires browser-event-util which uses `window` that
 // fails for those tests ... not fixing it now, skipping tests :(
-describe.skip('keyboard shortcut', function() {
+describe('keyboard shortcut', function() {
 
   var callback;
   var keyPressEmulation;
   beforeEach(function() {
-    this.sinon.spy(browserEventUtil, 'onWindowBlur');
-    keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil, this.sinon);
+    this.sinon.stub(browserEventUtil, 'onWindowBlur');
+    keyPressEmulation = new KeyPressEmulation(keyboardEventUtil, this.sinon);
     callback = this.sinon.spy();
   });
   function pressKeysAndFinalKeyUp(keyNames) {
@@ -102,14 +102,14 @@ describe.skip('keyboard shortcut', function() {
     it('before Meta-keyUp', function() {
       var shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
-      //keyPressEmulation.keyDownByKeyNames(shortcut);
-      //assert.notCalled(callback);
+      keyPressEmulation.keyDownByKeyNames(shortcut);
+      assert.notCalled(callback);
     });
     it('for shortcut+extra key was pressed', function() {
       var shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp(shortcut.concat(shortcut[1]));
-      expect(callback).not.toHaveBeenCalled();
+      assert.notCalled(callback);
     });
   });
 
