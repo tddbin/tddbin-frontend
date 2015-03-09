@@ -25885,14 +25885,14 @@ Object.defineProperty(exports, "__esModule", {
 },{}],178:[function(require,module,exports){
 "use strict";
 
-var PREVENT_DEFAULT_ACTION = "preventDefault";
-exports.PREVENT_DEFAULT_ACTION = PREVENT_DEFAULT_ACTION;
 var keyboardEventUtil = {
+
+  PREVENT_DEFAULT_ACTION: "preventDefault",
 
   addKeyDownListener: function addKeyDownListener(fn) {
     document.addEventListener("keydown", function (evt) {
       var whatToDo = fn(getKeyNameFromEvent(evt));
-      if (whatToDo === PREVENT_DEFAULT_ACTION) {
+      if (whatToDo === keyboardEventUtil.PREVENT_DEFAULT_ACTION) {
         evt.preventDefault();
       }
     });
