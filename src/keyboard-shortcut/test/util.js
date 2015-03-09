@@ -1,49 +1,40 @@
-function KeyPressEmulation(keyboardEventUtil, sinon) {
-  this._keyDownListeners = [];
-  this._keyUpListeners = [];
-  var self = this;
-  sinon.stub(keyboardEventUtil, 'addKeyDownListener', function(fn) {
-    self._keyDownListeners.push(fn);
-  });
-  sinon.stub(keyboardEventUtil, 'addKeyUpListener', function(fn) {
-    self._keyUpListeners.push(fn);
-  });
-}
-KeyPressEmulation.prototype = {
-  keyDownByKeyName: function(keyName) {
+export class KeyPressEmulation {
+  constructor(keyboardEventUtil, sinon) {
+    this._keyDownListeners = [];
+    this._keyUpListeners = [];
+    sinon.stub(keyboardEventUtil, 'addKeyDownListener', (fn) => this._keyDownListeners.push(fn));
+    sinon.stub(keyboardEventUtil, 'addKeyUpListener', (fn) => this._keyUpListeners.push(fn));
+  }
+
+  keyDownByKeyName(keyName) {
     this._keyDownListeners[0](keyName);
-  },
+  }
 
-  keyUpByKeyName: function(keyName) {
+  keyUpByKeyName(keyName) {
     this._keyUpListeners[0](keyName);
-  },
+  }
 
-  keyDownByKeyNames: function(keyNames) {
-    keyNames.forEach(this.keyDownByKeyName.bind(this));
-  },
+  keyDownByKeyNames(keyNames) {
+    keyNames.forEach((...args) => { this.keyDownByKeyName(...args)});
+  }
 
-  keyUpByKeyNames: function(keyNames) {
-    keyNames.forEach(this.keyUpByKeyName.bind(this));
-  },
+  keyUpByKeyNames(keyNames) {
+    keyNames.forEach((...args) => { this.keyUpByKeyName(...args)});
+  }
 
-  pressByKeyNames: function(keyNames) {
+  pressByKeyNames(keyNames) {
     // The first key is (normally) the Meta key, don't fire keyUp yet,
     // fire it only at the end of it all.
     var firstKeyName = keyNames[0];
     this._keyDownListeners[0](firstKeyName);
 
     // Fire all keyDowns and keyUps.
-    var self = this;
-    keyNames.slice(1).forEach(function(key) {
-      self._keyDownListeners[0](key);
-      self._keyUpListeners[0](key);
+    keyNames.slice(1).forEach((key) => {
+      this._keyDownListeners[0](key);
+      this._keyUpListeners[0](key);
     });
 
     this.keyUpByKeyName(firstKeyName);
   }
 
-};
-
-module.exports = {
-  KeyPressEmulation: KeyPressEmulation
-};
+}
