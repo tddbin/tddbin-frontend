@@ -2961,13 +2961,13 @@ var messages = exports.messages = {
 };
 
 function get(key) {
+  for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key];
+  }
+
   var msg = messages[key];
   if (!msg) throw new ReferenceError("Unknown message " + JSON.stringify(key));
 
-  var args = [];
-  for (var i = 1; i < arguments.length; i++) {
-    args.push(arguments[i]);
-  }
   args = parseArgs(args);
 
   return msg.replace(/\$(\d+)/g, function (str, i) {
@@ -4405,8 +4405,8 @@ var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["defau
 
 var t = _interopRequire(require("../../types"));
 
-var visitor = {
-  enter: function enter(node) {
+var awaitVisitor = {
+  enter: function enter(node, parent, scope, state) {
     if (t.isFunction(node)) this.skip();
 
     if (t.isAwaitExpression(node)) {
@@ -4421,13 +4421,25 @@ var visitor = {
   }
 };
 
+var referenceVisitor = {
+  enter: function enter(node, parent, scope, state) {
+    var name = state.id.name;
+    if (t.isReferencedIdentifier(node, parent, { name: name }) && scope.bindingIdentifierEquals(name, state.id)) {
+      var _state;
+
+      return (_state = state, !_state.ref && (_state.ref = scope.generateUidIdentifier(name)), _state.ref);
+    }
+  }
+};
+
 module.exports = function (node, callId, scope) {
   node.async = false;
   node.generator = true;
 
-  scope.traverse(node, visitor);
+  scope.traverse(node, awaitVisitor, state);
 
   var call = t.callExpression(callId, [node]);
+
   var id = node.id;
   node.id = null;
 
@@ -4436,6 +4448,16 @@ module.exports = function (node, callId, scope) {
     declar._blockHoist = true;
     return declar;
   } else {
+    if (id) {
+      var state = { id: id };
+      scope.traverse(node, referenceVisitor, state);
+
+      if (state.ref) {
+        scope.parent.push({ id: state.ref });
+        return t.assignmentExpression("=", state.ref, call);
+      }
+    }
+
     return call;
   }
 };
@@ -4499,12 +4521,11 @@ var ReplaceSupers = (function () {
 
   /**
    * Description
-   *
-   * @param {Object} opts
-   * @param {Boolean} [inClass]
    */
 
-  function ReplaceSupers(opts, inClass) {
+  function ReplaceSupers(opts) {
+    var inClass = arguments[1] === undefined ? false : arguments[1];
+
     _classCallCheck(this, ReplaceSupers);
 
     this.topLevelThisReference = opts.topLevelThisReference;
@@ -4530,12 +4551,6 @@ var ReplaceSupers = (function () {
    *
    *   _set(Object.getPrototypeOf(CLASS.prototype), "METHOD", "VALUE", this)
    *
-   * @param {Node} property
-   * @param {Node} value
-   * @param {Boolean} isComputed
-   * @param {Node} thisExpression
-   *
-   * @returns {Node}
    */
 
   ReplaceSupers.prototype.setSuperProperty = function setSuperProperty(property, value, isComputed, thisExpression) {
@@ -4549,11 +4564,6 @@ var ReplaceSupers = (function () {
    *
    *   _get(Object.getPrototypeOf(CLASS.prototype), "METHOD", this)
    *
-   * @param {Node} property
-   * @param {Boolean} isComputed
-   * @param {Node} thisExpression
-   *
-   * @returns {Node}
    */
 
   ReplaceSupers.prototype.getSuperProperty = function getSuperProperty(property, isComputed, thisExpression) {
@@ -4570,9 +4580,6 @@ var ReplaceSupers = (function () {
 
   /**
    * Description
-   *
-   * @param {Object} node
-   * @param {Boolean} topLevel
    */
 
   ReplaceSupers.prototype.traverseLevel = function traverseLevel(node, topLevel) {
@@ -4596,11 +4603,6 @@ var ReplaceSupers = (function () {
 
   /**
    * Description
-   *
-   * @param {Object} node
-   * @param {Object} id
-   * @param {Object} parent
-   * @returns {Object}
    */
 
   ReplaceSupers.prototype.getLooseSuperProperty = function getLooseSuperProperty(id, parent) {
@@ -4638,10 +4640,6 @@ var ReplaceSupers = (function () {
 
   /**
    * Description
-   *
-   * @param {Function} getThisReference
-   * @param {Object} node
-   * @param {Object} parent
    */
 
   ReplaceSupers.prototype.looseHandle = function looseHandle(getThisReference, node, parent) {
@@ -4662,10 +4660,6 @@ var ReplaceSupers = (function () {
 
   /**
    * Description
-   *
-   * @param {Function} getThisReference
-   * @param {Object} node
-   * @param {Object} parent
    */
 
   ReplaceSupers.prototype.specHandle = function specHandle(getThisReference, node, parent) {
@@ -4843,7 +4837,7 @@ each(rawTransformers, function (transformer, key) {
 
   transform.transformers[key] = new Transformer(key, transformer);
 });
-},{"../helpers/normalize-ast":25,"../helpers/object":26,"./file":31,"./modules":53,"./transformer":58,"./transformers":86,"./transformers/aliases":59,"./transformers/deprecated":60,"lodash/collection/each":178}],46:[function(require,module,exports){
+},{"../helpers/normalize-ast":25,"../helpers/object":26,"./file":31,"./modules":53,"./transformer":58,"./transformers":87,"./transformers/aliases":59,"./transformers/deprecated":60,"lodash/collection/each":178}],46:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -5946,6 +5940,7 @@ module.exports={
 module.exports={
   "selfContained": "runtime",
   "unicode-regex": "regex.unicode",
+  "spec.typeofSymbol": "es6.symbols",
 
   "minification.deadCodeElimination": "utility.deadCodeElimination",
   "minification.removeConsoleCalls": "utility.removeConsole",
@@ -6201,7 +6196,7 @@ function Loop(node, parent, scope, file) {
 
 function BlockStatement(block, parent, scope, file) {
   if (!t.isLoop(parent)) {
-    var blockScoping = new BlockScoping(false, block, parent, scope, file);
+    var blockScoping = new BlockScoping(null, block, parent, scope, file);
     blockScoping.run();
   }
 }
@@ -6346,12 +6341,6 @@ var BlockScoping = (function () {
 
   /**
    * Description
-   *
-   * @param {Boolean|Node} loopParent
-   * @param {Node} block
-   * @param {Node} parent
-   * @param {Scope} scope
-   * @param {File} file
    */
 
   function BlockScoping(loopParent, block, parent, scope, file) {
@@ -6592,9 +6581,6 @@ var BlockScoping = (function () {
   /**
    * Turn a `VariableDeclaration` into an array of `AssignmentExpressions` with
    * their declarations hoisted to before the closure wrapper.
-   *
-   * @param {Node} node VariableDeclaration
-   * @returns {Array}
    */
 
   BlockScoping.prototype.pushDeclar = function pushDeclar(node) {
@@ -6617,9 +6603,6 @@ var BlockScoping = (function () {
 
   /**
    * Push the closure to the body.
-   *
-   * @param {Node} ret Identifier
-   * @param {Node} call CallExpression
    */
 
   BlockScoping.prototype.build = function build(ret, call) {
@@ -6633,9 +6616,6 @@ var BlockScoping = (function () {
 
   /**
    * Description
-   *
-   * @param {Node} ret Identifier
-   * @param {Node} call CallExpression
    */
 
   BlockScoping.prototype.buildHas = function buildHas(ret, call) {
@@ -6759,11 +6739,6 @@ var ClassTransformer = (function () {
 
   /**
    * Description
-   *
-   * @param {Node} node
-   * @param {Node} parent
-   * @param {Scope} scope
-   * @param {File} file
    */
 
   function ClassTransformer(node, parent, scope, file) {
@@ -6937,8 +6912,6 @@ var ClassTransformer = (function () {
 
   /**
    * Description
-   *
-   * @param {Node} node
    */
 
   ClassTransformer.prototype.verifyConstructor = function verifyConstructor(node) {
@@ -6959,8 +6932,6 @@ var ClassTransformer = (function () {
 
   /**
    * Push a method to its respective mutatorMap.
-   *
-   * @param {Node} node MethodDefinition
    */
 
   ClassTransformer.prototype.pushMethod = function pushMethod(node) {
@@ -7000,8 +6971,6 @@ var ClassTransformer = (function () {
 
   /**
    * Description
-   *
-   * @param {Node} node
    */
 
   ClassTransformer.prototype.pushProperty = function pushProperty(node) {
@@ -7020,8 +6989,6 @@ var ClassTransformer = (function () {
 
   /**
    * Replace the constructor body of our class.
-   *
-   * @param {Node} method MethodDefinition
    */
 
   ClassTransformer.prototype.pushConstructor = function pushConstructor(method) {
@@ -7848,7 +7815,7 @@ function ExportDeclaration(node, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125,"../internal/modules":92}],72:[function(require,module,exports){
+},{"../../../types":125,"../internal/modules":93}],72:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8508,6 +8475,32 @@ exports.__esModule = true;
 },{"../../../types":125,"lodash/collection/includes":181}],80:[function(require,module,exports){
 "use strict";
 
+var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+exports.UnaryExpression = UnaryExpression;
+
+var t = _interopRequire(require("../../../types"));
+
+var optional = exports.optional = true;
+
+function UnaryExpression(node, parent, scope, file) {
+  this.skip();
+
+  if (node.operator === "typeof") {
+    var call = t.callExpression(file.addHelper("typeof"), [node.argument]);
+    if (t.isIdentifier(node.argument)) {
+      var undefLiteral = t.literal("undefined");
+      return t.conditionalExpression(t.binaryExpression("===", t.unaryExpression("typeof", node.argument), undefLiteral), undefLiteral, call);
+    } else {
+      return call;
+    }
+  }
+}
+
+exports.__esModule = true;
+},{"../../../types":125}],81:[function(require,module,exports){
+"use strict";
+
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8889,7 +8882,7 @@ var TailCallTransformer = (function () {
 
   return TailCallTransformer;
 })();
-},{"../../../messages":28,"../../../types":125,"../../../util":127,"lodash/array/flatten":173,"lodash/collection/map":182,"lodash/collection/reduceRight":183}],81:[function(require,module,exports){
+},{"../../../messages":28,"../../../types":125,"../../../util":127,"lodash/array/flatten":173,"lodash/collection/map":182,"lodash/collection/reduceRight":183}],82:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -8964,7 +8957,7 @@ function TemplateLiteral(node) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125}],82:[function(require,module,exports){
+},{"../../../types":125}],83:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9080,7 +9073,7 @@ function PrivateDeclaration(node) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125,"../../../util":127}],83:[function(require,module,exports){
+},{"../../../types":125,"../../../util":127}],84:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
@@ -9146,7 +9139,7 @@ function array(node, parent, scope, file) {
   return container;
 }
 exports.__esModule = true;
-},{"../../../traversal":120,"../../../types":125,"../../../util":127,"../../helpers/build-comprehension":33}],84:[function(require,module,exports){
+},{"../../../traversal":120,"../../../types":125,"../../../util":127,"../../helpers/build-comprehension":33}],85:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9169,7 +9162,7 @@ build(exports, {
   }
 });
 exports.__esModule = true;
-},{"../../../types":125,"../../helpers/build-binary-assignment-operator-transformer":32}],85:[function(require,module,exports){
+},{"../../../types":125,"../../helpers/build-binary-assignment-operator-transformer":32}],86:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9227,7 +9220,7 @@ function ObjectExpression(node, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125}],86:[function(require,module,exports){
+},{"../../../types":125}],87:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -9326,7 +9319,7 @@ module.exports = {
 
   _aliasFunctions: require("./internal/alias-functions"),
 
-  "spec.typeofSymbol": require("./spec/typeof-symbol"),
+  "es6.symbols": require("./es6/symbols"),
   "spec.undefinedToVoid": require("./spec/undefined-to-void"),
 
   _strict: require("./internal/strict"),
@@ -9344,7 +9337,7 @@ module.exports = {
 
   _cleanUp: require("./internal/cleanup")
 };
-},{"./es3/member-expression-literals":61,"./es3/property-literals":62,"./es5/properties.mutators":63,"./es6/arrow-functions":64,"./es6/block-scoping":66,"./es6/block-scoping-tdz":65,"./es6/classes":67,"./es6/constants":68,"./es6/destructuring":69,"./es6/for-of":70,"./es6/modules":71,"./es6/object-super":72,"./es6/parameters.default":73,"./es6/parameters.rest":74,"./es6/properties.computed":75,"./es6/properties.shorthand":76,"./es6/regex.sticky":77,"./es6/regex.unicode":78,"./es6/spread":79,"./es6/tail-call":80,"./es6/template-literals":81,"./es7/abstract-references":82,"./es7/comprehensions":83,"./es7/exponentiation-operator":84,"./es7/object-rest-spread":85,"./internal/alias-functions":87,"./internal/block-hoist":88,"./internal/cleanup":89,"./internal/declarations":90,"./internal/module-formatter":91,"./internal/modules":92,"./internal/strict":93,"./internal/validation":94,"./other/async-to-generator":95,"./other/bluebird-coroutines":96,"./other/flow":97,"./other/react":99,"./other/react-compat":98,"./other/regenerator":100,"./other/runtime":101,"./other/strict":102,"./playground/mallet-operator":103,"./playground/memoization-operator":104,"./playground/method-binding":105,"./playground/object-getter-memoization":106,"./spec/block-scoped-functions":107,"./spec/function-name":108,"./spec/proto-to-assign":109,"./spec/typeof-symbol":110,"./spec/undefined-to-void":111,"./utility/dead-code-elimination":112,"./utility/inline-environment-variables":113,"./utility/inline-expressions":114,"./utility/remove-console":115,"./utility/remove-debugger":116,"./validation/react":117,"./validation/undeclared-variable-check":118}],87:[function(require,module,exports){
+},{"./es3/member-expression-literals":61,"./es3/property-literals":62,"./es5/properties.mutators":63,"./es6/arrow-functions":64,"./es6/block-scoping":66,"./es6/block-scoping-tdz":65,"./es6/classes":67,"./es6/constants":68,"./es6/destructuring":69,"./es6/for-of":70,"./es6/modules":71,"./es6/object-super":72,"./es6/parameters.default":73,"./es6/parameters.rest":74,"./es6/properties.computed":75,"./es6/properties.shorthand":76,"./es6/regex.sticky":77,"./es6/regex.unicode":78,"./es6/spread":79,"./es6/symbols":80,"./es6/tail-call":81,"./es6/template-literals":82,"./es7/abstract-references":83,"./es7/comprehensions":84,"./es7/exponentiation-operator":85,"./es7/object-rest-spread":86,"./internal/alias-functions":88,"./internal/block-hoist":89,"./internal/cleanup":90,"./internal/declarations":91,"./internal/module-formatter":92,"./internal/modules":93,"./internal/strict":94,"./internal/validation":95,"./other/async-to-generator":96,"./other/bluebird-coroutines":97,"./other/flow":98,"./other/react":100,"./other/react-compat":99,"./other/regenerator":101,"./other/runtime":102,"./other/strict":103,"./playground/mallet-operator":104,"./playground/memoization-operator":105,"./playground/method-binding":106,"./playground/object-getter-memoization":107,"./spec/block-scoped-functions":108,"./spec/function-name":109,"./spec/proto-to-assign":110,"./spec/undefined-to-void":111,"./utility/dead-code-elimination":112,"./utility/inline-environment-variables":113,"./utility/inline-expressions":114,"./utility/remove-console":115,"./utility/remove-debugger":116,"./validation/react":117,"./validation/undeclared-variable-check":118}],88:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9446,7 +9439,7 @@ function FunctionDeclaration(node, parent, scope) {
 
 exports.FunctionExpression = FunctionDeclaration;
 exports.__esModule = true;
-},{"../../../types":125}],88:[function(require,module,exports){
+},{"../../../types":125}],89:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9486,7 +9479,7 @@ var BlockStatement = exports.BlockStatement = {
 
 exports.Program = BlockStatement;
 exports.__esModule = true;
-},{"lodash/array/flatten":173,"lodash/collection/groupBy":180,"lodash/object/values":283}],89:[function(require,module,exports){
+},{"lodash/array/flatten":173,"lodash/collection/groupBy":180,"lodash/object/values":283}],90:[function(require,module,exports){
 "use strict";
 
 var SequenceExpression = exports.SequenceExpression = {
@@ -9504,8 +9497,23 @@ var ExpressionStatement = exports.ExpressionStatement = {
     if (!node.expression) this.remove();
   }
 };
+
+var Binary = exports.Binary = {
+  exit: function exit(node) {
+    var right = node.right;
+    var left = node.left;
+
+    if (!left && !right) {
+      this.remove();
+    } else if (!left) {
+      return right;
+    } else if (!right) {
+      return left;
+    }
+  }
+};
 exports.__esModule = true;
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9554,7 +9562,7 @@ function BlockStatement(node, parent, scope, file) {
 
 exports.Program = BlockStatement;
 exports.__esModule = true;
-},{"../../../types":125,"../../helpers/strict":44}],91:[function(require,module,exports){
+},{"../../../types":125,"../../helpers/strict":44}],92:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
@@ -9576,7 +9584,7 @@ function Program(program, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../helpers/strict":44}],92:[function(require,module,exports){
+},{"../../helpers/strict":44}],93:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9618,40 +9626,43 @@ function ExportDeclaration(node, parent, scope) {
 
   if (node["default"]) {
     if (t.isClassDeclaration(declar)) {
+      // export default class Foo {};
+      this.node = [getDeclar(), node];
       node.declaration = declar.id;
-      return [getDeclar(), node];
     } else if (t.isClassExpression(declar)) {
+      // export default class {};
       var temp = scope.generateUidIdentifier("default");
       declar = t.variableDeclaration("var", [t.variableDeclarator(temp, declar)]);
       node.declaration = temp;
       return [getDeclar(), node];
     } else if (t.isFunctionDeclaration(declar)) {
+      // export default function Foo() {}
       node._blockHoist = 2;
       node.declaration = declar.id;
       return [getDeclar(), node];
     }
   } else {
     if (t.isFunctionDeclaration(declar)) {
+      // export function Foo() {}
       node.specifiers = [t.importSpecifier(declar.id, declar.id)];
       node.declaration = null;
       node._blockHoist = 2;
       return [getDeclar(), node];
     } else if (t.isVariableDeclaration(declar)) {
+      // export var foo = "bar";
       var specifiers = [];
-
       var bindings = t.getBindingIdentifiers(declar);
       for (var key in bindings) {
         var id = bindings[key];
         specifiers.push(t.exportSpecifier(id, id));
       }
-
       return [declar, t.exportDeclaration(null, specifiers)];
     }
   }
 }
 
 exports.__esModule = true;
-},{"../../../types":125}],93:[function(require,module,exports){
+},{"../../../types":125}],94:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9667,7 +9678,7 @@ function Program(program, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125}],94:[function(require,module,exports){
+},{"../../../types":125}],95:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9676,6 +9687,7 @@ var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? ob
 
 exports.ForOfStatement = ForOfStatement;
 exports.Property = Property;
+exports.BlockStatement = BlockStatement;
 
 var messages = _interopRequireWildcard(require("../../../messages"));
 
@@ -9705,8 +9717,21 @@ function Property(node, parent, scope, file) {
 }
 
 exports.MethodDefinition = Property;
+
+function BlockStatement(node) {
+  for (var i = 0; i < node.body.length; i++) {
+    var bodyNode = node.body[i];
+    if (t.isExpressionStatement(bodyNode) && t.isLiteral(bodyNode.expression)) {
+      bodyNode._blockHoist = Infinity;
+    } else {
+      return;
+    }
+  }
+}
+
+exports.Program = BlockStatement;
 exports.__esModule = true;
-},{"../../../messages":28,"../../../types":125}],95:[function(require,module,exports){
+},{"../../../messages":28,"../../../types":125}],96:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9722,7 +9747,7 @@ exports.Function = function (node, parent, scope, file) {
   return remapAsyncToGenerator(node, file.addHelper("async-to-generator"), scope);
 };
 exports.__esModule = true;
-},{"../../helpers/remap-async-to-generator":42,"./bluebird-coroutines":96}],96:[function(require,module,exports){
+},{"../../helpers/remap-async-to-generator":42,"./bluebird-coroutines":97}],97:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9746,7 +9771,7 @@ exports.Function = function (node, parent, scope, file) {
   return remapAsyncToGenerator(node, t.memberExpression(file.addImport("bluebird", null, true), t.identifier("coroutine")), scope);
 };
 exports.__esModule = true;
-},{"../../../types":125,"../../helpers/remap-async-to-generator":42}],97:[function(require,module,exports){
+},{"../../../types":125,"../../helpers/remap-async-to-generator":42}],98:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9793,7 +9818,7 @@ function ExportDeclaration(node) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125}],98:[function(require,module,exports){
+},{"../../../types":125}],99:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9824,7 +9849,7 @@ require("../../helpers/build-react-transformer")(exports, {
   }
 });
 exports.__esModule = true;
-},{"../../../types":125,"../../helpers/build-react-transformer":35,"../../helpers/react":40}],99:[function(require,module,exports){
+},{"../../../types":125,"../../helpers/build-react-transformer":35,"../../helpers/react":40}],100:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9876,7 +9901,7 @@ require("../../helpers/build-react-transformer")(exports, {
   }
 });
 exports.__esModule = true;
-},{"../../../types":125,"../../helpers/build-react-transformer":35,"../../helpers/react":40}],100:[function(require,module,exports){
+},{"../../../types":125,"../../helpers/build-react-transformer":35,"../../helpers/react":40}],101:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -9898,7 +9923,7 @@ var Program = exports.Program = {
   }
 };
 exports.__esModule = true;
-},{"../../../types":125,"regenerator-babel":296}],101:[function(require,module,exports){
+},{"../../../types":125,"regenerator-babel":296}],102:[function(require,module,exports){
 "use strict";
 
 var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { "default": obj }; };
@@ -9926,7 +9951,7 @@ var coreHas = function coreHas(node) {
   return node.name !== "_" && has(core, node.name);
 };
 
-var ALIASABLE_CONSTRUCTORS = ["Symbol", "Promise", "Map", "WeakMap", "Set", "WeakSet", "Number"];
+var ALIASABLE_CONSTRUCTORS = ["Symbol", "Promise", "Map", "WeakMap", "Set", "WeakSet"];
 
 var astVisitor = {
   enter: function enter(node, parent, scope, file) {
@@ -10009,7 +10034,7 @@ function Identifier(node, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125,"../../../util":127,"core-js/library":152,"lodash/collection/includes":181,"lodash/object/has":280}],102:[function(require,module,exports){
+},{"../../../types":125,"../../../util":127,"core-js/library":152,"lodash/collection/includes":181,"lodash/object/has":280}],103:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10049,7 +10074,7 @@ function CallExpression(node, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../../messages":28,"../../../types":125}],103:[function(require,module,exports){
+},{"../../../messages":28,"../../../types":125}],104:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10080,7 +10105,7 @@ build(exports, {
   }
 });
 exports.__esModule = true;
-},{"../../../messages":28,"../../../types":125,"../../helpers/build-conditional-assignment-operator-transformer":34}],104:[function(require,module,exports){
+},{"../../../messages":28,"../../../types":125,"../../helpers/build-conditional-assignment-operator-transformer":34}],105:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10113,7 +10138,7 @@ build(exports, {
   }
 });
 exports.__esModule = true;
-},{"../../../types":125,"../../helpers/build-conditional-assignment-operator-transformer":34}],105:[function(require,module,exports){
+},{"../../../types":125,"../../helpers/build-conditional-assignment-operator-transformer":34}],106:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10157,7 +10182,7 @@ function BindFunctionExpression(node, parent, scope) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125}],106:[function(require,module,exports){
+},{"../../../types":125}],107:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10203,7 +10228,7 @@ function MethodDefinition(node, parent, scope, file) {
 
 exports.Property = MethodDefinition;
 exports.__esModule = true;
-},{"../../../types":125}],107:[function(require,module,exports){
+},{"../../../types":125}],108:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10236,12 +10261,12 @@ function BlockStatement(node, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125}],108:[function(require,module,exports){
+},{"../../../types":125}],109:[function(require,module,exports){
 "use strict";
 
 exports.FunctionExpression = require("../../helpers/name-method").bare;
 exports.__esModule = true;
-},{"../../helpers/name-method":39}],109:[function(require,module,exports){
+},{"../../helpers/name-method":39}],110:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10313,33 +10338,7 @@ function ObjectExpression(node, parent, scope, file) {
 }
 
 exports.__esModule = true;
-},{"../../../types":125,"lodash/array/pull":175}],110:[function(require,module,exports){
-"use strict";
-
-var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
-
-exports.UnaryExpression = UnaryExpression;
-
-var t = _interopRequire(require("../../../types"));
-
-var optional = exports.optional = true;
-
-function UnaryExpression(node, parent, scope, file) {
-  this.skip();
-
-  if (node.operator === "typeof") {
-    var call = t.callExpression(file.addHelper("typeof"), [node.argument]);
-    if (t.isIdentifier(node.argument)) {
-      var undefLiteral = t.literal("undefined");
-      return t.conditionalExpression(t.binaryExpression("===", t.unaryExpression("typeof", node.argument), undefLiteral), undefLiteral, call);
-    } else {
-      return call;
-    }
-  }
-}
-
-exports.__esModule = true;
-},{"../../../types":125}],111:[function(require,module,exports){
+},{"../../../types":125,"lodash/array/pull":175}],111:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10639,6 +10638,8 @@ var flatten = _interopRequire(require("lodash/array/flatten"));
 
 var compact = _interopRequire(require("lodash/array/compact"));
 
+var t = _interopRequire(require("../types"));
+
 var TraversalContext = (function () {
   function TraversalContext(scope, opts, state, parentPath) {
     _classCallCheck(this, TraversalContext);
@@ -10681,7 +10682,7 @@ var TraversalContext = (function () {
     if (this.shouldFlatten) {
       node[key] = flatten(node[key]);
 
-      if (key === "body" || key === "expressions") {
+      if (t.FLATTENABLE_KEYS.indexOf(key) >= 0) {
         // we can safely compact this
         node[key] = compact(node[key]);
       }
@@ -10692,7 +10693,7 @@ var TraversalContext = (function () {
 })();
 
 module.exports = TraversalContext;
-},{"./path":121,"lodash/array/compact":172,"lodash/array/flatten":173}],120:[function(require,module,exports){
+},{"../types":125,"./path":121,"lodash/array/compact":172,"lodash/array/flatten":173}],120:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -10903,7 +10904,6 @@ var TraversalPath = (function () {
   };
 
   TraversalPath.prototype.setContext = function setContext(parentPath, context, key) {
-    this.shouldRemove = false;
     this.shouldSkip = false;
     this.shouldStop = false;
 
@@ -10917,8 +10917,9 @@ var TraversalPath = (function () {
   };
 
   TraversalPath.prototype.remove = function remove() {
-    this.shouldRemove = true;
-    this.shouldSkip = true;
+    this._refresh(this.node, []);
+    this.container[this.key] = null;
+    this.flatten();
   };
 
   TraversalPath.prototype.skip = function skip() {
@@ -10934,6 +10935,13 @@ var TraversalPath = (function () {
     this.context.flatten();
   };
 
+  TraversalPath.prototype._refresh = function _refresh(oldNode, newNodes) {};
+
+  TraversalPath.prototype.refresh = function refresh() {
+    var node = this.node;
+    this._refresh(node, [node]);
+  };
+
   TraversalPath.prototype.call = function call(key) {
     var node = this.node;
     if (!node) return;
@@ -10946,11 +10954,6 @@ var TraversalPath = (function () {
 
     if (replacement) {
       this.node = replacement;
-    }
-
-    if (this.shouldRemove) {
-      this.container[this.key] = null;
-      this.flatten();
     }
   };
 
@@ -10971,16 +10974,17 @@ var TraversalPath = (function () {
     var node = this.node;
     var opts = this.opts;
 
-    if (Array.isArray(node)) {
-      // traverse over these replacement nodes we purposely don't call exitNode
-      // as the original node has been destroyed
-      for (var i = 0; i < node.length; i++) {
-        traverse.node(node[i], opts, this.scope, this.state, this);
+    if (node) {
+      if (Array.isArray(node)) {
+        // traverse over these replacement nodes we purposely don't call exitNode
+        // as the original node has been destroyed
+        for (var i = 0; i < node.length; i++) {
+          traverse.node(node[i], opts, this.scope, this.state, this);
+        }
+      } else {
+        traverse.node(node, opts, this.scope, this.state, this);
+        this.call("exit");
       }
-    } else {
-      traverse.node(node, opts, this.scope, this.state, this);
-
-      this.call("exit");
     }
 
     return this.shouldStop;
@@ -11012,25 +11016,29 @@ var TraversalPath = (function () {
         return this.container[this.key];
       },
       set: function (replacement) {
+        if (!replacement) return this.remove();
+
+        var oldNode = this.node;
         var isArray = Array.isArray(replacement);
+        var replacements = isArray ? replacement : [replacement];
 
         // inherit comments from original node to the first replacement node
-        var inheritTo = replacement;
-        if (isArray) inheritTo = replacement[0];
-        if (inheritTo) t.inheritsComments(inheritTo, this.node);
+        var inheritTo = replacements[0];
+        if (inheritTo) t.inheritsComments(inheritTo, oldNode);
 
         // replace the node
         this.container[this.key] = replacement;
+
+        // potentially create new scope
         this.setScope();
+
+        // refresh scope with new/removed bindings
+        this._refresh(oldNode, replacements);
 
         var file = this.scope && this.scope.file;
         if (file) {
-          if (isArray) {
-            for (var i = 0; i < replacement.length; i++) {
-              file.checkNode(replacement[i], this.scope);
-            }
-          } else {
-            file.checkNode(replacement, this.scope);
+          for (var i = 0; i < replacements.length; i++) {
+            file.checkNode(replacements[i], this.scope);
           }
         }
 
@@ -11042,6 +11050,7 @@ var TraversalPath = (function () {
           }
 
           this.flatten();
+          // TODO: duplicate internal path metadata across the new node paths
         }
       },
       configurable: true
@@ -11062,6 +11071,8 @@ for (var i = 0; i < t.TYPES.length; i++) {
     };
   })();
 }
+
+// todo
 },{"../types":125,"./index":120,"./scope":122,"lodash/collection/includes":181}],122:[function(require,module,exports){
 "use strict";
 
@@ -11145,11 +11156,6 @@ var Scope = (function () {
   /**
    * This searches the current "scope" and collects all references/bindings
    * within.
-   *
-   * @param {Node} block
-   * @param {Node} parentBlock
-   * @param {Scope} [parent]
-   * @param {File} [file]
    */
 
   function Scope(block, parentBlock, parent, file) {
@@ -11165,14 +11171,10 @@ var Scope = (function () {
   }
 
   Scope.globals = flatten([globals.builtin, globals.browser, globals.node].map(Object.keys));
-  Scope.contextVariables = ["this", "arguments"];
+  Scope.contextVariables = ["this", "arguments", "super"];
 
   /**
    * Description
-   *
-   * @param {Object} node
-   * @param {Object} opts
-   * @param [state]
    */
 
   Scope.prototype.traverse = (function (_traverse) {
@@ -11191,12 +11193,12 @@ var Scope = (function () {
 
   /**
    * Description
-   *
-   * @param {String} [name="temp"]
    */
 
-  Scope.prototype.generateTemp = function generateTemp(name) {
-    var id = this.generateUidIdentifier(name || "temp");
+  Scope.prototype.generateTemp = function generateTemp() {
+    var name = arguments[0] === undefined ? "temp" : arguments[0];
+
+    var id = this.generateUidIdentifier(name);
     this.push({
       key: id.name,
       id: id
@@ -11206,8 +11208,6 @@ var Scope = (function () {
 
   /**
    * Description
-   *
-   * @param {String} name
    */
 
   Scope.prototype.generateUidIdentifier = function generateUidIdentifier(name) {
@@ -11218,8 +11218,6 @@ var Scope = (function () {
 
   /**
    * Description
-   *
-   * @param {String} name
    */
 
   Scope.prototype.generateUid = function generateUid(name) {
@@ -11242,9 +11240,6 @@ var Scope = (function () {
 
   /*
    * Description
-   *
-   * @param {Object} parent
-   * @returns {Object}
    */
 
   Scope.prototype.generateUidBasedOnNode = function generateUidBasedOnNode(parent) {
@@ -11293,9 +11288,6 @@ var Scope = (function () {
 
   /**
    * Description
-   *
-   * @param {Object} node
-   * @returns {Object}
    */
 
   Scope.prototype.generateTempBasedOnNode = function generateTempBasedOnNode(node) {
@@ -11311,6 +11303,10 @@ var Scope = (function () {
     return id;
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.checkBlockScopedCollisions = function checkBlockScopedCollisions(kind, name, id) {
     var local = this.getOwnBindingInfo(name);
     if (!local) return;
@@ -11322,6 +11318,10 @@ var Scope = (function () {
       throw this.file.errorWithNode(id, messages.get("scopeDuplicateDeclaration", name), TypeError);
     }
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.rename = function rename(oldName, newName) {
     if (!newName) newName = this.generateUidIdentifier(oldName).name;
@@ -11349,11 +11349,15 @@ var Scope = (function () {
       }
     });
 
-    this.clearOwnBinding(oldName);
+    scope.removeOwnBinding(oldName);
     scope.bindings[newName] = info;
 
     binding.name = newName;
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.inferType = function inferType(node) {
     var target;
@@ -11387,6 +11391,10 @@ var Scope = (function () {
     }
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.isTypeGeneric = function isTypeGeneric(name, genericName) {
     var info = this.getBindingInfo(name);
     if (!info) return false;
@@ -11395,9 +11403,17 @@ var Scope = (function () {
     return t.isGenericTypeAnnotation(type) && t.isIdentifier(type.id, { name: genericName });
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.assignTypeGeneric = function assignTypeGeneric(name, type) {
     this.assignType(name, t.genericTypeAnnotation(t.identifier(type)));
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.assignType = function assignType(name, type) {
     var info = this.getBindingInfo(name);
@@ -11406,7 +11422,11 @@ var Scope = (function () {
     info.typeAnnotation = type;
   };
 
-  Scope.prototype.getTypeAnnotation = function getTypeAnnotation(name, id, node) {
+  /**
+   * Description
+   */
+
+  Scope.prototype.getTypeAnnotation = function getTypeAnnotation(id, node) {
     var info = {
       annotation: null,
       inferred: false
@@ -11430,6 +11450,10 @@ var Scope = (function () {
 
     return info;
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.toArray = function toArray(node, i) {
     var file = this.file;
@@ -11457,9 +11481,23 @@ var Scope = (function () {
     return t.callExpression(file.addHelper(helperName), args);
   };
 
-  Scope.prototype.clearOwnBinding = function clearOwnBinding(name) {
-    delete this.bindings[name];
+  /**
+   * Description
+   */
+
+  Scope.prototype.refreshDeclaration = function refreshDeclaration(node) {
+    if (t.isBlockScoped(node)) {
+      this.getBlockParent().registerDeclaration(node);
+    } else if (t.isVariableDeclaration(node, { kind: "var" })) {
+      this.getFunctionParent().registerDeclaration(node);
+    } else if (node === this.block) {
+      this.recrawl();
+    }
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.registerDeclaration = function registerDeclaration(node) {
     if (t.isFunctionDeclaration(node)) {
@@ -11477,6 +11515,10 @@ var Scope = (function () {
     }
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.registerBindingReassignment = function registerBindingReassignment(node) {
     var ids = t.getBindingIdentifiers(node);
     for (var name in ids) {
@@ -11492,6 +11534,10 @@ var Scope = (function () {
     }
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.registerBinding = function registerBinding(kind, node) {
     if (!kind) throw new ReferenceError("no `kind`");
 
@@ -11502,7 +11548,7 @@ var Scope = (function () {
 
       this.checkBlockScopedCollisions(kind, name, id);
 
-      var typeInfo = this.getTypeAnnotation(name, id, node);
+      var typeInfo = this.getTypeAnnotation(id, node);
 
       this.bindings[name] = {
         typeAnnotationInferred: typeInfo.inferred,
@@ -11516,16 +11562,17 @@ var Scope = (function () {
     }
   };
 
-  Scope.prototype.registerVariableDeclaration = function registerVariableDeclaration(declar) {
-    var declars = declar.declarations;
-    for (var i = 0; i < declars.length; i++) {
-      this.registerBinding(declar.kind, declars[i]);
-    }
-  };
+  /**
+   * Description
+   */
 
   Scope.prototype.addGlobal = function addGlobal(node) {
     this.globals[node.name] = node;
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.hasGlobal = function hasGlobal(name) {
     var scope = this;
@@ -11536,6 +11583,19 @@ var Scope = (function () {
 
     return false;
   };
+
+  /**
+   * Description
+   */
+
+  Scope.prototype.recrawl = function recrawl() {
+    this.block._scopeInfo = null;
+    this.crawl();
+  };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.crawl = function crawl() {
     var block = this.block;
@@ -11575,6 +11635,12 @@ var Scope = (function () {
       if (!t.isProperty(this.parentBlock, { method: true })) {
         this.registerBinding("var", block.id);
       }
+    }
+
+    // Class
+
+    if (t.isClass(block) && block.id) {
+      this.registerBinding("var", block.id);
     }
 
     // Function - params, rest
@@ -11622,8 +11688,6 @@ var Scope = (function () {
 
   /**
    * Description
-   *
-   * @param {Object} opts
    */
 
   Scope.prototype.push = function push(opts) {
@@ -11638,7 +11702,7 @@ var Scope = (function () {
       var _block = block;
       if (!_block._declarations) _block._declarations = {};
 
-      block._declarations[opts.key] = {
+      block._declarations[opts.key || opts.id.name] = {
         kind: opts.kind || "var",
         id: opts.id,
         init: opts.init
@@ -11662,9 +11726,20 @@ var Scope = (function () {
   };
 
   /**
+   * Walk up the scope tree until we hit either a BlockStatement/Loop or reach the
+   * very top and hit Program.
+   */
+
+  Scope.prototype.getBlockParent = function getBlockParent() {
+    var scope = this;
+    while (scope.parent && !t.isFunction(scope.block) && !t.isLoop(scope.block) && !t.isFunction(scope.block)) {
+      scope = scope.parent;
+    }
+    return scope;
+  };
+
+  /**
    * Walks the scope tree and gathers **all** bindings.
-   *
-   * @returns {Object}
    */
 
   Scope.prototype.getAllBindings = function getAllBindings() {
@@ -11681,9 +11756,6 @@ var Scope = (function () {
 
   /**
    * Walks the scope tree and gathers all declarations of `kind`.
-   *
-   * @param {String} kind
-   * @returns {Object}
    */
 
   Scope.prototype.getAllBindingsOfKind = function getAllBindingsOfKind(kind) {
@@ -11701,13 +11773,17 @@ var Scope = (function () {
     return ids;
   };
 
-  // misc
+  /**
+   * Description
+   */
 
   Scope.prototype.bindingIdentifierEquals = function bindingIdentifierEquals(name, node) {
     return this.getBindingIdentifier(name) === node;
   };
 
-  // get
+  /**
+   * Description
+   */
 
   Scope.prototype.getBindingInfo = function getBindingInfo(name) {
     var scope = this;
@@ -11718,23 +11794,43 @@ var Scope = (function () {
     } while (scope = scope.parent);
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.getOwnBindingInfo = function getOwnBindingInfo(name) {
     return this.bindings[name];
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.getBindingIdentifier = function getBindingIdentifier(name) {
     var info = this.getBindingInfo(name);
     return info && info.identifier;
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.getOwnBindingIdentifier = function getOwnBindingIdentifier(name) {
     var binding = this.bindings[name];
     return binding && binding.identifier;
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.getOwnImmutableBindingValue = function getOwnImmutableBindingValue(name) {
     return this._immutableBindingInfoToValue(this.getOwnBindingInfo(name));
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.getImmutableBindingValue = function getImmutableBindingValue(name) {
     return this._immutableBindingInfoToValue(this.getBindingInfo(name));
@@ -11762,11 +11858,17 @@ var Scope = (function () {
     }
   };
 
-  // has
+  /**
+   * Description
+   */
 
   Scope.prototype.hasOwnBinding = function hasOwnBinding(name) {
     return !!this.getOwnBindingInfo(name);
   };
+
+  /**
+   * Description
+   */
 
   Scope.prototype.hasBinding = function hasBinding(name) {
     if (!name) return false;
@@ -11777,8 +11879,29 @@ var Scope = (function () {
     return false;
   };
 
+  /**
+   * Description
+   */
+
   Scope.prototype.parentHasBinding = function parentHasBinding(name) {
     return this.parent && this.parent.hasBinding(name);
+  };
+
+  /**
+   * Description
+   */
+
+  Scope.prototype.removeOwnBinding = function removeOwnBinding(name) {
+    this.bindings[name] = null;
+  };
+
+  /**
+   * Description
+   */
+
+  Scope.prototype.removeBinding = function removeBinding(name) {
+    var info = this.getBindingInfo(name);
+    if (info) info.scope.removeOwnBinding(name);
   };
 
   return Scope;
@@ -11813,7 +11936,7 @@ module.exports={
   "ImportSpecifier": ["ModuleSpecifier"],
   "ExportSpecifier": ["ModuleSpecifier"],
 
-  "BlockStatement": ["Statement", "Scopable"],
+  "BlockStatement": ["Scopable", "Statement"],
   "Program":        ["Scopable"],
   "CatchClause":    ["Scopable"],
 
@@ -11824,8 +11947,8 @@ module.exports={
   "SpreadProperty":  ["UnaryLike"],
   "SpreadElement":   ["UnaryLike"],
 
-  "ClassDeclaration": ["Statement", "Declaration", "Class"],
-  "ClassExpression":  ["Class", "Expression"],
+  "ClassDeclaration": ["Scopable", "Class", "Statement", "Declaration"],
+  "ClassExpression":  ["Scopable", "Class", "Expression"],
 
   "ForOfStatement": ["Scopable", "Statement", "For", "Loop"],
   "ForInStatement": ["Scopable", "Statement", "For", "Loop"],
@@ -12117,9 +12240,6 @@ module.exports = t;
 /**
  * Registers `is[Type]` and `assert[Type]` generated functions for a given `type`.
  * Pass `skipAliasCheck` to force it to directly compare `node.type` with `type`.
- *
- * @param {String} type
- * @param {Boolean?} skipAliasCheck
  */
 
 function registerType(type, skipAliasCheck) {
@@ -12138,6 +12258,7 @@ function registerType(type, skipAliasCheck) {
 
 t.STATEMENT_OR_BLOCK_KEYS = ["consequent", "body", "alternate"];
 t.NATIVE_TYPE_NAMES = ["Array", "Object", "Number", "Boolean", "Date", "Array", "String"];
+t.FLATTENABLE_KEYS = ["body", "expressions"];
 t.FOR_INIT_KEYS = ["left", "init"];
 
 t.VISITOR_KEYS = require("./visitor-keys");
@@ -12170,12 +12291,6 @@ t.TYPES = Object.keys(t.VISITOR_KEYS).concat(Object.keys(t.FLIPPED_ALIAS_KEYS));
  *
  * For better performance, use this instead of `is[Type]` when `type` is unknown.
  * Optionally, pass `skipAliasCheck` to directly compare `node.type` with `type`.
- *
- * @param {String} type
- * @param {Node} node
- * @param {Object?} opts
- * @param {Boolean?} skipAliasCheck
- * @returns {Boolean} isOfType
  */
 
 t.is = function (type, node, opts, skipAliasCheck) {
@@ -12236,9 +12351,6 @@ each(t.BUILDER_KEYS, function (keys, type) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Object}
  */
 
 t.toComputedKey = function (node, key) {
@@ -12255,9 +12367,6 @@ t.toComputedKey = function (node, key) {
  * declarations hoisted to the top of the current scope.
  *
  * Expression statements are just resolved to their standard expression.
- *
- * @param {Array} nodes
- * @param {Scope} scope
  */
 
 t.toSequenceExpression = function (nodes, scope) {
@@ -12289,10 +12398,6 @@ t.toSequenceExpression = function (nodes, scope) {
 
 /*
  * Description
- *
- * @param {Object} actual
- * @param {Object} expected
- * @returns {Boolean}
  */
 
 t.shallowEqual = function (actual, expected) {
@@ -12311,11 +12416,6 @@ t.shallowEqual = function (actual, expected) {
 
 /**
  * Description
- *
- * @param {Object} member
- * @param {Object} append
- * @param {Boolean} [computed]
- * @returns {Object} member
  */
 
 t.appendToMemberExpression = function (member, append, computed) {
@@ -12327,10 +12427,6 @@ t.appendToMemberExpression = function (member, append, computed) {
 
 /**
  * Description
- *
- * @param {Object} member
- * @param {Object} append
- * @returns {Object} member
  */
 
 t.prependToMemberExpression = function (member, append) {
@@ -12340,10 +12436,6 @@ t.prependToMemberExpression = function (member, append) {
 
 /**
  * Check if the input `node` is a reference to a bound variable.
- *
- * @param {Object} node
- * @param {Object} parent
- * @returns {Boolean}
  */
 
 t.isReferenced = function (node, parent) {
@@ -12450,10 +12542,6 @@ t.isReferenced = function (node, parent) {
 
 /**
  * Check if the input `node` is an `Identifier` and `isReferenced`.
- *
- * @param {Node} node
- * @parma {Node} parent
- * @returns {Boolean}
  */
 
 t.isReferencedIdentifier = function (node, parent, opts) {
@@ -12463,9 +12551,6 @@ t.isReferencedIdentifier = function (node, parent, opts) {
 /**
  * Check if the input `name` is a valid identifier name
  * and isn't a reserved word.
- *
- * @param {String} name
- * @returns {Boolean}
  */
 
 t.isValidIdentifier = function (name) {
@@ -12474,9 +12559,6 @@ t.isValidIdentifier = function (name) {
 
 /*
  * Description
- *
- * @param {String} name
- * @returns {String}
  */
 
 t.toIdentifier = function (name) {
@@ -12504,22 +12586,16 @@ t.toIdentifier = function (name) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @param {String=} key
  */
 
-t.ensureBlock = function (node, key) {
-  if (!key) key = "body";
+t.ensureBlock = function (node) {
+  var key = arguments[1] === undefined ? "body" : arguments[1];
 
   return node[key] = t.toBlock(node[key], node);
 };
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Object}
  */
 
 t.clone = function (node) {
@@ -12533,9 +12609,6 @@ t.clone = function (node) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Object}
  */
 
 t.cloneDeep = function (node) {
@@ -12566,10 +12639,6 @@ t.cloneDeep = function (node) {
  *
  * For example, given the match `React.createClass` it would match the
  * parsed nodes of `React.createClass` and `React["createClass"]`.
- *
- * @param {String} match Dot-delimited string
- * @param {Boolean} [allowPartial] Allow a partial match
- * @returns {Function}
  */
 
 t.buildMatchMemberExpression = function (match, allowPartial) {
@@ -12622,8 +12691,6 @@ t.buildMatchMemberExpression = function (match, allowPartial) {
 /**
  * Description
  *
- * @param {Object} node
- * @param {Boolean} [ignore]
  * @returns {Object|Boolean}
  */
 
@@ -12664,9 +12731,6 @@ t.toStatement = function (node, ignore) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Object}
  */
 
 t.toExpression = function (node) {
@@ -12689,10 +12753,6 @@ t.toExpression = function (node) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @param {Object} parent
- * @returns {Object}
  */
 
 t.toBlock = function (node, parent) {
@@ -12722,9 +12782,6 @@ t.toBlock = function (node, parent) {
 /**
  * Return a list of binding identifiers associated with
  * the input `node`.
- *
- * @param {Object} node
- * @returns {Array|Object}
  */
 
 t.getBindingIdentifiers = function (node) {
@@ -12762,7 +12819,9 @@ t.getBindingIdentifiers.keys = {
   ImportBatchSpecifier: ["name"],
   VariableDeclarator: ["id"],
   FunctionDeclaration: ["id"],
+  FunctionExpression: ["id"],
   ClassDeclaration: ["id"],
+  ClassExpression: ["id"],
   SpreadElement: ["argument"],
   RestElement: ["argument"],
   UpdateExpression: ["argument"],
@@ -12780,9 +12839,6 @@ t.getBindingIdentifiers.keys = {
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Boolean}
  */
 
 t.isLet = function (node) {
@@ -12791,9 +12847,6 @@ t.isLet = function (node) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Boolean}
  */
 
 t.isBlockScoped = function (node) {
@@ -12802,9 +12855,6 @@ t.isBlockScoped = function (node) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Boolean}
  */
 
 t.isVar = function (node) {
@@ -12817,9 +12867,6 @@ t.COMMENT_KEYS = ["leadingComments", "trailingComments"];
 
 /**
  * Description
- *
- * @param {Object} child
- * @returns {Object} child
  */
 
 t.removeComments = function (child) {
@@ -12831,10 +12878,6 @@ t.removeComments = function (child) {
 
 /**
  * Description
- *
- * @param {Object} child
- * @param {Object} parent
- * @returns {Object} child
  */
 
 t.inheritsComments = function (child, parent) {
@@ -12846,10 +12889,6 @@ t.inheritsComments = function (child, parent) {
 
 /**
  * Description
- *
- * @param {Object} child
- * @param {Object} parent
- * @returns {Object} child
  */
 
 t.inherits = function (child, parent) {
@@ -12869,9 +12908,6 @@ t.inherits = function (child, parent) {
 
 /**
  * Description
- *
- * @param {Object} node
- * @returns {Array}
  */
 
 t.getLastStatements = function (node) {
@@ -12897,9 +12933,6 @@ t.getLastStatements = function (node) {
 
 /**
  * Description
- *
- * @param {Object} specifier
- * @returns {String}
  */
 
 t.getSpecifierName = function (specifier) {
@@ -12908,9 +12941,6 @@ t.getSpecifierName = function (specifier) {
 
 /**
  * Description
- *
- * @param {Object} specifier
- * @returns {String}
  */
 
 t.getSpecifierId = function (specifier) {
@@ -12923,9 +12953,6 @@ t.getSpecifierId = function (specifier) {
 
 /**
  * Description
- *
- * @param {Object} specifier
- * @returns {Boolean}
  */
 
 t.isSpecifierDefault = function (specifier) {
@@ -12934,10 +12961,6 @@ t.isSpecifierDefault = function (specifier) {
 
 /**
  * Description
- *
- * @param {Node} node
- * @param {Node} parent
- * @returns {Boolean}
  */
 
 t.isScope = function (node, parent) {
@@ -12956,9 +12979,6 @@ t.isScope = function (node, parent) {
 
 /**
  * Description
- *
- * @param {Node} node
- * @returns {Boolean}
  */
 
 t.isImmutable = function (node) {
@@ -12999,9 +13019,6 @@ t.isImmutable = function (node) {
  *
  *   if (!t.evaluateTruthy(node)) falsyLogic();
  *
- * @param {Node} node
- * @param {Scope} scope
- * @returns {Boolean}
  */
 
 t.evaluateTruthy = function (node, scope) {
@@ -13022,9 +13039,6 @@ t.evaluateTruthy = function (node, scope) {
  *   t.evaluate(parse("!true")) // { confident: true, value: false }
  *   t.evaluate(parse("foo + foo")) // { confident: false, value: undefined }
  *
- * @param {Node} node
- * @param {Scope} scope
- * @returns {Object}
  */
 
 t.evaluate = function (node, scope) {
@@ -13134,9 +13148,6 @@ t.evaluate = function (node, scope) {
 
 /**
  * Description
- *
- * @param value
- * @returns {Node}
  */
 
 t.valueToNode = function (value) {
@@ -30235,7 +30246,7 @@ function baseAssign(object, source, customizer) {
         value = object[key],
         result = customizer(value, source[key], key, object, source);
 
-    if ((result === result ? result !== value : value === value) ||
+    if ((result === result ? (result !== value) : (value === value)) ||
         (typeof value == 'undefined' && !(key in object))) {
       object[key] = result;
     }
@@ -31597,6 +31608,7 @@ function createAssigner(assigner) {
 module.exports = createAssigner;
 
 },{"./bindCallback":225,"./isIterateeCall":250}],234:[function(require,module,exports){
+(function (global){
 var createCtorWrapper = require('./createCtorWrapper');
 
 /**
@@ -31612,13 +31624,15 @@ function createBindWrapper(func, thisArg) {
   var Ctor = createCtorWrapper(func);
 
   function wrapper() {
-    return (this instanceof wrapper ? Ctor : func).apply(thisArg, arguments);
+    var fn = (this && this !== global && this instanceof wrapper) ? Ctor : func;
+    return fn.apply(thisArg, arguments);
   }
   return wrapper;
 }
 
 module.exports = createBindWrapper;
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./createCtorWrapper":236}],235:[function(require,module,exports){
 (function (global){
 var SetCache = require('./SetCache'),
@@ -31671,6 +31685,7 @@ function createCtorWrapper(Ctor) {
 module.exports = createCtorWrapper;
 
 },{"../lang/isObject":272,"./baseCreate":200}],237:[function(require,module,exports){
+(function (global){
 var arrayCopy = require('./arrayCopy'),
     composeArgs = require('./composeArgs'),
     composeArgsRight = require('./composeArgsRight'),
@@ -31769,14 +31784,17 @@ function createHybridWrapper(func, bitmask, thisArg, partials, holders, partials
     if (isAry && ary < args.length) {
       args.length = ary;
     }
-    return (this instanceof wrapper ? (Ctor || createCtorWrapper(func)) : func).apply(thisBinding, args);
+    var fn = (this && this !== global && this instanceof wrapper) ? (Ctor || createCtorWrapper(func)) : func;
+    return fn.apply(thisBinding, args);
   }
   return wrapper;
 }
 
 module.exports = createHybridWrapper;
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./arrayCopy":189,"./composeArgs":230,"./composeArgsRight":231,"./createCtorWrapper":236,"./reorder":256,"./replaceHolders":257}],238:[function(require,module,exports){
+(function (global){
 var createCtorWrapper = require('./createCtorWrapper');
 
 /** Used to compose bitmasks for wrapper metadata. */
@@ -31813,13 +31831,15 @@ function createPartialWrapper(func, bitmask, thisArg, partials) {
     while (argsLength--) {
       args[leftIndex++] = arguments[++argsIndex];
     }
-    return (this instanceof wrapper ? Ctor : func).apply(isBind ? thisArg : this, args);
+    var fn = (this && this !== global && this instanceof wrapper) ? Ctor : func;
+    return fn.apply(isBind ? thisArg : this, args);
   }
   return wrapper;
 }
 
 module.exports = createPartialWrapper;
 
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./createCtorWrapper":236}],239:[function(require,module,exports){
 var baseSetData = require('./baseSetData'),
     createBindWrapper = require('./createBindWrapper'),
@@ -32079,8 +32099,10 @@ function equalObjects(object, other, equalFunc, customizer, isWhere, stackA, sta
         othCtor = other.constructor;
 
     // Non `Object` object instances with different constructors are not equal.
-    if (objCtor != othCtor && ('constructor' in object && 'constructor' in other) &&
-        !(typeof objCtor == 'function' && objCtor instanceof objCtor && typeof othCtor == 'function' && othCtor instanceof othCtor)) {
+    if (objCtor != othCtor &&
+        ('constructor' in object && 'constructor' in other) &&
+        !(typeof objCtor == 'function' && objCtor instanceof objCtor &&
+          typeof othCtor == 'function' && othCtor instanceof othCtor)) {
       return false;
     }
   }
@@ -32335,7 +32357,7 @@ function isIterateeCall(value, index, object) {
   }
   if (prereq) {
     var other = object[index];
-    return value === value ? value === other : other !== other;
+    return value === value ? (value === other) : (other !== other);
   }
   return false;
 }
@@ -33599,7 +33621,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
         length = object.length;
   }
   if ((typeof Ctor == 'function' && Ctor.prototype === object) ||
-     (typeof object != 'function' && (length && isLength(length)))) {
+      (typeof object != 'function' && (length && isLength(length)))) {
     return shimKeys(object);
   }
   return isObject(object) ? nativeKeys(object) : [];
@@ -42701,7 +42723,7 @@ module.exports = function (str) {
 module.exports={
   "name": "babel",
   "description": "Turn ES6 code into readable vanilla ES5 with source maps",
-  "version": "4.7.3",
+  "version": "4.7.4",
   "author": {
     "name": "Sebastian McKenzie",
     "email": "sebmck@gmail.com"
@@ -42786,12 +42808,12 @@ module.exports={
     "rimraf": "^2.2.8",
     "uglify-js": "^2.4.16"
   },
-  "gitHead": "70967cf53cb4344fb27b0763140582dd57cf1508",
+  "gitHead": "b1252b865bb6de1817114d2a0c8f477c47783d1c",
   "bugs": {
     "url": "https://github.com/babel/babel/issues"
   },
-  "_id": "babel@4.7.3",
-  "_shasum": "5393b98d1108ddcf99ff663ba9f9116dc34cb6f8",
+  "_id": "babel@4.7.4",
+  "_shasum": "593de5b47e5b1f278594ec50e041a3dd5965554c",
   "_from": "babel@^4.3.0",
   "_npmVersion": "2.6.0",
   "_nodeVersion": "1.4.1",
@@ -42806,11 +42828,11 @@ module.exports={
     }
   ],
   "dist": {
-    "shasum": "5393b98d1108ddcf99ff663ba9f9116dc34cb6f8",
-    "tarball": "http://registry.npmjs.org/babel/-/babel-4.7.3.tgz"
+    "shasum": "593de5b47e5b1f278594ec50e041a3dd5965554c",
+    "tarball": "http://registry.npmjs.org/babel/-/babel-4.7.4.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/babel/-/babel-4.7.3.tgz"
+  "_resolved": "https://registry.npmjs.org/babel/-/babel-4.7.4.tgz"
 }
 
 },{}],323:[function(require,module,exports){
@@ -56302,6 +56324,8 @@ Object.keys(types).forEach(function(typeName) {
 },{"buffer":327}],374:[function(require,module,exports){
 "use strict";
 
+var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
+
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
@@ -56333,21 +56357,6 @@ var getLeadingSpaces = function (number, maxDigits) {
 var getSpaces = function (howMany) {
   return new Array(howMany + 1).join(" ");
 };
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-
-},{}],375:[function(require,module,exports){
-"use strict";
-
-var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _inherits = function (subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; };
-
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-
-var LinePrefix = require("./line-prefix.js").LinePrefix;
 
 var MarkedLinePrefix = exports.MarkedLinePrefix = (function (_LinePrefix) {
   function MarkedLinePrefix() {
@@ -56377,15 +56386,20 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 
-},{"./line-prefix.js":374}],376:[function(require,module,exports){
+},{}],375:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
-var expect = require("referee/lib/expect");
-var should = require("should");
-var assert = require("assert");
-var babel = require("babel"); // the es6 transpiler
+var expect = _interopRequire(require("referee/lib/expect"));
+
+var should = _interopRequire(require("should"));
+
+var assert = _interopRequire(require("assert"));
+
+var babel = _interopRequire(require("babel"));
+
+// the es6 transpiler
 
 var RuntimeError = _interopRequire(require("../runtime-error"));
 
@@ -56432,7 +56446,7 @@ function consumeMessage(messageData) {
 window.addEventListener("message", consumeMessage, false);
 
 
-},{"../runtime-error":377,"assert":325,"babel":1,"referee/lib/expect":352,"should":369}],377:[function(require,module,exports){
+},{"../runtime-error":376,"assert":325,"babel":1,"referee/lib/expect":352,"should":369}],376:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -56441,9 +56455,10 @@ var _classCallCheck = function (instance, Constructor) { if (!(instance instance
 
 var StackTrace = require("./stack-trace.js").StackTrace;
 
-var LinePrefix = require("./line-prefix.js").LinePrefix;
+var _linePrefixJs = require("./line-prefix.js");
 
-var MarkedLinePrefix = require("./marked-line-prefix.js").MarkedLinePrefix;
+var LinePrefix = _linePrefixJs.LinePrefix;
+var MarkedLinePrefix = _linePrefixJs.MarkedLinePrefix;
 
 var COLUMN_HIGHLIGHT_CHARACTER = "^";
 
@@ -56485,7 +56500,7 @@ var getSpaces = function (howMany) {
 };
 
 
-},{"./line-prefix.js":374,"./marked-line-prefix.js":375,"./stack-trace.js":378}],378:[function(require,module,exports){
+},{"./line-prefix.js":374,"./stack-trace.js":377}],377:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -56529,4 +56544,4 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 
-},{}]},{},[376]);
+},{}]},{},[375]);
