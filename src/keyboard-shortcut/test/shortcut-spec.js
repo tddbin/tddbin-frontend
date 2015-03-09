@@ -1,7 +1,7 @@
 'use strict';
 
 import assert from '../../_test-helper/assert';
-import {Shortcut} from '../shortcut';
+import Shortcut from '../shortcut';
 
 /*
 - helper function to create a shortcut instance

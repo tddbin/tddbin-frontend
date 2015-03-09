@@ -1,5 +1,5 @@
 import {toPrintableKeys} from '../src/keyboard-shortcut/util';
-import {Shortcut} from '../src/keyboard-shortcut/shortcut';
+import Shortcut from '../src/keyboard-shortcut/shortcut';
 
 var isMac = navigator.platform.indexOf('Mac') === 0;
 

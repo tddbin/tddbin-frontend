@@ -1,4 +1,4 @@
-export class Shortcut {
+export default class Shortcut {
 
   constructor(keys, fn, helpText) {
     this._keys = keys;
