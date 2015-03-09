@@ -1,7 +1,6 @@
 import assert from '../../_test-helper/assert';
 import Shortcut from '../shortcut';
 import ShortcutProcessor from '../shortcut-processor';
-import {keyboardEventUtil} from '../keyboard-event-util';
 import {browserEventUtil} from '../browser-event-util';
 import {KeyPressEmulation} from './util';
 
@@ -23,7 +22,7 @@ describe('a shortcut', function() {
       blurCallbacks.push(fn);
     });
 
-    keyPressEmulation = new KeyPressEmulation(keyboardEventUtil, this.sinon);
+    keyPressEmulation = new KeyPressEmulation(this.sinon);
 
     processor = new ShortcutProcessor();
     processor.registerShortcut(shortcut);

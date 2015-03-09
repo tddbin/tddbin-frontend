@@ -1,5 +1,7 @@
+import {keyboardEventUtil} from '../keyboard-event-util';
+
 export class KeyPressEmulation {
-  constructor(keyboardEventUtil, sinon) {
+  constructor(sinon) {
     this._keyDownListeners = [];
     this._keyUpListeners = [];
     sinon.stub(keyboardEventUtil, 'addKeyDownListener', (fn) => this._keyDownListeners.push(fn));
