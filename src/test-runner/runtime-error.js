@@ -1,6 +1,5 @@
 import {StackTrace} from './stack-trace.js';
-import {LinePrefix} from './line-prefix.js';
-import {MarkedLinePrefix} from './marked-line-prefix.js';
+import {LinePrefix, MarkedLinePrefix} from './line-prefix.js';
 
 const COLUMN_HIGHLIGHT_CHARACTER = '^';
 export default class RuntimeError {

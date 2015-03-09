@@ -1,5 +1,5 @@
 import {assert} from '../../_test-helper/assert';
-import {MarkedLinePrefix} from '../marked-line-prefix.js';
+import {MarkedLinePrefix} from '../line-prefix.js';
 
 describe('MarkedLinePrefix', () => {
 

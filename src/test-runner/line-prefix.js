@@ -15,3 +15,10 @@ const getLeadingSpaces = (number, maxDigits) => {
 const getSpaces = (howMany) => {
   return new Array(howMany + 1).join(' ');
 };
+
+export class MarkedLinePrefix extends LinePrefix {
+  static getPrefix() {
+    var defaultPrefix = LinePrefix.getPrefix(...arguments).substr(1);
+    return `>${defaultPrefix}`;
+  }
+}
