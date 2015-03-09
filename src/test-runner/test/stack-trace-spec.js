@@ -1,4 +1,4 @@
-import {assert} from '../../_test-helper/assert';
+import assert from '../../_test-helper/assert';
 import {StackTrace} from '../stack-trace';
 
 describe('StackTrace', function() {

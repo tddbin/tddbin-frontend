@@ -1,4 +1,4 @@
-import {assert} from '../../_test-helper/assert';
+import assert from '../../_test-helper/assert';
 import {LinePrefix} from '../line-prefix.js';
 
 describe('get a line prefix for pretty printing', function() { // there must be `function` here so we don't inherit `this` from global :)

@@ -1,14 +1,16 @@
 'use strict';
 
 import './sinon-cleanup';
-
 import nodeAssert from 'assert';
 import sinon from 'sinon';
 
-export var assert = {};
-for (var key in nodeAssert) {
-  assert[key] = nodeAssert[key];
-}
-for (var key in sinon.assert) {
-  assert[key] = sinon.assert[key];
-}
+const assignFunctionsTo = (fromObj, toObj) => {
+  Object.keys(fromObj)
+    .forEach((key) => toObj[key] = fromObj[key]);
+};
+
+var assert = {};
+assignFunctionsTo(nodeAssert, assert);
+assignFunctionsTo(sinon.assert, assert);
+
+export default assert;

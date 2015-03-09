@@ -1,4 +1,4 @@
-import {assert} from '../../_test-helper/assert';
+import assert from '../../_test-helper/assert';
 import RuntimeError from '../runtime-error';
 
 describe('runtime error', function() {

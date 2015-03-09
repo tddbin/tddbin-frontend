@@ -1,6 +1,6 @@
 'use strict';
 
-import {assert} from '../../_test-helper/assert';
+import assert from '../../_test-helper/assert';
 import {Shortcut} from '../shortcut';
 var ShortcutProcessor = require('../shortcut-processor');
 import {keyboardEventUtil} from '../keyboard-event-util';
