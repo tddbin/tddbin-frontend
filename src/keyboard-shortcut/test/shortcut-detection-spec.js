@@ -1,9 +1,9 @@
 import assert from '../../_test-helper/assert';
-import {Shortcut} from '../shortcut';
-var ShortcutProcessor = require('../shortcut-processor');
+import Shortcut from '../shortcut';
+import ShortcutProcessor from '../shortcut-processor';
 import {keyboardEventUtil} from '../keyboard-event-util';
 import {browserEventUtil} from '../browser-event-util';
-var util = require('./util');
+import {KeyPressEmulation} from './util';
 
 var noop = function() {};
 
@@ -23,7 +23,7 @@ describe('a shortcut', function() {
       blurCallbacks.push(fn);
     });
 
-    keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil, this.sinon);
+    keyPressEmulation = new KeyPressEmulation(keyboardEventUtil, this.sinon);
 
     processor = new ShortcutProcessor();
     processor.registerShortcut(shortcut);

@@ -1,16 +1,16 @@
 import assert from '../../_test-helper/assert';
-import {Shortcut} from '../shortcut';
-var ShortcutProcessor = require('../shortcut-processor');
+import Shortcut from '../shortcut';
+import ShortcutProcessor from '../shortcut-processor';
 import {keyboardEventUtil} from '../keyboard-event-util';
 import {browserEventUtil} from '../browser-event-util';
-var util = require('./util');
+import {KeyPressEmulation} from './util';
 
 describe('IE specifics', function() {
 
   var keyPressEmulation;
   beforeEach(function() {
     this.sinon.stub(browserEventUtil, 'onWindowBlur');
-    keyPressEmulation = new util.KeyPressEmulation(keyboardEventUtil, this.sinon);
+    keyPressEmulation = new KeyPressEmulation(keyboardEventUtil, this.sinon);
   });
 
   it('ignore multiple consecutive keydown-events for Control, Alt, etc.', function() {

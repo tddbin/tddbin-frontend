@@ -1,9 +1,9 @@
 import assert from '../../_test-helper/assert';
-import {Shortcut} from '../shortcut';
-var ShortcutProcessor = require('../shortcut-processor');
+import Shortcut from '../shortcut';
+import ShortcutProcessor from '../shortcut-processor';
 import {keyboardEventUtil} from '../keyboard-event-util';
 import {browserEventUtil} from '../browser-event-util';
-var util = require('./util');
+import {KeyPressEmulation} from './util';
 
 var noop = function() {};
 
@@ -12,7 +12,7 @@ describe('registering multiple shortcuts', function() {
     // TODO simplify the necessary mocking for every shortcut test
     //spyOn(browserEventUtil, 'onWindowBlur');
     this.sinon.stub(browserEventUtil, 'onWindowBlur');
-    new util.KeyPressEmulation(keyboardEventUtil, this.sinon);
+    new KeyPressEmulation(keyboardEventUtil, this.sinon);
     var processor = new ShortcutProcessor();
     this.sinon.stub(processor, 'registerShortcut');
 

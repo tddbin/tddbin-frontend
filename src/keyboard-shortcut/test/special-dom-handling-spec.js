@@ -1,6 +1,6 @@
 import assert from '../../_test-helper/assert';
-import {Shortcut} from '../shortcut';
-var ShortcutProcessor = require('../shortcut-processor');
+import Shortcut from '../shortcut';
+import ShortcutProcessor from '../shortcut-processor';
 import {keyboardEventUtil} from '../keyboard-event-util';
 import {browserEventUtil} from '../browser-event-util';
 

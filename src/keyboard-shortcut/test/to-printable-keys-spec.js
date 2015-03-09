@@ -1,8 +1,5 @@
 import assert from '../../_test-helper/assert';
-/*
-  - pre-process shortcuts into ui-shortcuts (or alike) where 'Meta' is replace by '⌘' etc.
- */
-var toPrintableKeys = require('../util').toPrintableKeys;
+import {toPrintableKeys} from '../util';
 
 var keyToSignMap = {
   Meta: 'Meta',
