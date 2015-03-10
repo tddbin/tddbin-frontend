@@ -40,6 +40,16 @@ Now you can
 and open the built version in the browser. Be sure to open the `dist` directory 
 through a URL served by a local web server, such as an apache, nginx, etc.
 
+## Using the katas service
+
+You don't need the [katas-service] to run locally, tddbin works also fully-functional without it.  
+All pre-built katas are hosted in [katas-service] repo. Which gets deployed to 
+http://katas.tddbin.com from where all the katas can be loaded and which can be updated
+independently, micro-service style :).   
+If you also want to use the [katas-service] locally, clone the repo and make it
+available so that the env variable `KATAS_SERVICE_DOMAIN` points to where to find the `proxy.html`
+served by the built katas-service.
+
 ## Coding style
 
 The coding style is checked by running `npm run lint` using [jsxcs] a JSX-enabled fork of 
