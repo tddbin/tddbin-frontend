@@ -1,5 +1,4 @@
 var $ = document.getElementById.bind(document);
-import {simplePassingTestCode} from './example-tests';
 import {Controller as Main} from '../src/main/main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
@@ -33,20 +32,17 @@ function getSourceCode() {
     return;
   }
 
-  var kataName = queryString.match(/kata=(\w+)/);
-  if (kataName && kataName.length === 2) {
-    var kataUrl = `http://katas.${document.domain}/katas/mocha+assert/assert-api.js`;
-    atomic.get(kataUrl)
-      .success(function(data) {
-        main.setEditorContent(data);
-      })
-      .error(function() {});
-  } else {
-    main.setEditorContent(simplePassingTestCode);
-  }
+  var kataUrl = getKataUrl();
+  atomic.get(kataUrl)
+    .success((data) => main.setEditorContent(data))
+    .error((e, xhr) => {
+      if (xhr.status === 404) {
+        main.setEditorContent(`// 404, Kata at "${kataUrl}" not found\n// Maybe try a different kata (see URL).`);
+      } else {
+        main.setEditorContent('// not kata found :(');
+      }
+    });
 }
-getSourceCode();
-
 
 function getTestRunner() {
   var validTestRunners = ['mocha', 'jasmine'];
@@ -56,3 +52,15 @@ function getTestRunner() {
   }
   return 'mocha';
 }
+
+const getKataUrl = () => {
+  var kataName = queryString.match(/kata=([^&]+)/);
+  if (kataName && kataName.length === 2) {
+    kataName = kataName[1];
+  } else {
+    kataName = 'es5/mocha+assert/assert-api';
+  }
+  return `http://katas.${document.domain}/katas/${kataName}.js`;
+};
+
+getSourceCode();
