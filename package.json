@@ -16,7 +16,7 @@
     "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
     "build-css": "./scripts/build/copy-media-files.sh",
     "lint": "jsxcs --preset google src",
-    "test": "mocha --compilers js:babel/register src/**/**/*spec.js"
+    "test": "mocha --compilers js:babel-core/register src/**/**/*spec.js"
   },
   "browserify": {
     "extension": [
