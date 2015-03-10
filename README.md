@@ -6,12 +6,11 @@
 
 # TDDbin.com Frontend
 
-This project contains all the UI stuff for [TDDbin](http://tddbin.com), it is runnable separately
+This project contains all the UI stuff for [TDDbin], it is runnable separately
 without any backend and aims to provide all components modularly.
 Please [get involved on trello][trello] and [vote][trello] or [add ideas, comments, etc.][trello].
 The highest ranked ideas will be the priority for us to implement.
 
-[trello]: https://trello.com/b/FW1gUVxe/tddbin-com
 
 # Development
 
@@ -36,17 +35,17 @@ Now you can
 - `export KATAS_SERVICE_DOMAIN=katas.service.domain.local`, the domain where to find the katas locally 
   (live it has this value `katas.tddbin.com`)
 - `npm run build` for the first time and
-- `npm start` starts [watchify](https://github.com/substack/watchify) which continuously updates the built files 
+- `npm start` starts [watchify] which continuously updates the built files 
 
 and open the built version in the browser. Be sure to open the `dist` directory 
 through a URL served by a local web server, such as an apache, nginx, etc.
 
 ## Coding style
 
-The coding style is checked by running `npm run lint` using [jsxcs](https://github.com/orktes/node-jsxcs) a JSX-enabled fork of 
-[jscs](https://github.com/jscs-dev/node-jscs).
-The applied style derives from the [google coding style](https://github.com/jscs-dev/node-jscs/blob/master/presets/google.json)
-as contained also in the [jscs project](https://github.com/jscs-dev/node-jscs).
+The coding style is checked by running `npm run lint` using [jsxcs] a JSX-enabled fork of 
+[jscs].
+The applied style derives from the [google coding style][1]
+as contained also in [jscs].
 
 ## How to contribute
 
@@ -75,15 +74,27 @@ Mocha is assertion API agnostic, it brings it's own assert() function by default
 By adding plugins various other styles can be provided. See below which ones come with it.
  
 #### Jasmine-style (currently not working, see code)
-It is enhanced with [referee](https://github.com/busterjs/referee), which provides jasmine-style expect methods.
+It is enhanced with [referee], which provides jasmine-style expect methods.
 The tests can be written the same way as with jasmine (for the biggest part) - at least
-all standard matchers are available, for details see [the docs](http://docs.busterjs.org/en/latest/modules/referee/#expectations).
+all standard matchers are available, for details see [the docs][2].
 
 #### Should-style
-Also should-style assertions can be used. Thanks to [Roman Liutikov](https://twitter.com/roman01la/status/496720629555798016)
-pointing that out, it was added. On how to use them see the [should.js documentation](https://github.com/visionmedia/should.js#assertions).
+Also should-style assertions can be used. Thanks to [Roman Liutikov][3]
+pointing that out, it was added. On how to use them see the [should.js documentation][4].
 
 ## Custom runner
 This architecture allows to add any kind of runner now.
 The easiest way for now is to duplicate the mocha runner and the example
 and get one up and file it as a pull request.
+
+[TDDbin]: http://tddbin.com
+[katas-service]: https://github.com/tddbin/katas-service
+[watchify]: https://github.com/substack/watchify
+[referee]: https://github.com/busterjs/referee
+[jscs]: https://github.com/jscs-dev/node-jscs
+[trello]: https://trello.com/b/FW1gUVxe/tddbin-com
+[jsxcs]: https://github.com/orktes/node-jsxcs
+[1]: https://github.com/jscs-dev/node-jscs/blob/master/presets/google.json
+[2]: http://docs.busterjs.org/en/latest/modules/referee/#expectations
+[3]: https://twitter.com/roman01la/status/496720629555798016
+[4]: https://github.com/visionmedia/should.js#assertions
