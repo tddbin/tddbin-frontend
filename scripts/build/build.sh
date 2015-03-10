@@ -16,6 +16,9 @@ mkdir -p $DIST_JASMINE_DIR;
 
 # copy html assets
 cp $ORIGIN_ROOT/html/index.html $DIST_ROOT;
+# replace place holder KATAS_SERVICE_DOMAIN with env var, so it can be different in dev/prod mode
+sed -i '' "s/\${KATAS_SERVICE_DOMAIN}/$KATAS_SERVICE_DOMAIN/g" $DIST_ROOT/index.html
+
 cp $ORIGIN_ROOT/html/favicon.ico $DIST_ROOT;
 cp $ORIGIN_ROOT/src/test-runner/mocha/spec-runner.html $DIST_MOCHA_DIR;
 cp $ORIGIN_ROOT/src/test-runner/jasmine/spec-runner.html $DIST_JASMINE_DIR;

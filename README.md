@@ -17,7 +17,9 @@ The highest ranked ideas will be the priority for us to implement.
 
 ## The short version
 
-Copy+paste into the shell: 
+In your shell: 
+- `export KATAS_SERVICE_DOMAIN=katas.service.domain.local`, the domain where to find the katas locally 
+  (is `katas.tddbin.com` when deployed)
 - `git clone git@github.com:tddbin/tddbin-frontend.git; cd tddbin-frontend; npm install; npm run build; npm start`  
 
 ## The long version
@@ -31,6 +33,8 @@ and do the following:
 - `npm test` runs all the tests of the project
 
 Now you can 
+- `export KATAS_SERVICE_DOMAIN=katas.service.domain.local`, the domain where to find the katas locally 
+  (live it has this value `katas.tddbin.com`)
 - `npm run build` for the first time and
 - `npm start` starts [watchify](https://github.com/substack/watchify) which continuously updates the built files 
 
