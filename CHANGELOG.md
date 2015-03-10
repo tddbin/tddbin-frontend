@@ -9,7 +9,7 @@
 - [ux] make a slow loading page not show the "oh, sorry" message  
 - [ux] store code in localstorage, and allow to reset it with new button (thx Matthieu for PR #1)
 - [ux] make ACE autocompletion work (load missing dependency) (use CTRL+Space for auto-completing)
-- enable use of katas from http://katas.tddbin.com, using [xdomain]
+- [ux] enable use of katas from http://katas.tddbin.com, using [xdomain]
 
 # 1.1.1  2015-03-05
 
