@@ -5,17 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "./scripts/build/build.sh",
-
     "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify",
     "watch-app": "watchify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify -v",
     "start": "npm run watch-app",
-
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=reactify --transform=babelify",
     "watch-jasmine-spec-runners": "watchify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=reactify --transform=babelify -v",
-
     "build-mocha-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify --transform=babelify",
     "watch-mocha-spec-runners": "watchify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify --transform=babelify -v",
-
     "build-spec-runners": "npm run build-mocha-spec-runners && npm run build-jasmine-spec-runners",
     "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
     "build-css": "./scripts/build/copy-media-files.sh",
@@ -51,12 +47,12 @@
     "reactify": "^1.0.0",
     "watchify": "^2.3.0",
     "referee": "^1.1.1",
-    "babel": "^4.3.0",
     "babelify": "^5.0.3",
     "react": "^0.13.0-rc2",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
     "should": "^5.0.1",
-    "atomic": "git+https://github.com/toddmotto/atomic.git"
+    "atomic": "git+https://github.com/toddmotto/atomic.git",
+    "babel-core": "^4.7.8"
   }
 }
