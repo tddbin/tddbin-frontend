@@ -42,10 +42,19 @@ through a URL served by a local web server, such as an apache, nginx, etc.
 
 ## Using the katas service
 
-You don't need the [katas-service] to run locally, tddbin works also fully-functional without it.  
 All pre-built katas are hosted in [katas-service] repo. Which gets deployed to 
 http://katas.tddbin.com from where all the katas can be loaded and which can be updated
 independently, micro-service style :).   
+
+### Do I need it?
+
+If you want to work on the katas-service repo and want to load the katas into 
+tddbin you might want to set up both repos to work with each other.  
+Other than that there is no real need to set up katas-service.
+
+### How to set it up
+
+You don't need the [katas-service] to run locally, tddbin works also fully-functional without it.  
 If you also want to use the [katas-service] locally, clone the repo and make it
 available so that the env variable `KATAS_SERVICE_DOMAIN` points to where to find the `proxy.html`
 served by the built katas-service.
