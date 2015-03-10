@@ -16,7 +16,7 @@
     "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
     "build-css": "./scripts/build/copy-media-files.sh",
     "lint": "jsxcs --preset google src",
-    "test": "mocha --compilers js:babel/register src/**/**/*spec.js"
+    "test": "mocha --compilers js:babel-core/register src/**/**/*spec.js"
   },
   "browserify": {
     "extension": [
@@ -47,13 +47,13 @@
     "reactify": "^1.0.0",
     "watchify": "^2.3.0",
     "referee": "^1.1.1",
-    "babel": "^4.3.0",
     "babelify": "^5.0.3",
     "react": "^0.13.0-rc2",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
     "should": "^5.0.1",
     "atomic": "git+https://github.com/toddmotto/atomic.git",
-    "envify": "^3.3.0"
+    "envify": "^3.3.0",
+    "babel-core": "^4.7.8"
   }
 }

@@ -1,11 +1,11 @@
 import expect from 'referee/lib/expect';
 import should from 'should';
 import assert from 'assert';
-import babel from 'babel'; // the es6 transpiler
+import {transform} from 'babel-core'; // the es6 transpiler
 import RuntimeError from '../runtime-error'
 
 function es6ToEs5(sourceCode) {
-  return babel.transform(sourceCode).code
+  return transform(sourceCode).code
 }
 
 function consumeMessage(messageData) {
