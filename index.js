@@ -1,6 +1,10 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _util = require("./_util");
 
 var getShortcutObject = _util.getShortcutObject;
@@ -10,9 +14,6 @@ var noop = function noop() {};
 
 var shortcuts = [getShortcutObject([metaKey, "D"], noop, "Delete line"), getShortcutObject([metaKey, "Z"], noop, "Undo"), getShortcutObject([metaKey, "Shift", "D"], noop, "Duplicate line"), getShortcutObject([metaKey, "Shift", "Z"], noop, "Redo"), getShortcutObject([metaKey, "/"], noop, "Comment in/out line")];
 exports.shortcuts = shortcuts;
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 //
 //getShortcutObject([metaKey, 'I', 'E'], noop, '???'),
@@ -24,6 +25,10 @@ Object.defineProperty(exports, "__esModule", {
 "use strict";
 
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var toPrintableKeys = require("../src/keyboard-shortcut/util").toPrintableKeys;
 
@@ -49,12 +54,14 @@ var getShortcutObject = function getShortcutObject(keys, fn, helpText) {
 exports.getShortcutObject = getShortcutObject;
 var metaKey = isMac ? "Meta" : "Control";
 exports.metaKey = metaKey;
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 
 },{"../src/keyboard-shortcut/shortcut":180,"../src/keyboard-shortcut/util":181}],3:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 "use strict";
 
 var simplePassingTestCode = [
@@ -105,9 +112,6 @@ function getSourceFrom(func) {
 
 var simpleFailingTestCode = getSourceFrom(simpleFailing);
 exports.simpleFailingTestCode = simpleFailingTestCode;
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 //'',
 //'class Es6Class {',
@@ -25870,6 +25874,9 @@ module.exports = Overlay;
 },{"react":175}],177:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var browserEventUtil = {
 
   onWindowBlur: function onWindowBlur(fn) {
@@ -25877,14 +25884,14 @@ var browserEventUtil = {
   }
 };
 exports.browserEventUtil = browserEventUtil;
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 
 },{}],178:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var keyboardEventUtil = {
 
   PREVENT_DEFAULT_ACTION: "preventDefault",
@@ -25932,9 +25939,6 @@ var getKeyNameFromEvent = function getKeyNameFromEvent(evt) {
   }
   return mapKeyCodeToReadable(evt.keyCode);
 };
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 
 },{}],179:[function(require,module,exports){
@@ -26144,15 +26148,15 @@ module.exports = Shortcut;
 },{}],181:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var toPrintableKeys = function toPrintableKeys(keys, map) {
   return keys.map(function (key) {
     return map[key] || key;
   });
 };
 exports.toPrintableKeys = toPrintableKeys;
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 
 },{}],182:[function(require,module,exports){
@@ -26161,6 +26165,9 @@ Object.defineProperty(exports, "__esModule", {
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 exports.Controller = Controller;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var React = _interopRequire(require("react"));
 
@@ -26254,9 +26261,6 @@ Controller.prototype = {
   }
 
 };
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 
 
 },{"../keyboard-shortcut/shortcut-processor":179,"../test-runner/runner":186,"./main-view":183,"ace-with-plugins":14,"react":175}],183:[function(require,module,exports){
