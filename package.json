@@ -5,17 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "./scripts/build/build.sh",
-
-    "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify",
-    "watch-app": "watchify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify -v",
+    "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify --transform=envify",
+    "watch-app": "watchify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify --transform=envify -v",
     "start": "npm run watch-app",
-
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=reactify --transform=babelify",
     "watch-jasmine-spec-runners": "watchify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=reactify --transform=babelify -v",
-
     "build-mocha-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify --transform=babelify",
     "watch-mocha-spec-runners": "watchify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=reactify --transform=babelify -v",
-
     "build-spec-runners": "npm run build-mocha-spec-runners && npm run build-jasmine-spec-runners",
     "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
     "build-css": "./scripts/build/copy-media-files.sh",
@@ -57,6 +53,7 @@
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
     "should": "^5.0.1",
-    "atomic": "git+https://github.com/toddmotto/atomic.git"
+    "atomic": "git+https://github.com/toddmotto/atomic.git",
+    "envify": "^3.3.0"
   }
 }

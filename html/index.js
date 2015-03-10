@@ -60,7 +60,7 @@ const getKataUrl = () => {
   } else {
     kataName = 'es5/mocha+assert/assert-api';
   }
-  return `http://katas.${document.domain}/katas/${kataName}.js`;
+  return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
 };
 
 getSourceCode();
