@@ -5,7 +5,7 @@ import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import atomic from 'atomic';
 atomic = atomic(window);
 
-const queryString = window.location.search;
+const queryString = window.location.hash.replace(/^#\?/, '');
 
 const shortcuts = aceDefaultShortcuts.concat([
   getShortcutObject([metaKey, 'S'], onSave, 'Save+Run'),
