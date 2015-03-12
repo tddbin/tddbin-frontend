@@ -8,8 +8,7 @@ atomic = atomic(window);
 const queryString = window.location.hash.replace(/^#\?/, '');
 
 const shortcuts = aceDefaultShortcuts.concat([
-  getShortcutObject([metaKey, 'S'], onSave, 'Save+Run'),
-  getShortcutObject(['Shift', 'F6'], refactoringRename, 'Rename (refactoring)')
+  getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
 ]);
 
 var main = new Main($('tddbin'), {
@@ -21,9 +20,6 @@ function onSave() {
   main.onSave();
 }
 
-function refactoringRename() {
-  main.turnOnRenameMode();
-}
 function getSourceCode() {
 
   var sourceCode = localStorage.getItem('code');
