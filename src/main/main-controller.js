@@ -55,10 +55,6 @@ Controller.prototype = {
     this._runner.send(this._editor.getContent());
   },
 
-  turnOnRenameMode: function() {
-    this._editor.turnOnRenameMode();
-  },
-
   _registerShortcuts: function(shortcuts) {
     var processor = new ShortcutProcessor();
     processor.registerShortcuts(shortcuts);
