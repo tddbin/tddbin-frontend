@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "./scripts/build/build.sh",
+    "build-offline-dev": "./scripts/build/build.sh; ./scripts/build/build-offline-dev.sh",
     "build-app": "browserify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify --transform=envify",
     "watch-app": "watchify html/index.js --outfile=dist/index.js --transform=reactify --transform=babelify --transform=envify -v",
     "start": "npm run watch-app",
