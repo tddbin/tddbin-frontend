@@ -42881,6 +42881,7 @@ module.exports={
     "shasum": "7eee53b6e3c15aa75bbed60ce55cc34354b1a1a1",
     "tarball": "http://registry.npmjs.org/babel-core/-/babel-core-4.7.8.tgz"
   },
+  "directories": {},
   "_resolved": "https://registry.npmjs.org/babel-core/-/babel-core-4.7.8.tgz"
 }
 

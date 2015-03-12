@@ -105,7 +105,7 @@ var getSourceCode = function () {
 
 var withKataSourceCode = function (sourceCode) {
   main.setEditorContent(sourceCode);
-  onSave();
+  setTimeout(onSave, 1000);
 };
 
 var loadDefaultKata = function (onLoaded) {
