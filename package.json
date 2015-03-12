@@ -20,12 +20,9 @@
     "test": "mocha --compilers js:babel-core/register src/**/**/*spec.js"
   },
   "browserify": {
-    "extension": [
-      "jsx"
-    ],
+    "extension": [],
     "transform": [
       [
-        "reactify",
         "babelify"
       ]
     ]
