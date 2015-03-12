@@ -22,28 +22,34 @@ const getSourceCode = () => {
   var kataUrl = getKataUrl();
   var sourceCode = localStorage.getItem('code');
   if (kataUrl) {
-    loadKataFromUrl(kataUrl);
+    loadKataFromUrl(kataUrl, withKataSourceCode);
   } else if (sourceCode) {
-    main.setEditorContent(sourceCode);
+    withKataSourceCode(sourceCode);
   } else {
-    loadDefaultKata();
+    loadDefaultKata(withKataSourceCode);
   }
+  window.location.hash = window.location.hash.replace(/kata=([^&]+)/, '');
 };
 
-const loadDefaultKata = () => {
+const withKataSourceCode = (sourceCode) => {
+  main.setEditorContent(sourceCode);
+  onSave();
+};
+
+const loadDefaultKata = (onLoaded) => {
   const kataName = 'es5/mocha+assert/assert-api';
   const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
-  loadKataFromUrl(kataUrl);
+  loadKataFromUrl(kataUrl, onLoaded);
 };
 
-const loadKataFromUrl = (kataUrl) => {
+const loadKataFromUrl = (kataUrl, onLoaded) => {
   atomic.get(kataUrl)
-    .success((data) => main.setEditorContent(data))
+    .success((data) => onLoaded(data))
     .error((e, xhr) => {
       if (xhr.status === 404) {
-        main.setEditorContent(`// 404, Kata at "${kataUrl}" not found\n// Maybe try a different kata (see URL).`);
+        onLoaded(`// 404, Kata at "${kataUrl}" not found\n// Maybe try a different kata (see URL).`);
       } else {
-        main.setEditorContent('// not kata found :(');
+        onLoaded('// not kata found :(');
       }
     });
 };
