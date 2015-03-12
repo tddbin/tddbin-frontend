@@ -33,7 +33,7 @@ const getSourceCode = () => {
 
 const withKataSourceCode = (sourceCode) => {
   main.setEditorContent(sourceCode);
-  onSave();
+  setTimeout(onSave, 1000);
 };
 
 const loadDefaultKata = (onLoaded) => {
