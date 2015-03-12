@@ -1,8 +1,8 @@
-var $ = document.getElementById.bind(document);
 import {Controller as Main} from '../src/main/main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import atomic from 'atomic';
+var appDomNode = document.getElementById('tddbin');
 atomic = atomic(window);
 
 const queryString = window.location.hash.replace(/^#\?/, '');
@@ -69,7 +69,7 @@ const shortcuts = aceDefaultShortcuts.concat([
   getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
 ]);
 
-var main = new Main($('tddbin'), {
+var main = new Main(appDomNode, {
   iframeSrcUrl: `./${getTestRunner()}/spec-runner.html`,
   shortcuts: shortcuts
 });
