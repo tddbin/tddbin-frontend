@@ -21,7 +21,7 @@ Controller.prototype = {
     this._editor = editor(this._editorDomNodeId);
     this._runner = new TestRunner(document.getElementById(this._runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
-    this.setEditorContent(this._config.initialContent);
+    this.setEditorContent('');
     this._registerShortcuts(this._config.shortcuts);
   },
 
