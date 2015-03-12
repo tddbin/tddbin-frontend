@@ -2,7 +2,7 @@ import React from 'react';
 import View from './main-view';
 import TestRunner from '../test-runner/runner';
 import ShortcutProcessor from '../keyboard-shortcut/shortcut-processor';
-import editor from 'ace-with-plugins';
+import Editor from '../editor/editor';
 
 export function Controller(domNode, config) {
   this._domNode = domNode;
@@ -18,7 +18,7 @@ Controller.prototype = {
     this._editorDomNodeId = 'editorId';
     this._runnerDomNodeId = 'runnerId';
     this._render();
-    this._editor = editor(this._editorDomNodeId);
+    this._editor = new Editor(this._editorDomNodeId);
     this._runner = new TestRunner(document.getElementById(this._runnerDomNodeId));
     this._runner.render(this._config.iframeSrcUrl);
     this.setEditorContent('');
