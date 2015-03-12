@@ -14,7 +14,7 @@
     "build-mocha-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=babelify",
     "watch-mocha-spec-runners": "watchify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=babelify -v",
     "build-spec-runners": "npm run build-mocha-spec-runners && npm run build-jasmine-spec-runners",
-    "build-ace": "mkdir -p dist/vendor/ace; cp -r node_modules/ace-with-plugins/vendor/ace/* dist/vendor/ace",
+    "build-ace": "mkdir -p dist/vendor/ace; cp -r vendor/ace/* dist/vendor/ace",
     "build-css": "./scripts/build/copy-media-files.sh",
     "lint": "jsxcs --preset google src",
     "test": "mocha --compilers js:babel-core/register src/**/**/*spec.js"
@@ -42,7 +42,6 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "ace-with-plugins": "git://github.com/uxebu/ace-with-plugins.git",
     "browserify": "^9.0.3",
     "jsxcs": "^0.2.1",
     "reactify": "^1.0.0",
