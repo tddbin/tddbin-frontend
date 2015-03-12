@@ -7,20 +7,18 @@ atomic = atomic(window);
 
 const queryString = window.location.hash.replace(/^#\?/, '');
 
-const shortcuts = aceDefaultShortcuts.concat([
-  getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
-]);
+const onSave = () => main.onSave();
 
-var main = new Main($('tddbin'), {
-  iframeSrcUrl: `./${getTestRunner()}/spec-runner.html`,
-  shortcuts: shortcuts
-});
+const getTestRunner = () => {
+  var validTestRunners = ['mocha', 'jasmine'];
+  var testRunner = queryString.match(/test-runner=(\w+)/);
+  if (testRunner && testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
+    return testRunner[1];
+  }
+  return 'mocha';
+};
 
-function onSave() {
-  main.onSave();
-}
-
-function getSourceCode() {
+const getSourceCode = () => {
 
   var sourceCode = localStorage.getItem('code');
   if(sourceCode) {
@@ -38,16 +36,8 @@ function getSourceCode() {
         main.setEditorContent('// not kata found :(');
       }
     });
-}
+};
 
-function getTestRunner() {
-  var validTestRunners = ['mocha', 'jasmine'];
-  var testRunner = queryString.match(/test-runner=(\w+)/);
-  if (testRunner && testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
-    return testRunner[1];
-  }
-  return 'mocha';
-}
 
 const getKataUrl = () => {
   var kataName = queryString.match(/kata=([^&]+)/);
@@ -60,3 +50,15 @@ const getKataUrl = () => {
 };
 
 getSourceCode();
+
+
+
+const shortcuts = aceDefaultShortcuts.concat([
+  getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
+]);
+
+var main = new Main($('tddbin'), {
+  iframeSrcUrl: `./${getTestRunner()}/spec-runner.html`,
+  shortcuts: shortcuts
+});
+
