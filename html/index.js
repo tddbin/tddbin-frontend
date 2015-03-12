@@ -19,14 +19,24 @@ const getTestRunner = () => {
 };
 
 const getSourceCode = () => {
-
-  var sourceCode = localStorage.getItem('code');
-  if(sourceCode) {
-    main.setEditorContent(sourceCode);
-    return;
-  }
-
   var kataUrl = getKataUrl();
+  var sourceCode = localStorage.getItem('code');
+  if (kataUrl) {
+    loadKataFromUrl(kataUrl);
+  } else if (sourceCode) {
+    main.setEditorContent(sourceCode);
+  } else {
+    loadDefaultKata();
+  }
+};
+
+const loadDefaultKata = () => {
+  const kataName = 'es5/mocha+assert/assert-api';
+  const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
+  loadKataFromUrl(kataUrl);
+};
+
+const loadKataFromUrl = (kataUrl) => {
   atomic.get(kataUrl)
     .success((data) => main.setEditorContent(data))
     .error((e, xhr) => {
@@ -38,18 +48,14 @@ const getSourceCode = () => {
     });
 };
 
-
 const getKataUrl = () => {
   var kataName = queryString.match(/kata=([^&]+)/);
   if (kataName && kataName.length === 2) {
     kataName = kataName[1];
-  } else {
-    kataName = 'es5/mocha+assert/assert-api';
+    return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
   }
-  return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
 };
 
-getSourceCode();
 
 
 
@@ -62,3 +68,4 @@ var main = new Main($('tddbin'), {
   shortcuts: shortcuts
 });
 
+getSourceCode();
