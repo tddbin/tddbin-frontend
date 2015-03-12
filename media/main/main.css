@@ -1,0 +1,55 @@
+@import "../navigation-bar/navigation-bar.css";
+@import "../keyboard-shortcut-overlay/keyboard-shortcut-overlay.css";
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+html, body, #tddbin, #main {
+  height: 100%;
+}
+
+/*
+ *  Refactor renaming highlight style
+ */
+.ace_marker-layer .selected-for-renaming {
+  position: absolute;
+  z-index: 4;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+
+  background: yellow;
+  border: 1px solid red;
+}
+
+
+
+
+.editor-and-runner {
+  position: fixed;
+  /* 50px - the height of the navigation bar, variables would be nice :) */
+  top: 50px;
+}
+
+.editor-and-runner .editor {
+  position: fixed;
+  width: 50%;
+  height: calc(100% - 50px);
+  float: left;
+  background-color: lightyellow;
+  border: none;
+}
+
+.editor-and-runner .runner {
+  position: fixed;
+  left: 50%;
+  width: 50%;
+  height: calc(100% - 50px);
+  background-color: #EEE;
+}
+
+  .editor-and-runner .runner iframe {
+    border: none;
+  }

@@ -1,0 +1,83 @@
+/* Common stuff */
+
+.navigation-bar {
+  background-color: #2E3949;
+  color: white;
+  position: fixed;
+  top: 0;
+  height: 50px;
+  width: 100%;
+  border-bottom: 1px solid #000;
+  overflow: hidden;
+  z-index: 1000; /* we have to make sure that it is above ace, this is not the best way :( */
+}
+
+.navigation-bar a,
+.navigation-bar button {
+  background-color: #384355;
+  border: none;
+  font-size: inherit;
+  color: #C1C5CB;
+  vertical-align: middle;
+  margin-left: 1px;
+  height: 50px;
+  outline: none;
+}
+
+.navigation-bar :hover {
+  background-color: #475263;
+}
+
+/* logo */
+
+.navigation-bar button.logo {
+  background-image: url(./img/logo-150px.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  height: 30px;
+  width: 30px;
+  margin: 10px 20px 10px 10px;
+  vertical-align: middle;
+}
+
+.navigation-bar .icon {
+  padding-left: 48px;
+  padding-right: 16px;
+  background-repeat: no-repeat;
+}
+
+.navigation-bar .icon.new {
+  background-image: url(./img/icon-new.png);
+}
+
+.navigation-bar .icon.save {
+  background-image: url(./img/icon-reload.png);
+}
+
+.navigation-bar .icon.twitter,
+.navigation-bar .icon.trello,
+.navigation-bar .icon.github,
+.navigation-bar .icon.uxebu {
+  background-size: 50%;
+  background-position: center center;
+  float: right;
+}
+
+.navigation-bar .icon.uxebu {
+  background-image: url(./img/uxebu-logo.png);
+}
+
+.navigation-bar .icon.trello {
+  background-image: url(./img/trello-logo.png);
+}
+
+.navigation-bar .icon.github {
+  background-image: url(./img/GitHub-Mark-Light-64px.png);
+}
+
+.navigation-bar .icon.twitter {
+  background-image: url(./img/Twitter_logo_white.png);
+}
+
+
