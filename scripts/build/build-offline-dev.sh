@@ -14,5 +14,5 @@ if [[ $OSTYPE == darwin* ]]; then
   sed -i '' "s/\/\/cdnjs.cloudflare.com\/ajax\/libs/..\/vendor/g" $DIST_ROOT/jasmine/spec-runner.html
 else
   echo "To do: make '$0' work on non-Macs";
-  exit -1;
+  exit 1;
 fi;

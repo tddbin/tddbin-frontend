@@ -2,7 +2,7 @@
 
 if [ -z "${KATAS_SERVICE_DOMAIN:+x}" ]; then
   echo "Can not build. Environment variable 'KATAS_SERVICE_DOMAIN' must be set";
-  exit -1;
+  exit 1;
 fi;
 
 # TODO: must be run from project root (i am sure this is not bash best pratice)
