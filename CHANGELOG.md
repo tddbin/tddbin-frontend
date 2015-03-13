@@ -15,6 +15,7 @@
 - [feature] kata loading and storing in localstorage flow implemented, so that a kata given in the URL
   always overrides what is currently in the editor, and the `?kata=...` is cleared from the URL after
   it was loaded
+- [code] remove dependency on ace-with-plugins project, use pure ACE from vendor folder or CDN  
 
 # 1.1.1  2015-03-05
 
