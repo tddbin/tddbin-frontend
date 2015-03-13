@@ -6,6 +6,8 @@
 
 # TDDbin.com Frontend
 
+[![Join the chat at https://gitter.im/tddbin/tddbin-frontend](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/tddbin/tddbin-frontend?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This project contains all the UI stuff for [TDDbin], it is runnable separately
 without any backend and aims to provide all components modularly.
 Please [get involved on trello][trello] and [vote][trello] or [add ideas, comments, etc.][trello].
