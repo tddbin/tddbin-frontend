@@ -2,12 +2,9 @@ import {Controller as Main} from '../src/main/main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import atomic from 'atomic';
-const appDomNode = document.getElementById('tddbin');
 atomic = atomic(window);
 
 const queryString = window.location.hash.replace(/^#\?/, '');
-
-const onSave = () => main.onSave();
 
 const getTestRunner = () => {
   var validTestRunners = ['mocha', 'jasmine'];
@@ -63,12 +60,13 @@ const getKataUrl = () => {
 };
 
 
-
+const onSave = () => main.onSave();
 
 const shortcuts = aceDefaultShortcuts.concat([
   getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
 ]);
 
+const appDomNode = document.getElementById('tddbin');
 var main = new Main(appDomNode, {
   iframeSrcUrl: `./${getTestRunner()}/spec-runner.html`,
   shortcuts: shortcuts
