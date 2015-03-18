@@ -7,7 +7,7 @@ global.localStorage = {
 };
 
 import assert from '../../_test-helper/assert';
-import {startUp} from '../startup';
+import {startUp, DEFAULT_KATA_URL} from '../startup';
 
 const noop = function() {};
 
@@ -31,6 +31,16 @@ describe('start up', function() {
     startUp(withSourceCode, noop);
 
     assert.calledWith(withSourceCode, 'kata code');
+  });
+
+  it('get default kata, if there is no kata in the URL and nothing in localStorage', function() {
+    global.window.location.hash = '#?';
+    global.localStorage = {getItem: noop};
+    const xhrGet = this.sinon.spy();
+
+    startUp(noop, xhrGet);
+
+    assert.calledWith(xhrGet, DEFAULT_KATA_URL);
   });
 
 });

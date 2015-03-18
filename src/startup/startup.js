@@ -1,3 +1,6 @@
+const kataName = 'es5/mocha+assert/assert-api';
+export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
+
 export const startUp = function(withKataSourceCode, xhrGet) {
 
   const queryString = window.location.hash.replace(/^#\?/, '');
@@ -16,9 +19,7 @@ export const startUp = function(withKataSourceCode, xhrGet) {
   };
 
   const loadDefaultKata = (onLoaded) => {
-    const kataName = 'es5/mocha+assert/assert-api';
-    const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
-    loadKataFromUrl(kataUrl, onLoaded);
+    loadKataFromUrl(DEFAULT_KATA_URL, onLoaded);
   };
 
   const loadKataFromUrl = (kataUrl, onLoaded) => {
