@@ -1,21 +1,6 @@
-import {Controller as Main} from '../src/main/main-controller';
-import {getShortcutObject, metaKey} from './_util';
-import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
-import atomic from 'atomic';
-atomic = atomic(window);
-
-export const startUp = function() {
+export const startUp = function(main, xhrGet) {
 
   const queryString = window.location.hash.replace(/^#\?/, '');
-
-  const getTestRunner = () => {
-    var validTestRunners = ['mocha', 'jasmine'];
-    var testRunner = queryString.match(/test-runner=(\w+)/);
-    if (testRunner && testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
-      return testRunner[1];
-    }
-    return 'mocha';
-  };
 
   const getSourceCode = () => {
     var kataUrl = getKataUrl();
@@ -42,9 +27,9 @@ export const startUp = function() {
   };
 
   const loadKataFromUrl = (kataUrl, onLoaded) => {
-    atomic.get(kataUrl)
-      .success((data) => onLoaded(data))
-      .error((e, xhr) => {
+    xhrGet(kataUrl,
+      (data) => onLoaded(data),
+      (e, xhr) => {
         if (xhr.status === 404) {
           onLoaded(`// 404, Kata at "${kataUrl}" not found\n// Maybe try a different kata (see URL).`);
         } else {
@@ -61,18 +46,7 @@ export const startUp = function() {
     }
   };
 
-
   const onSave = () => main.onSave();
-
-  const shortcuts = aceDefaultShortcuts.concat([
-    getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
-  ]);
-
-  const appDomNode = document.getElementById('tddbin');
-  var main = new Main(appDomNode, {
-    iframeSrcUrl: `./${getTestRunner()}/spec-runner.html`,
-    shortcuts: shortcuts
-  });
 
   getSourceCode();
 
