@@ -1,4 +1,4 @@
-export const startUp = function(main, xhrGet) {
+export const startUp = function(withKataSourceCode, xhrGet) {
 
   const queryString = window.location.hash.replace(/^#\?/, '');
 
@@ -13,11 +13,6 @@ export const startUp = function(main, xhrGet) {
       loadDefaultKata(withKataSourceCode);
     }
     window.location.hash = window.location.hash.replace(/kata=([^&]+)/, '');
-  };
-
-  const withKataSourceCode = (sourceCode) => {
-    main.setEditorContent(sourceCode);
-    setTimeout(onSave, 1000);
   };
 
   const loadDefaultKata = (onLoaded) => {
@@ -45,8 +40,6 @@ export const startUp = function(main, xhrGet) {
       return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
     }
   };
-
-  const onSave = () => main.onSave();
 
   getSourceCode();
 

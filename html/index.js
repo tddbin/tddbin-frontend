@@ -24,4 +24,10 @@ function xhrGet(url, onError, onSuccess) {
   ;
 }
 
-startUp(main, xhrGet);
+const withKataSourceCode = (sourceCode) => {
+  const onSave = () => main.onSave();
+  main.setEditorContent(sourceCode);
+  setTimeout(onSave, 1000);
+};
+
+startUp(withKataSourceCode, xhrGet);
