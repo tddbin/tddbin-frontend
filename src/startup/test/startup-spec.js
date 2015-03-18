@@ -21,17 +21,31 @@ describe('start up', function() {
     assert.equal(global.window.location.hash, '#?');
   });
 
-  it('if there is no kata in the URL get it from localStorage', function() {
-    global.window.location.hash = '#?';
-    global.localStorage = {
-      getItem: () => 'kata code'
-    };
-    const withSourceCode = this.sinon.spy();
+  describe('get source code from localstorage', function() {
 
-    startUp(withSourceCode, noop);
+    let withSourceCode;
+    beforeEach(function() {
+      global.localStorage = {getItem: () => 'kata code'};
+      withSourceCode = this.sinon.spy();
+    });
 
-    assert.calledWith(withSourceCode, 'kata code');
+    it('if kata param is given but empty', function() {
+      global.window.location.hash = '#?kata=';
+
+      startUp(withSourceCode, noop);
+
+      assert.calledWith(withSourceCode, 'kata code');
+    });
+
+    it('if there is no kata in the URL', function() {
+      global.window.location.hash = '#?';
+
+      startUp(withSourceCode, noop);
+
+      assert.calledWith(withSourceCode, 'kata code');
+    });
   });
+
 
   it('get default kata, if there is no kata in the URL and nothing in localStorage', function() {
     global.window.location.hash = '#?';
