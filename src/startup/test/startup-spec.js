@@ -9,11 +9,14 @@ global.localStorage = {
 import assert from '../../_test-helper/assert';
 import {startUp} from '../startup';
 
+const noop = function() {};
 
 describe('start up', () => {
   it('remove kata from the hash', () => {
 
-    startUp({}, function() {});
+    global.window.location.hash = '#?kata=somekata';
+
+    startUp(noop, (_, _1, onSuccess) => onSuccess(''));
 
     assert.equal(global.window.location.hash, '#?');
   });
