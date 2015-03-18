@@ -1,2 +1,2 @@
-import {startUp} from './startup';
+import {startUp} from '../src/startup/startup';
 startUp();
