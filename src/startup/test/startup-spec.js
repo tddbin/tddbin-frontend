@@ -1,4 +1,3 @@
-global.navigator = {platform: 'Mac'};
 global.window = {
   location: {hash: ''}
 };
