@@ -23,15 +23,10 @@ export const startUp = function(withKataSourceCode, xhrGet) {
   };
 
   const loadKataFromUrl = (kataUrl, onLoaded) => {
-    xhrGet(kataUrl,
-      (e, xhr) => {
-        if (xhr.status === 404) {
-          onLoaded(`// 404, Kata at "${kataUrl}" not found\n// Maybe try a different kata (see URL).`);
-        } else {
-          onLoaded('// not kata found :(');
-        }
-      },
-      (data) => onLoaded(data)
+    xhrGet(
+      kataUrl,
+      (_, {status}) => onLoaded(`// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`),
+      data => {onLoaded(data)}
     );
   };
 
