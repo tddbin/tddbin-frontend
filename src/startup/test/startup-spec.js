@@ -4,6 +4,7 @@ global.window = {
 global.localStorage = {
   getItem: function() {}
 };
+process.env.KATAS_SERVICE_DOMAIN = 'katas.tddbin.test';
 
 import assert from '../../_test-helper/assert';
 import {startUp, DEFAULT_KATA_URL} from '../startup';
@@ -45,15 +46,32 @@ describe('start up', function() {
     });
   });
 
+  describe('get default kata', function() {
 
-  it('get default kata, if there is no kata in the URL and nothing in localStorage', function() {
-    global.window.location.hash = '#?';
-    global.localStorage = {getItem: noop};
-    const xhrGet = this.sinon.spy();
+    it('if there is no kata in the URL and nothing in localStorage', function() {
+      global.window.location.hash = '#?';
+      global.localStorage = {getItem: noop};
+      const xhrGet = this.sinon.spy();
 
-    startUp(noop, xhrGet);
+      startUp(noop, xhrGet);
 
-    assert.calledWith(xhrGet, DEFAULT_KATA_URL);
+      assert.calledWith(xhrGet, DEFAULT_KATA_URL);
+    });
+
+  });
+
+  describe('get kata from katas.tddbin.com', function() {
+
+    it('request from the right URL', function() {
+      global.window.location.hash = '#?kata=my/kata';
+      const xhrGet = this.sinon.spy();
+
+      startUp(noop, xhrGet);
+
+      const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
+      assert.calledWith(xhrGet, kataUrl);
+    });
+
   });
 
 });
