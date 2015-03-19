@@ -74,4 +74,17 @@ describe('start up', function() {
 
   });
 
+  describe('request fails', function() {
+    it('loads source code with error message', function() {
+      global.window.location.hash = '#?kata=some';
+      const withSourceCode = this.sinon.spy();
+      const status = 404;
+      const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/some.js`;
+      startUp(withSourceCode, (_, onError) => onError(null, {status: status}));
+
+      const errorString = `// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`
+      assert.calledWith(withSourceCode, errorString);
+    });
+  });
+
 });
