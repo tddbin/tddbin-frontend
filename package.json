@@ -17,7 +17,9 @@
     "build-ace": "mkdir -p dist/vendor/ace; cp -r vendor/ace/* dist/vendor/ace",
     "build-css": "./scripts/build/copy-media-files.sh",
     "lint": "jsxcs --preset google src",
-    "test": "mocha --compilers js:babel-core/register src/**/**/*spec.js"
+    "test": "mocha --compilers js:babel-core/register src/**/**/*spec.js",
+    "precover": "rm -Rf coverage",
+    "cover": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel-core/register src/**/**/*spec.js"
   },
   "browserify": {
     "extension": [],
@@ -51,6 +53,7 @@
     "should": "^5.0.1",
     "atomic": "git+https://github.com/toddmotto/atomic.git",
     "envify": "^3.3.0",
-    "babel-core": "^4.7.8"
+    "babel-core": "^4.7.8",
+    "istanbul": "latest"
   }
 }
