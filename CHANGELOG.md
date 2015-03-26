@@ -1,4 +1,4 @@
-# 1.2.0  2015-??-??
+# 1.2.0  2015-03-26
 
 - [feature] add basic jasmine support back in (just cleaning the results page is still broken)
   try http://tddbin.com/?test-runner=jasmine or for the mocha runner
@@ -16,6 +16,10 @@
   always overrides what is currently in the editor, and the `?kata=...` is cleared from the URL after
   it was loaded
 - [code] remove dependency on ace-with-plugins project, use pure ACE from vendor folder or CDN  
+- [code] allow `npm run build-for-offline` to enable offline development
+- [code] get ACE from CDN by default, remove dependecy on [ace-with-plugins] package
+- [fix] [kata 10] threw `Can't find variable: Symbol` in browsers that have `Symbol` not yet defined, 
+  [PR6] by [@tonovotny] fixed it
 
 # 1.1.1  2015-03-05
 
@@ -66,5 +70,10 @@
 [docs] = change, improve documentation   
 [feature] = features  
 [ui] = user interaction related changes
+[fix] = a bug fix
 
 [xdomain]: https://github.com/jpillora/xdomain
+[kata 10]: http://tddbin.com/#?kata=es6/language/destructuring/array
+[@tonovotny]: https://twitter.com/tonovotny
+[PR6]: https://github.com/tddbin/tddbin-frontend/pull/6
+[ace-with-plugins]: https://github.com/uxebu/ace-with-plugins 
