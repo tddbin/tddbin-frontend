@@ -14,5 +14,4 @@ function consumeMessage(messageData) {
 
 window.addEventListener("message", consumeMessage, false);
 
-
 },{}]},{},[1]);

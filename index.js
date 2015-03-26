@@ -20,7 +20,6 @@ exports.shortcuts = shortcuts;
 //getShortcutObject([metaKey, 'I', 'I'], noop, '???'),
 //getShortcutObject([metaKey, 'I', 'E', 'E'], noop, '???')
 
-
 },{"./_util":2}],2:[function(require,module,exports){
 "use strict";
 
@@ -57,7 +56,6 @@ exports.getShortcutObject = getShortcutObject;
 var metaKey = isMac ? "Meta" : "Control";
 exports.metaKey = metaKey;
 
-
 },{"../src/keyboard-shortcut/shortcut":167,"../src/keyboard-shortcut/util":168}],3:[function(require,module,exports){
 "use strict";
 
@@ -76,14 +74,9 @@ var aceDefaultShortcuts = require("./_aceDefaultShortcuts").shortcuts;
 
 var atomic = _interopRequire(require("atomic"));
 
-var appDomNode = document.getElementById("tddbin");
 atomic = atomic(window);
 
 var queryString = window.location.hash.replace(/^#\?/, "");
-
-var onSave = function onSave() {
-  return main.onSave();
-};
 
 var getTestRunner = function getTestRunner() {
   var validTestRunners = ["mocha", "jasmine"];
@@ -138,15 +131,19 @@ var getKataUrl = function getKataUrl() {
   }
 };
 
+var onSave = function onSave() {
+  return main.onSave();
+};
+
 var shortcuts = aceDefaultShortcuts.concat([getShortcutObject([metaKey, "S"], onSave, "Save+Run")]);
 
+var appDomNode = document.getElementById("tddbin");
 var main = new Main(appDomNode, {
   iframeSrcUrl: "./" + getTestRunner() + "/spec-runner.html",
   shortcuts: shortcuts
 });
 
 getSourceCode();
-
 
 },{"../src/main/main-controller":169,"./_aceDefaultShortcuts":1,"./_util":2,"atomic":4}],4:[function(require,module,exports){
 (function (root, factory) {
@@ -4619,7 +4616,7 @@ if ("production" !== process.env.NODE_ENV) {
   }
 }
 
-React.version = '0.13.0';
+React.version = '0.13.1';
 
 module.exports = React;
 
@@ -8076,6 +8073,7 @@ ReactDOMComponent.Mixin = {
             styleUpdates[styleName] = '';
           }
         }
+        this._previousStyleCopy = null;
       } else if (registrationNameModules.hasOwnProperty(propKey)) {
         deleteListener(this._rootNodeID, propKey);
       } else if (
@@ -8855,7 +8853,9 @@ function updateOptions(component, propValue) {
         return;
       }
     }
-    options[0].selected = true;
+    if (options.length) {
+      options[0].selected = true;
+    }
   }
 }
 
@@ -9808,8 +9808,8 @@ var ReactDefaultPerf = {
           ReactDefaultPerf._allMeasurements.length - 1
         ].totalTime = performanceNow() - start;
         return rv;
-      } else if (moduleName === 'ReactDOMIDOperations' ||
-        moduleName === 'ReactComponentBrowserEnvironment') {
+      } else if (fnName === '_mountImageIntoNode' ||
+          moduleName === 'ReactDOMIDOperations') {
         start = performanceNow();
         rv = func.apply(this, args);
         totalTime = performanceNow() - start;
@@ -9855,6 +9855,10 @@ var ReactDefaultPerf = {
         (fnName === 'mountComponent' ||
         fnName === 'updateComponent' || fnName === '_renderValidatedComponent')))) {
 
+        if (typeof this._currentElement.type === 'string') {
+          return func.apply(this, args);
+        }
+
         var rootNodeID = fnName === 'mountComponent' ?
           args[0] :
           this._rootNodeID;
@@ -9888,9 +9892,7 @@ var ReactDefaultPerf = {
         }
 
         entry.displayNames[rootNodeID] = {
-          current: typeof this._currentElement.type === 'string' ?
-            this._currentElement.type :
-            this.getName(),
+          current: this.getName(),
           owner: this._currentElement._owner ?
             this._currentElement._owner.getName() :
             '<root>'
@@ -17465,6 +17467,7 @@ function createFullPageComponent(tag) {
   var elementFactory = ReactElement.createFactory(tag);
 
   var FullPageComponent = ReactClass.createClass({
+    tagName: tag.toUpperCase(),
     displayName: 'ReactFullPageComponent' + tag,
 
     componentWillUnmount: function() {
@@ -20001,7 +20004,6 @@ var Ace = (function () {
 
 module.exports = Ace;
 
-
 },{}],162:[function(require,module,exports){
 "use strict";
 
@@ -20052,7 +20054,6 @@ var Editor = (function () {
 })();
 
 module.exports = Editor;
-
 
 },{"./ace":161}],163:[function(require,module,exports){
 "use strict";
@@ -20135,7 +20136,6 @@ var Overlay = (function (_React$Component) {
 
 module.exports = Overlay;
 
-
 },{"react":160}],164:[function(require,module,exports){
 "use strict";
 
@@ -20149,7 +20149,6 @@ var browserEventUtil = {
   }
 };
 exports.browserEventUtil = browserEventUtil;
-
 
 },{}],165:[function(require,module,exports){
 "use strict";
@@ -20204,7 +20203,6 @@ var getKeyNameFromEvent = function getKeyNameFromEvent(evt) {
   }
   return mapKeyCodeToReadable(evt.keyCode);
 };
-
 
 },{}],166:[function(require,module,exports){
 "use strict";
@@ -20357,7 +20355,6 @@ var ShortcutProcessor = (function () {
 
 module.exports = ShortcutProcessor;
 
-
 },{"./browser-event-util":164,"./keyboard-event-util":165}],167:[function(require,module,exports){
 "use strict";
 
@@ -20433,7 +20430,6 @@ var Shortcut = (function () {
 
 module.exports = Shortcut;
 
-
 },{}],168:[function(require,module,exports){
 "use strict";
 
@@ -20446,7 +20442,6 @@ var toPrintableKeys = function toPrintableKeys(keys, map) {
   });
 };
 exports.toPrintableKeys = toPrintableKeys;
-
 
 },{}],169:[function(require,module,exports){
 "use strict";
@@ -20549,7 +20544,6 @@ Controller.prototype = {
 
 };
 
-
 },{"../editor/editor":162,"../keyboard-shortcut/shortcut-processor":166,"../test-runner/runner":173,"./main-view":170,"react":160}],170:[function(require,module,exports){
 "use strict";
 
@@ -20617,7 +20611,6 @@ var View = (function (_React$Component) {
 
 module.exports = View;
 
-
 },{"../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view":163,"../navigation-bar/navigation-bar-view":171,"react":160}],171:[function(require,module,exports){
 "use strict";
 
@@ -20672,7 +20665,6 @@ var View = (function (_React$Component) {
 })(React.Component);
 
 module.exports = View;
-
 
 },{"react":160}],172:[function(require,module,exports){
 "use strict";
@@ -20733,7 +20725,6 @@ var Iframe = (function (_React$Component) {
 })(React.Component);
 
 module.exports = Iframe;
-
 
 },{"react":160}],173:[function(require,module,exports){
 "use strict";
@@ -20803,6 +20794,5 @@ var TestRunner = (function () {
 })();
 
 module.exports = TestRunner;
-
 
 },{"./iframe":172,"react":160}]},{},[3]);
