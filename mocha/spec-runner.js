@@ -56957,6 +56957,8 @@ var _interopRequire = function _interopRequire(obj) {
   return obj && obj.__esModule ? obj["default"] : obj;
 };
 
+require("babel-core/lib/babel/polyfill");
+
 var expect = _interopRequire(require("referee/lib/expect"));
 
 var should = _interopRequire(require("should"));
@@ -57011,7 +57013,7 @@ function consumeMessage(messageData) {
 
 window.addEventListener("message", consumeMessage, false);
 
-},{"../runtime-error":392,"assert":341,"babel-core":1,"referee/lib/expect":368,"should":385}],392:[function(require,module,exports){
+},{"../runtime-error":392,"assert":341,"babel-core":1,"babel-core/lib/babel/polyfill":29,"referee/lib/expect":368,"should":385}],392:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () {
