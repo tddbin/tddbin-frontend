@@ -15,9 +15,7 @@
 - [feature] kata loading and storing in localstorage flow implemented, so that a kata given in the URL
   always overrides what is currently in the editor, and the `?kata=...` is cleared from the URL after
   it was loaded
-- [code] remove dependency on ace-with-plugins project, use pure ACE from vendor folder or CDN  
-- [code] allow `npm run build-for-offline` to enable offline development
-- [code] get ACE from CDN by default, remove dependecy on [ace-with-plugins] package
+- [code] remove dependency on [ace-with-plugins] project, use pure ACE from vendor folder or CDN  
 - [fix] [kata 10] threw `Can't find variable: Symbol` in browsers that have `Symbol` not yet defined, 
   [PR6] by [@tonovotny] fixed it
 
