@@ -1,8 +1,8 @@
-import 'babel-core/lib/babel/polyfill';
 import expect from 'referee/lib/expect';
 import should from 'should';
 import assert from 'assert';
 import {transform} from 'babel-core'; // the es6 transpiler
+import 'babel-core/lib/babel/polyfill';
 import RuntimeError from '../runtime-error'
 
 function es6ToEs5(sourceCode) {
