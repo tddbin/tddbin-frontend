@@ -56957,8 +56957,6 @@ var _interopRequire = function _interopRequire(obj) {
   return obj && obj.__esModule ? obj["default"] : obj;
 };
 
-require("babel-core/lib/babel/polyfill");
-
 var expect = _interopRequire(require("referee/lib/expect"));
 
 var should = _interopRequire(require("should"));
@@ -56968,6 +56966,8 @@ var assert = _interopRequire(require("assert"));
 var transform = require("babel-core").transform;
 
 // the es6 transpiler
+
+require("babel-core/lib/babel/polyfill");
 
 var RuntimeError = _interopRequire(require("../runtime-error"));
 
