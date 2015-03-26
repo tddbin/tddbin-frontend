@@ -69,7 +69,7 @@
 [code] = changes, improvements in the source code, architecture, structure, etc.    
 [docs] = change, improve documentation   
 [feature] = features  
-[ui] = user interaction related changes
+[ui] = user interaction related changes  
 [fix] = a bug fix
 
 [xdomain]: https://github.com/jpillora/xdomain
