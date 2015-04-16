@@ -1,7 +1,7 @@
 const kataName = 'es5/mocha+assert/assert-api';
 export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
 
-export const startUp = function(withKataSourceCode, xhrGet) {
+export const startUp = function(withKataSourceCode, xhrGet, xhrGetDefaultKata) {
 
   const queryString = window.location.hash.replace(/^#\?/, '');
 
@@ -19,7 +19,10 @@ export const startUp = function(withKataSourceCode, xhrGet) {
   };
 
   const loadDefaultKata = (onLoaded) => {
-    loadKataFromUrl(DEFAULT_KATA_URL, onLoaded);
+    xhrGetDefaultKata(
+      (_, {status}) => onLoaded(`// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`),
+      data => {onLoaded(data)}
+    );
   };
 
   const loadKataFromUrl = (kataUrl, onLoaded) => {

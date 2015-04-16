@@ -56,11 +56,12 @@ describe('start up', function() {
     it('if there is no kata in the URL and nothing in localStorage', function() {
       global.window.location.hash = '#?';
       global.localStorage = {getItem: noop};
-      const xhrGet = this.sinon.spy();
+      const xhrGetDefaultKata = this.sinon.spy();
 
-      startUp(noop, xhrGet);
+      const obj = new StartUp(noop, xhrGetDefaultKata);
+      obj.loadSourceCode();
 
-      assert.calledWith(xhrGet, DEFAULT_KATA_URL);
+      assert.called(xhrGetDefaultKata);
     });
 
   });
