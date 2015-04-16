@@ -41,3 +41,14 @@ export const startUp = function(withKataSourceCode, xhrGet) {
   getSourceCode();
 
 };
+
+export default class StartUp {
+  constructor(xhrGet, xhrGetDefaultKata) {
+    this.xhrGet = xhrGet;
+    this.xhrGetDefaultKata = xhrGetDefaultKata;
+  }
+
+  loadSourceCode(withSourceCode) {
+    startUp(withSourceCode, this.xhrGet, this.xhrGetDefaultKata);
+  }
+}

@@ -7,16 +7,21 @@ global.localStorage = {
 process.env.KATAS_SERVICE_DOMAIN = 'katas.tddbin.test';
 
 import assert from '../../_test-helper/assert';
-import {startUp, DEFAULT_KATA_URL} from '../startup';
+import StartUp from '../startup';
 
 const noop = function() {};
+
+const loadSourceCode = (withSourceCode, xhrGet) => {
+  const obj = new StartUp(xhrGet);
+  obj.loadSourceCode(withSourceCode);
+};
 
 describe('start up', function() {
 
   it('remove kata from the hash', () => {
     global.window.location.hash = '#?kata=somekata';
 
-    startUp(noop, (_, _1, onSuccess) => onSuccess(''));
+    loadSourceCode(noop, (_, _1, onSuccess) => onSuccess(''));
 
     assert.equal(global.window.location.hash, '#?');
   });
@@ -32,7 +37,7 @@ describe('start up', function() {
     it('if kata param is given but empty', function() {
       global.window.location.hash = '#?kata=';
 
-      startUp(withSourceCode, noop);
+      loadSourceCode(withSourceCode, noop);
 
       assert.calledWith(withSourceCode, 'kata code');
     });
@@ -40,7 +45,7 @@ describe('start up', function() {
     it('if there is no kata in the URL', function() {
       global.window.location.hash = '#?';
 
-      startUp(withSourceCode, noop);
+      loadSourceCode(withSourceCode, noop);
 
       assert.calledWith(withSourceCode, 'kata code');
     });
@@ -66,7 +71,7 @@ describe('start up', function() {
       global.window.location.hash = '#?kata=my/kata';
       const xhrGet = this.sinon.spy();
 
-      startUp(noop, xhrGet);
+      loadSourceCode(noop, xhrGet);
 
       const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
       assert.calledWith(xhrGet, kataUrl);
@@ -80,7 +85,7 @@ describe('start up', function() {
       const withSourceCode = this.sinon.spy();
       const status = 404;
       const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/some.js`;
-      startUp(withSourceCode, (_, onError) => onError(null, {status: status}));
+      loadSourceCode(withSourceCode, (_, onError) => onError(null, {status: status}));
 
       const errorString = `// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`
       assert.calledWith(withSourceCode, errorString);
