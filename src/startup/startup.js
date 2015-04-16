@@ -4,10 +4,10 @@ export default class StartUp {
     this.xhrGetDefaultKata = xhrGetDefaultKata;
   }
 
-  loadSourceCode(kataUrlParamString, withSourceCode) {
+  loadSourceCode(kataUrl, withSourceCode) {
     var sourceCode = localStorage.getItem('code');
-    if (kataUrlParamString) {
-      this.loadKataFromUrl(kataUrlParamString, withSourceCode);
+    if (kataUrl) {
+      this.loadKataFromUrl(kataUrl, withSourceCode);
     } else if (sourceCode) {
       withSourceCode(sourceCode);
     } else {
