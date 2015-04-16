@@ -7,22 +7,17 @@ export default class StartUp {
   }
 
   loadSourceCode(withSourceCode) {
-
-    const getSourceCode = () => {
-      const queryString = window.location.hash.replace(/^#\?/, '');
-      var kataUrl = KataUrl.fromQueryString(queryString);
-      var sourceCode = localStorage.getItem('code');
-      if (kataUrl) {
-        this.loadKataFromUrl(kataUrl, withSourceCode);
-      } else if (sourceCode) {
-        withSourceCode(sourceCode);
-      } else {
-        this.loadDefaultKata(withSourceCode);
-      }
-      window.location.hash = window.location.hash.replace(/kata=([^&]+)/, '');
-    };
-
-    getSourceCode();
+    const queryString = window.location.hash.replace(/^#\?/, '');
+    var kataUrl = KataUrl.fromQueryString(queryString);
+    var sourceCode = localStorage.getItem('code');
+    if (kataUrl) {
+      this.loadKataFromUrl(kataUrl, withSourceCode);
+    } else if (sourceCode) {
+      withSourceCode(sourceCode);
+    } else {
+      this.loadDefaultKata(withSourceCode);
+    }
+    window.location.hash = window.location.hash.replace(/kata=([^&]+)/, '');
   }
 
   loadDefaultKata(onLoaded) {
