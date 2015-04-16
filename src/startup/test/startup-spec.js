@@ -66,20 +66,6 @@ describe('start up', function() {
 
   });
 
-  describe('get kata from katas.tddbin.com', function() {
-
-    it('request from the right URL', function() {
-      global.window.location.hash = '#?kata=my/kata';
-      const xhrGet = this.sinon.spy();
-
-      loadSourceCode(noop, xhrGet);
-
-      const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
-      assert.calledWith(xhrGet, kataUrl);
-    });
-
-  });
-
   describe('request fails', function() {
     it('loads source code with error message', function() {
       global.window.location.hash = '#?kata=some';
