@@ -3,7 +3,7 @@ import KataUrl from '../kata-url';
 
 process.env.KATAS_SERVICE_DOMAIN = 'katas.tddbin.test';
 
-describe.only('get kata from katas.tddbin.com', function() {
+describe('get kata from katas.tddbin.com', function() {
 
   it('request from the right URL', function() {
     const kataUrlParam = 'kata=my/kata';

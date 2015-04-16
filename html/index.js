@@ -35,4 +35,9 @@ export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/kata
 var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
-startUp.loadSourceCode(withSourceCode);
+
+import KataUrl from '../src/startup/kata-url.js'
+const queryString = window.location.hash.replace(/^#\?/, '');
+var kataUrl = KataUrl.fromQueryString(queryString);
+
+startUp.loadSourceCode(kataUrl, withSourceCode);

@@ -1,17 +1,13 @@
-import KataUrl from './kata-url.js'
-
 export default class StartUp {
   constructor(xhrGet, xhrGetDefaultKata) {
     this.xhrGet = xhrGet;
     this.xhrGetDefaultKata = xhrGetDefaultKata;
   }
 
-  loadSourceCode(withSourceCode) {
-    const queryString = window.location.hash.replace(/^#\?/, '');
-    var kataUrl = KataUrl.fromQueryString(queryString);
+  loadSourceCode(kataUrlParamString, withSourceCode) {
     var sourceCode = localStorage.getItem('code');
-    if (kataUrl) {
-      this.loadKataFromUrl(kataUrl, withSourceCode);
+    if (kataUrlParamString) {
+      this.loadKataFromUrl(kataUrlParamString, withSourceCode);
     } else if (sourceCode) {
       withSourceCode(sourceCode);
     } else {
