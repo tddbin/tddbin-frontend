@@ -1,7 +1,7 @@
 import {Controller as Main} from '../src/main/main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
-import {startUp} from '../src/startup/startup';
+import StartUp from '../src/startup/startup';
 import atomic from 'atomic';
 atomic = atomic(window);
 
@@ -24,10 +24,15 @@ function xhrGet(url, onError, onSuccess) {
   ;
 }
 
-const withKataSourceCode = (sourceCode) => {
+const withSourceCode = (sourceCode) => {
   const onSave = () => main.onSave();
   main.setEditorContent(sourceCode);
   setTimeout(onSave, 1000);
 };
 
-startUp(withKataSourceCode, xhrGet);
+const kataName = 'es5/mocha+assert/assert-api';
+export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
+var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
+
+const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
+startUp.loadSourceCode(withSourceCode);

@@ -1,6 +1,3 @@
-const kataName = 'es5/mocha+assert/assert-api';
-export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
-
 export const startUp = function(withKataSourceCode, xhrGet, xhrGetDefaultKata) {
 
   const queryString = window.location.hash.replace(/^#\?/, '');
