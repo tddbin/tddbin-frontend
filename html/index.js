@@ -3,7 +3,7 @@ import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import StartUp from '../src/startup/startup';
 import atomic from 'atomic';
-atomic = atomic(window);
+const myAtomic = atomic(window);
 
 const onSave = () => main.onSave();
 
@@ -18,7 +18,7 @@ var main = new Main(appDomNode, {
 });
 
 function xhrGet(url, onError, onSuccess) {
-  atomic.get(url)
+  myAtomic.get(url)
     .success(onSuccess)
     .error(onError)
   ;
