@@ -7,8 +7,8 @@ describe('get kata from katas.tddbin.com', function() {
 
   it('request from the right URL', function() {
     const kataUrlParam = 'kata=my/kata';
-    const kataUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
-    assert.equal(KataUrl.fromQueryString(kataUrlParam), kataUrl);
+    const expectedUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
+    assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
   });
 
 });
