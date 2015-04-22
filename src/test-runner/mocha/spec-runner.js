@@ -6,7 +6,7 @@ import 'babel-core/lib/babel/polyfill';
 import RuntimeError from '../runtime-error'
 
 function es6ToEs5(sourceCode) {
-  return transform(sourceCode).code
+  return transform(sourceCode).code;
 }
 
 function consumeMessage(messageData) {
