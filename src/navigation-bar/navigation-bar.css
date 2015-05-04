@@ -73,7 +73,9 @@
 
 .navigation-bar .icon.uxebu {
   background-image: url(./img/uxebu_icon.svg);
-  width: 100px;
+  background-size: 70%;
+  padding: 0;
+  width: 120px;
 }
 
 .navigation-bar .icon.trello {
