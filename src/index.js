@@ -1,8 +1,9 @@
 import {Controller as Main} from '../src/main/main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
-import StartUp from '../src/startup/startup';
+import StartUp from '../src/startup';
 import {xhrGet} from '../src/_external-deps/xhr.js';
+import KataUrl from '../src/kata-url.js'
 
 const onSave = () => main.onSave();
 
@@ -28,7 +29,6 @@ var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
 
-import KataUrl from '../src/startup/kata-url.js'
 const queryString = window.location.hash.replace(/^#\?/, '');
 var kataUrl = KataUrl.fromQueryString(queryString);
 
