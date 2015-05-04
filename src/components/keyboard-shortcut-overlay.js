@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class Overlay extends React.Component {
+export default class KeyboardShortcutOverlay extends React.Component {
 
   _renderShortcut(shortcut) {
     return (

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default class View extends React.Component {
+export default class NavigationBar extends React.Component {
 
   render() {
     return (

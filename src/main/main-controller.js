@@ -1,5 +1,5 @@
 import React from 'react';
-import View from './main-view';
+import Main from '../components/main.js';
 import TestRunner from '../test-runner/runner';
 import ShortcutProcessor from '../keyboard-shortcut/shortcut-processor';
 import Editor from '../editor/editor';
@@ -34,7 +34,7 @@ Controller.prototype = {
       onResetCode: this._onResetCode,
       shortcuts: shortcuts
     };
-    this._component = React.render(<View {...props}/>, this._domNode);
+    this._component = React.render(<Main {...props}/>, this._domNode);
   },
 
   onSave: function() {
