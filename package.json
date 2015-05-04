@@ -3,6 +3,9 @@
   "version": "1.2.0",
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
+  "browser": {
+    "react": "./src/shim/react.js"
+  },
   "scripts": {
     "build": "./scripts/build/build.sh",
     "build-for-offline": "./scripts/build/build.sh && ./scripts/build/build-offline-dev.sh",
