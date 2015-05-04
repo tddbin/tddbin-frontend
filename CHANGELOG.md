@@ -2,6 +2,8 @@
 
 - [code] improve structure (poorly) basically around index.js
 - [ui] upgrade ACE to show less warnings for ES6 features
+- [ui] apply the new design (partly)
+- [code] separate out react components, improve directory structure
 
 # 1.2.0  2015-03-26
 
