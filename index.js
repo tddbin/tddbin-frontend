@@ -56,12 +56,16 @@ exports.getShortcutObject = getShortcutObject;
 var metaKey = isMac ? "Meta" : "Control";
 exports.metaKey = metaKey;
 
-},{"../src/keyboard-shortcut/shortcut":167,"../src/keyboard-shortcut/util":168}],3:[function(require,module,exports){
+},{"../src/keyboard-shortcut/shortcut":168,"../src/keyboard-shortcut/util":169}],3:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
   return obj && obj.__esModule ? obj["default"] : obj;
 };
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var Main = require("../src/main/main-controller").Controller;
 
@@ -72,64 +76,9 @@ var metaKey = _util.metaKey;
 
 var aceDefaultShortcuts = require("./_aceDefaultShortcuts").shortcuts;
 
-var atomic = _interopRequire(require("atomic"));
+var StartUp = _interopRequire(require("../src/startup/startup"));
 
-atomic = atomic(window);
-
-var queryString = window.location.hash.replace(/^#\?/, "");
-
-var getTestRunner = function getTestRunner() {
-  var validTestRunners = ["mocha", "jasmine"];
-  var testRunner = queryString.match(/test-runner=(\w+)/);
-  if (testRunner && testRunner.length === 2 && validTestRunners.indexOf(testRunner[1]) > -1) {
-    return testRunner[1];
-  }
-  return "mocha";
-};
-
-var getSourceCode = function getSourceCode() {
-  var kataUrl = getKataUrl();
-  var sourceCode = localStorage.getItem("code");
-  if (kataUrl) {
-    loadKataFromUrl(kataUrl, withKataSourceCode);
-  } else if (sourceCode) {
-    withKataSourceCode(sourceCode);
-  } else {
-    loadDefaultKata(withKataSourceCode);
-  }
-  window.location.hash = window.location.hash.replace(/kata=([^&]+)/, "");
-};
-
-var withKataSourceCode = function withKataSourceCode(sourceCode) {
-  main.setEditorContent(sourceCode);
-  setTimeout(onSave, 1000);
-};
-
-var loadDefaultKata = function loadDefaultKata(onLoaded) {
-  var kataName = "es5/mocha+assert/assert-api";
-  var kataUrl = "http://" + "katas.tddbin.com" + "/katas/" + kataName + ".js";
-  loadKataFromUrl(kataUrl, onLoaded);
-};
-
-var loadKataFromUrl = function loadKataFromUrl(kataUrl, onLoaded) {
-  atomic.get(kataUrl).success(function (data) {
-    return onLoaded(data);
-  }).error(function (e, xhr) {
-    if (xhr.status === 404) {
-      onLoaded("// 404, Kata at \"" + kataUrl + "\" not found\n// Maybe try a different kata (see URL).");
-    } else {
-      onLoaded("// not kata found :(");
-    }
-  });
-};
-
-var getKataUrl = function getKataUrl() {
-  var kataName = queryString.match(/kata=([^&]+)/);
-  if (kataName && kataName.length === 2) {
-    kataName = kataName[1];
-    return "http://" + "katas.tddbin.com" + "/katas/" + kataName + ".js";
-  }
-};
+var xhrGet = require("../src/_external-deps/xhr.js").xhrGet;
 
 var onSave = function onSave() {
   return main.onSave();
@@ -139,13 +88,33 @@ var shortcuts = aceDefaultShortcuts.concat([getShortcutObject([metaKey, "S"], on
 
 var appDomNode = document.getElementById("tddbin");
 var main = new Main(appDomNode, {
-  iframeSrcUrl: "./" + getTestRunner() + "/spec-runner.html",
+  iframeSrcUrl: "./mocha/spec-runner.html",
   shortcuts: shortcuts
 });
 
-getSourceCode();
+var withSourceCode = function withSourceCode(sourceCode) {
+  var onSave = function onSave() {
+    return main.onSave();
+  };
+  main.setEditorContent(sourceCode);
+  setTimeout(onSave, 1000);
+};
 
-},{"../src/main/main-controller":169,"./_aceDefaultShortcuts":1,"./_util":2,"atomic":4}],4:[function(require,module,exports){
+var kataName = "es5/mocha+assert/assert-api";
+var DEFAULT_KATA_URL = "http://" + "katas.tddbin.com" + "/katas/" + kataName + ".js";
+exports.DEFAULT_KATA_URL = DEFAULT_KATA_URL;
+var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
+
+var startUp = new StartUp(xhrGet, xhrGetDefaultKata);
+
+var KataUrl = _interopRequire(require("../src/startup/kata-url.js"));
+
+var queryString = window.location.hash.replace(/^#\?/, "");
+var kataUrl = KataUrl.fromQueryString(queryString);
+
+startUp.loadSourceCode(kataUrl, withSourceCode);
+
+},{"../src/_external-deps/xhr.js":161,"../src/main/main-controller":170,"../src/startup/kata-url.js":173,"../src/startup/startup":174,"./_aceDefaultShortcuts":1,"./_util":2}],4:[function(require,module,exports){
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     define(factory);
@@ -828,7 +797,9 @@ var isUnitlessNumber = {
   columnCount: true,
   flex: true,
   flexGrow: true,
+  flexPositive: true,
   flexShrink: true,
+  flexNegative: true,
   fontWeight: true,
   lineClamp: true,
   lineHeight: true,
@@ -841,7 +812,9 @@ var isUnitlessNumber = {
 
   // SVG-related properties
   fillOpacity: true,
-  strokeOpacity: true
+  strokeDashoffset: true,
+  strokeOpacity: true,
+  strokeWidth: true
 };
 
 /**
@@ -3928,6 +3901,7 @@ var HTMLDOMPropertyConfig = {
     headers: null,
     height: MUST_USE_ATTRIBUTE,
     hidden: MUST_USE_ATTRIBUTE | HAS_BOOLEAN_VALUE,
+    high: null,
     href: null,
     hrefLang: null,
     htmlFor: null,
@@ -3938,6 +3912,7 @@ var HTMLDOMPropertyConfig = {
     lang: null,
     list: MUST_USE_ATTRIBUTE,
     loop: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
+    low: null,
     manifest: MUST_USE_ATTRIBUTE,
     marginHeight: null,
     marginWidth: null,
@@ -3952,6 +3927,7 @@ var HTMLDOMPropertyConfig = {
     name: null,
     noValidate: HAS_BOOLEAN_VALUE,
     open: HAS_BOOLEAN_VALUE,
+    optimum: null,
     pattern: null,
     placeholder: null,
     poster: null,
@@ -3965,6 +3941,7 @@ var HTMLDOMPropertyConfig = {
     rowSpan: null,
     sandbox: null,
     scope: null,
+    scoped: HAS_BOOLEAN_VALUE,
     scrolling: null,
     seamless: MUST_USE_ATTRIBUTE | HAS_BOOLEAN_VALUE,
     selected: MUST_USE_PROPERTY | HAS_BOOLEAN_VALUE,
@@ -4006,7 +3983,9 @@ var HTMLDOMPropertyConfig = {
     itemID: MUST_USE_ATTRIBUTE,
     itemRef: MUST_USE_ATTRIBUTE,
     // property is supported for OpenGraph in meta tags.
-    property: null
+    property: null,
+    // IE-only attribute that controls focus behavior
+    unselectable: MUST_USE_ATTRIBUTE
   },
   DOMAttributeNames: {
     acceptCharset: 'accept-charset',
@@ -4616,7 +4595,7 @@ if ("production" !== process.env.NODE_ENV) {
   }
 }
 
-React.version = '0.13.1';
+React.version = '0.13.2';
 
 module.exports = React;
 
@@ -6654,6 +6633,14 @@ var ReactCompositeComponentMixin = {
         this.getName() || 'a component'
       ) : null);
       ("production" !== process.env.NODE_ENV ? warning(
+        !inst.getDefaultProps ||
+        inst.getDefaultProps.isReactClassApproved,
+        'getDefaultProps was defined on %s, a plain JavaScript class. ' +
+        'This is only supported for classes created using React.createClass. ' +
+        'Use a static property to define defaultProps instead.',
+        this.getName() || 'a component'
+      ) : null);
+      ("production" !== process.env.NODE_ENV ? warning(
         !inst.propTypes,
         'propTypes was defined as an instance property on %s. Use a static ' +
         'property to define propTypes instead.',
@@ -7222,7 +7209,7 @@ var ReactCompositeComponentMixin = {
         this._renderedComponent,
         thisID,
         transaction,
-        context
+        this._processChildContext(context)
       );
       this._replaceNodeWithMarkupByID(prevComponentID, nextMarkup);
     }
@@ -8096,6 +8083,8 @@ ReactDOMComponent.Mixin = {
       if (propKey === STYLE) {
         if (nextProp) {
           nextProp = this._previousStyleCopy = assign({}, nextProp);
+        } else {
+          this._previousStyleCopy = null;
         }
         if (lastProp) {
           // Unset styles on `lastProp` but not on `nextProp`.
@@ -10716,9 +10705,9 @@ function warnForPropsMutation(propName, element) {
 
   ("production" !== process.env.NODE_ENV ? warning(
     false,
-    'Don\'t set .props.%s of the React component%s. ' +
-    'Instead, specify the correct value when ' +
-    'initially creating the element.%s',
+    'Don\'t set .props.%s of the React component%s. Instead, specify the ' +
+    'correct value when initially creating the element or use ' +
+    'React.cloneElement to make a new element with updated props.%s',
     propName,
     elementInfo,
     ownerInfo
@@ -18659,6 +18648,7 @@ assign(
 function isInternalComponentType(type) {
   return (
     typeof type === 'function' &&
+    typeof type.prototype !== 'undefined' &&
     typeof type.prototype.mountComponent === 'function' &&
     typeof type.prototype.receiveComponent === 'function'
   );
@@ -19943,6 +19933,26 @@ module.exports = require('./lib/React');
 },{"./lib/React":33}],161:[function(require,module,exports){
 "use strict";
 
+var _interopRequire = function _interopRequire(obj) {
+  return obj && obj.__esModule ? obj["default"] : obj;
+};
+
+exports.xhrGet = xhrGet;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var atomic = _interopRequire(require("atomic"));
+
+var myAtomic = atomic(window);
+
+function xhrGet(url, onError, onSuccess) {
+  myAtomic.get(url).success(onSuccess).error(onError);
+}
+
+},{"atomic":4}],162:[function(require,module,exports){
+"use strict";
+
 var _createClass = (function () {
   function defineProperties(target, props) {
     for (var key in props) {
@@ -20004,7 +20014,7 @@ var Ace = (function () {
 
 module.exports = Ace;
 
-},{}],162:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -20055,7 +20065,7 @@ var Editor = (function () {
 
 module.exports = Editor;
 
-},{"./ace":161}],163:[function(require,module,exports){
+},{"./ace":162}],164:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -20136,7 +20146,7 @@ var Overlay = (function (_React$Component) {
 
 module.exports = Overlay;
 
-},{"react":160}],164:[function(require,module,exports){
+},{"react":160}],165:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20150,7 +20160,7 @@ var browserEventUtil = {
 };
 exports.browserEventUtil = browserEventUtil;
 
-},{}],165:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20204,7 +20214,7 @@ var getKeyNameFromEvent = function getKeyNameFromEvent(evt) {
   return mapKeyCodeToReadable(evt.keyCode);
 };
 
-},{}],166:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () {
@@ -20355,7 +20365,7 @@ var ShortcutProcessor = (function () {
 
 module.exports = ShortcutProcessor;
 
-},{"./browser-event-util":164,"./keyboard-event-util":165}],167:[function(require,module,exports){
+},{"./browser-event-util":165,"./keyboard-event-util":166}],168:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () {
@@ -20430,7 +20440,7 @@ var Shortcut = (function () {
 
 module.exports = Shortcut;
 
-},{}],168:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20443,7 +20453,7 @@ var toPrintableKeys = function toPrintableKeys(keys, map) {
 };
 exports.toPrintableKeys = toPrintableKeys;
 
-},{}],169:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -20544,7 +20554,7 @@ Controller.prototype = {
 
 };
 
-},{"../editor/editor":162,"../keyboard-shortcut/shortcut-processor":166,"../test-runner/runner":173,"./main-view":170,"react":160}],170:[function(require,module,exports){
+},{"../editor/editor":163,"../keyboard-shortcut/shortcut-processor":167,"../test-runner/runner":176,"./main-view":171,"react":160}],171:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -20611,7 +20621,7 @@ var View = (function (_React$Component) {
 
 module.exports = View;
 
-},{"../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view":163,"../navigation-bar/navigation-bar-view":171,"react":160}],171:[function(require,module,exports){
+},{"../keyboard-shortcut-overlay/keyboard-shortcut-overlay-view":164,"../navigation-bar/navigation-bar-view":172,"react":160}],172:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -20666,7 +20676,116 @@ var View = (function (_React$Component) {
 
 module.exports = View;
 
-},{"react":160}],172:[function(require,module,exports){
+},{"react":160}],173:[function(require,module,exports){
+"use strict";
+
+var _createClass = (function () {
+  function defineProperties(target, props) {
+    for (var key in props) {
+      var prop = props[key];prop.configurable = true;if (prop.value) prop.writable = true;
+    }Object.defineProperties(target, props);
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+  };
+})();
+
+var _classCallCheck = function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var KataUrl = (function () {
+  function KataUrl() {
+    _classCallCheck(this, KataUrl);
+  }
+
+  _createClass(KataUrl, null, {
+    fromQueryString: {
+      value: function fromQueryString(queryString) {
+        var kataName = queryString.match(/kata=([^&]+)/);
+        if (kataName && kataName.length === 2) {
+          kataName = kataName[1];
+          return "http://" + "katas.tddbin.com" + "/katas/" + kataName + ".js";
+        }
+      }
+    }
+  });
+
+  return KataUrl;
+})();
+
+module.exports = KataUrl;
+
+},{}],174:[function(require,module,exports){
+"use strict";
+
+var _createClass = (function () {
+  function defineProperties(target, props) {
+    for (var key in props) {
+      var prop = props[key];prop.configurable = true;if (prop.value) prop.writable = true;
+    }Object.defineProperties(target, props);
+  }return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+  };
+})();
+
+var _classCallCheck = function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+};
+
+var StartUp = (function () {
+  function StartUp(xhrGet, xhrGetDefaultKata) {
+    _classCallCheck(this, StartUp);
+
+    this.xhrGet = xhrGet;
+    this.xhrGetDefaultKata = xhrGetDefaultKata;
+  }
+
+  _createClass(StartUp, {
+    loadSourceCode: {
+      value: function loadSourceCode(kataUrl, withSourceCode) {
+        var sourceCode = localStorage.getItem("code");
+        if (kataUrl) {
+          this.loadKataFromUrl(kataUrl, withSourceCode);
+        } else if (sourceCode) {
+          withSourceCode(sourceCode);
+        } else {
+          this.loadDefaultKata(withSourceCode);
+        }
+        window.location.hash = window.location.hash.replace(/kata=([^&]+)/, "");
+      }
+    },
+    loadDefaultKata: {
+      value: function loadDefaultKata(onLoaded) {
+        this.xhrGetDefaultKata(function (_, _ref) {
+          var status = _ref.status;
+          return onLoaded("// Default kata not found (status " + status + ")\n// Maybe try a different kata (see URL).");
+        }, function (data) {
+          onLoaded(data);
+        });
+      }
+    },
+    loadKataFromUrl: {
+      value: function loadKataFromUrl(kataUrl, onLoaded) {
+        this.xhrGet(kataUrl, function (_, _ref) {
+          var status = _ref.status;
+          return onLoaded("// Kata at \"" + kataUrl + "\" not found (status " + status + ")\n// Maybe try a different kata (see URL).");
+        }, function (data) {
+          onLoaded(data);
+        });
+      }
+    }
+  });
+
+  return StartUp;
+})();
+
+module.exports = StartUp;
+
+},{}],175:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -20726,7 +20845,7 @@ var Iframe = (function (_React$Component) {
 
 module.exports = Iframe;
 
-},{"react":160}],173:[function(require,module,exports){
+},{"react":160}],176:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -20795,4 +20914,4 @@ var TestRunner = (function () {
 
 module.exports = TestRunner;
 
-},{"./iframe":172,"react":160}]},{},[3]);
+},{"./iframe":175,"react":160}]},{},[3]);
