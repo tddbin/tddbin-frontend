@@ -1,6 +1,6 @@
 # ???  2015-??-??
 
-- 
+- [code] improve structure (poorly) basically around index.js
 
 # 1.2.0  2015-03-26
 
