@@ -10,7 +10,8 @@
     "build": "./scripts/build/build.sh",
     "build-for-offline": "./scripts/build/build.sh && ./scripts/build/build-offline-dev.sh",
     "build-app": "browserify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify",
-    "watch:app": "watchify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify -v",
+    "postbuild-app": "uglifyjs dist/index.js -m -c > dist/index.min.js && rm dist/index.js",
+    "watch:app": "watch 'npm run build-app' src",
     "watch:css": "watch 'npm run build-css' src/components",
     "start": "parallelshell 'npm run watch:app' 'npm run watch:css'",
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify",
@@ -60,6 +61,7 @@
     "babel-core": "^4.7.8",
     "istanbul": "latest",
     "watch": "^0.16.0",
-    "parallelshell": "^1.1.1"
+    "parallelshell": "^1.1.1",
+    "uglifyjs": "^2.4.10"
   }
 }
