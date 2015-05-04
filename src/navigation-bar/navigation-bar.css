@@ -1,8 +1,13 @@
 /* Common stuff */
 
+.navigation-bar,
+.navigation-bar a,
+.navigation-bar button {
+  background-color: #363738;
+  color: #9c9e9f;
+}
+
 .navigation-bar {
-  background-color: #2E3949;
-  color: white;
   position: fixed;
   top: 0;
   height: 50px;
@@ -14,10 +19,8 @@
 
 .navigation-bar a,
 .navigation-bar button {
-  background-color: #384355;
   border: none;
   font-size: inherit;
-  color: #C1C5CB;
   vertical-align: middle;
   margin-left: 1px;
   height: 50px;
@@ -25,13 +28,14 @@
 }
 
 .navigation-bar :hover {
-  background-color: #475263;
+  background-color: #fedb00;
+  color: #454445;
 }
 
 /* logo */
 
 .navigation-bar button.logo {
-  background-image: url(./img/logo-150px.png);
+  background-image: url(./img/tddbin_logo.svg);
   background-size: contain;
   background-repeat: no-repeat;
   background-color: transparent;
