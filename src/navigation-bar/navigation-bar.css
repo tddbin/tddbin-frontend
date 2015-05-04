@@ -17,6 +17,15 @@
   z-index: 1000; /* we have to make sure that it is above ace, this is not the best way :( */
 }
 
+.navigation-bar .tddbin {
+  color: white;
+  font-weight: bold;
+  font-size: x-large;
+  margin-right: 1em;
+  height: 30px;
+  vertical-align: middle;
+}
+
 .navigation-bar a,
 .navigation-bar button {
   background-color: #454445;
@@ -28,7 +37,7 @@
   outline: none;
 }
 
-.navigation-bar :hover {
+.navigation-bar button:hover {
   background-color: #fedb00;
   color: #454445;
 }
@@ -47,7 +56,7 @@
 }
 .navigation-bar button.logo:hover {
   animation-name: spin;
-  animation-duration: 10s;
+  animation-duration: 30s;
   animation-timing-function: linear;
 }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

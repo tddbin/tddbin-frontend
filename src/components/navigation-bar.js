@@ -7,6 +7,7 @@ export default class NavigationBar extends React.Component {
     return (
       <header className="navigation-bar">
         <button className="logo"></button>
+        <span className="tddbin">TDD bin</span>
         <button className="save" title={`Run tests (${metaKeySymbol}S)`} onClick={onSave}>Run tests</button>
         <button title="Reset code" onClick={onResetCode}>Reset code</button>
 
