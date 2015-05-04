@@ -1,8 +1,8 @@
 import React from 'react';
-import Main from '../components/main.js';
-import TestRunner from '../test-runner/runner';
-import ShortcutProcessor from '../keyboard-shortcut/shortcut-processor';
-import Editor from '../editor';
+import Main from './components/main.js';
+import TestRunner from './test-runner/runner';
+import ShortcutProcessor from './keyboard-shortcut/shortcut-processor';
+import Editor from './editor';
 
 export function Controller(domNode, config) {
   this._domNode = domNode;

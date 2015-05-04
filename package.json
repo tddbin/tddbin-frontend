@@ -8,7 +8,7 @@
     "build-for-offline": "./scripts/build/build.sh && ./scripts/build/build-offline-dev.sh",
     "build-app": "browserify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify",
     "watch:app": "watchify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify -v",
-    "watch:css": "watch 'npm run build-css' src",
+    "watch:css": "watch 'npm run build-css' src/components",
     "start": "parallelshell 'npm run watch:app' 'npm run watch:css'",
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify",
     "watch-jasmine-spec-runners": "watchify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify -v",
