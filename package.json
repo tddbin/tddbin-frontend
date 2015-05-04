@@ -7,8 +7,9 @@
     "build": "./scripts/build/build.sh",
     "build-for-offline": "./scripts/build/build.sh && ./scripts/build/build-offline-dev.sh",
     "build-app": "browserify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify",
-    "watch-app": "watchify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify -v",
-    "start": "npm run watch-app",
+    "watch:app": "watchify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify -v",
+    "watch:css": "watch 'npm run build-css' src",
+    "start": "parallelshell 'npm run watch:app' 'npm run watch:css'",
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify",
     "watch-jasmine-spec-runners": "watchify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify -v",
     "build-mocha-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=babelify",
@@ -54,6 +55,8 @@
     "atomic": "git+https://github.com/toddmotto/atomic.git",
     "envify": "^3.3.0",
     "babel-core": "^4.7.8",
-    "istanbul": "latest"
+    "istanbul": "latest",
+    "watch": "^0.16.0",
+    "parallelshell": "^1.1.1"
   }
 }
