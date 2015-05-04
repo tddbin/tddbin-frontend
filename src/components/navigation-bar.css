@@ -3,8 +3,8 @@
 .navigation-bar,
 .navigation-bar a,
 .navigation-bar button {
-  background-color: #363738;
-  color: #9c9e9f;
+  background-color: var(--navigation-background-color);
+  color: var(--navigation-foreground-color);
 }
 
 .navigation-bar {
@@ -28,7 +28,7 @@
 
 .navigation-bar a,
 .navigation-bar button {
-  background-color: #454445;
+  background-color: var(--navigation-hover-color);
   border: none;
   font-size: inherit;
   vertical-align: middle;
@@ -38,8 +38,8 @@
 }
 
 .navigation-bar button:hover {
-  background-color: #fedb00;
-  color: #454445;
+  background-color: var(--navigation-hover-background-color);
+  color: var(--navigation-hover-color);
 }
 
 /* logo */
