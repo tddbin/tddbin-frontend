@@ -44,6 +44,12 @@
   margin: 10px 20px 10px 10px;
   vertical-align: middle;
 }
+.navigation-bar button.logo:hover {
+  animation-name: spin;
+  animation-duration: 10s;
+  animation-timing-function: linear;
+}
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 .navigation-bar .icon {
   padding-left: 48px;
