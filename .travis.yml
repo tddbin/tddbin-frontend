@@ -11,4 +11,4 @@ env:
  global:
  - KATAS_SERVICE_DOMAIN: katas.tddbin.com
  - GH_REF: github.com/tddbin/tddbin-frontend.git
- - secure: HofeV8v4B9m97cQ7S4otS7r+iY39ME1pIh/oGJc2U46oce+vAI1ONGVccgM0325myUqYTyZmP/dZGewalNm2X2KFoMrJefSNvMVTmyI9DzWKni575ss3tbuOy/RTcHTDzSc4eEZgSdnIC7OyzeTGi7WN583WUthFkc6P+wq0IeA=
+ - secure: xcpF8NUZw1hSaQnx7Px0NuPlGGSE0rvPC9e5L//MmlGNSxGgIMR8RYWBuBKcA7S1L9fdpbtSi0CLYGhixYPQ3Pe6WEtnDZZWYalkDg0BoxUVuI2HV0CQ3uxsUHSgXUvuoMqlaGHDsiKA4IyLBy7o4d3wI1vIknUKdmwWOf8VD+A=
