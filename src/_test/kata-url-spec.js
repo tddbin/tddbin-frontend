@@ -1,5 +1,5 @@
-import assert from '../../_test-helper/assert';
-import KataUrl from '../kata-url';
+import assert from '../_test-helper/assert.js';
+import KataUrl from '../kata-url.js';
 
 process.env.KATAS_SERVICE_DOMAIN = 'katas.tddbin.test';
 

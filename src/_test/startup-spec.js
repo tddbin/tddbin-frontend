@@ -5,8 +5,8 @@ global.localStorage = {
   getItem: function() {}
 };
 
-import assert from '../../_test-helper/assert';
-import StartUp from '../startup';
+import assert from '../_test-helper/assert';
+import StartUp from '../startup.js';
 
 const noop = function() {};
 

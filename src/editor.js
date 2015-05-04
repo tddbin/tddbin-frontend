@@ -1,4 +1,4 @@
-import Ace from '../_external-deps/ace.js';
+import Ace from './_external-deps/ace.js';
 
 export default class Editor {
 

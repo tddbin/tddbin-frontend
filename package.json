@@ -6,8 +6,8 @@
   "scripts": {
     "build": "./scripts/build/build.sh",
     "build-for-offline": "./scripts/build/build.sh && ./scripts/build/build-offline-dev.sh",
-    "build-app": "browserify html/index.js --outfile=dist/index.js --transform=babelify --transform=envify",
-    "watch-app": "watchify html/index.js --outfile=dist/index.js --transform=babelify --transform=envify -v",
+    "build-app": "browserify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify",
+    "watch-app": "watchify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify -v",
     "start": "npm run watch-app",
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify",
     "watch-jasmine-spec-runners": "watchify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify -v",
