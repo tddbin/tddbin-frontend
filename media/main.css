@@ -1,5 +1,5 @@
-@import "../navigation-bar/navigation-bar.css";
-@import "../keyboard-shortcut-overlay/keyboard-shortcut-overlay.css";
+@import "./navigation-bar.css";
+@import "./keyboard-shortcut-overlay.css";
 
 body {
   margin: 0;
