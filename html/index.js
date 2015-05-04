@@ -2,8 +2,7 @@ import {Controller as Main} from '../src/main/main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import StartUp from '../src/startup/startup';
-import atomic from 'atomic';
-const myAtomic = atomic(window);
+import {xhrGet} from '../src/_external-deps/xhr.js';
 
 const onSave = () => main.onSave();
 
@@ -16,13 +15,6 @@ var main = new Main(appDomNode, {
   iframeSrcUrl: `./mocha/spec-runner.html`,
   shortcuts: shortcuts
 });
-
-function xhrGet(url, onError, onSuccess) {
-  myAtomic.get(url)
-    .success(onSuccess)
-    .error(onError)
-  ;
-}
 
 const withSourceCode = (sourceCode) => {
   const onSave = () => main.onSave();
