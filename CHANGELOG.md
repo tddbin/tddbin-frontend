@@ -6,6 +6,7 @@
 - [code] separate out react components, improve directory structure
 - [code] remove react from the built file, much smaller JS file loaded in browser, and CDN used
 - [code] minify build JS file
+- [code] use myth CSS preprocessing, to allow some css future features
 
 # 1.2.0  2015-03-26
 
