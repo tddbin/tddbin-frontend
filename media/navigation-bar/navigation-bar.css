@@ -1,8 +1,13 @@
 /* Common stuff */
 
+.navigation-bar,
+.navigation-bar a,
+.navigation-bar button {
+  background-color: #363738;
+  color: #9c9e9f;
+}
+
 .navigation-bar {
-  background-color: #2E3949;
-  color: white;
   position: fixed;
   top: 0;
   height: 50px;
@@ -12,26 +17,35 @@
   z-index: 1000; /* we have to make sure that it is above ace, this is not the best way :( */
 }
 
+.navigation-bar .tddbin {
+  color: white;
+  font-weight: bold;
+  font-size: x-large;
+  margin-right: 1em;
+  height: 30px;
+  vertical-align: middle;
+}
+
 .navigation-bar a,
 .navigation-bar button {
-  background-color: #384355;
+  background-color: #454445;
   border: none;
   font-size: inherit;
-  color: #C1C5CB;
   vertical-align: middle;
   margin-left: 1px;
   height: 50px;
   outline: none;
 }
 
-.navigation-bar :hover {
-  background-color: #475263;
+.navigation-bar button:hover {
+  background-color: #fedb00;
+  color: #454445;
 }
 
 /* logo */
 
 .navigation-bar button.logo {
-  background-image: url(./img/logo-150px.png);
+  background-image: url(./img/tddbin_logo.svg);
   background-size: contain;
   background-repeat: no-repeat;
   background-color: transparent;
@@ -40,6 +54,12 @@
   margin: 10px 20px 10px 10px;
   vertical-align: middle;
 }
+.navigation-bar button.logo:hover {
+  animation-name: spin;
+  animation-duration: 30s;
+  animation-timing-function: linear;
+}
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
 
 .navigation-bar .icon {
   padding-left: 48px;
@@ -47,13 +67,9 @@
   background-repeat: no-repeat;
 }
 
-.navigation-bar .icon.new {
-  background-image: url(./img/icon-new.png);
-}
-
-.navigation-bar .icon.save {
-  background-image: url(./img/icon-reload.png);
-}
+/*.navigation-bar .icon.save {*/
+  /*background-image: url(./img/arrow.svg);*/
+/*}*/
 
 .navigation-bar .icon.twitter,
 .navigation-bar .icon.trello,
@@ -65,19 +81,22 @@
 }
 
 .navigation-bar .icon.uxebu {
-  background-image: url(./img/uxebu-logo.png);
+  background-image: url(./img/uxebu_icon.svg);
+  background-size: 70%;
+  padding: 0;
+  width: 120px;
 }
 
 .navigation-bar .icon.trello {
-  background-image: url(./img/trello-logo.png);
+  background-image: url(./img/trello_icon.svg);
 }
 
 .navigation-bar .icon.github {
-  background-image: url(./img/GitHub-Mark-Light-64px.png);
+  background-image: url(./img/github_icon.svg);
 }
 
 .navigation-bar .icon.twitter {
-  background-image: url(./img/Twitter_logo_white.png);
+  background-image: url(./img/twitter_icon.svg);
 }
 
 
