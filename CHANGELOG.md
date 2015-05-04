@@ -5,6 +5,7 @@
 - [ui] apply the new design (partly)
 - [code] separate out react components, improve directory structure
 - [code] remove react from the built file, much smaller JS file loaded in browser, and CDN used
+- [code] minify build JS file
 
 # 1.2.0  2015-03-26
 
