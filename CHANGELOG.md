@@ -1,6 +1,7 @@
 # ???  2015-??-??
 
 - [code] improve structure (poorly) basically around index.js
+- [ui] upgrade ACE to show less warnings for ES6 features
 
 # 1.2.0  2015-03-26
 
