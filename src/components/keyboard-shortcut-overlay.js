@@ -1,4 +1,5 @@
 import React from 'react';
+import KeyboardShortcut from './keyboard-shortcut.js';
 
 export default class KeyboardShortcutOverlay extends React.Component {
 
@@ -8,7 +9,7 @@ export default class KeyboardShortcutOverlay extends React.Component {
     var styleProps = {display: isVisible ? 'block' : 'none'};
     return (
       <div className="keyboard-shortcut-overlay" style={styleProps}>
-        {shortcuts.map(_renderShortcut)}
+        {shortcuts.map((shortcut, idx) => <KeyboardShortcut shortcut={shortcut} key={idx}/>)}
         <div className="hint">
           Note: All keyboard shortcuts fire <b>when you release the {metaKeySymbol}</b>  key.<br/>
           This allows for combinations such as  {metaKeySymbol}+I+E  and  {metaKeySymbol}+I+E+E , and way more<br/>
@@ -18,13 +19,4 @@ export default class KeyboardShortcutOverlay extends React.Component {
     );
   }
 
-}
-
-function _renderShortcut(shortcut) {
-  return (
-    <div>
-      <span className="shortcut">{shortcut.printableKeys} </span>
-      {shortcut.helpText}
-    </div>
-  );
 }
