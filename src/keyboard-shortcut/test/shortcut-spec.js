@@ -17,10 +17,10 @@ function createShortcut(shortcut, callback, helpText) {
 }
 
 describe('provide the help text', function() {
-  it('via getHelpText()', function() {
+  it('via the helpText property', function() {
     var helpText = 'help text';
     var shortcut = createShortcut([], someFunction, helpText);
-    assert.equal(shortcut.getHelpText(), helpText);
+    assert.equal(shortcut.helpText, helpText);
   });
 });
 
@@ -92,14 +92,14 @@ describe('printable keys', function() {
     var keys = ['Meta', 'A'];
     var shortcut = createShortcut(keys, someFunction, someString);
     var spy = this.sinon.stub().returns([]);
-    shortcut.setPrintableKeysFormatter(spy);
-    shortcut.getPrintableKeys();
+    shortcut.printableKeysFormatter = spy;
+    const _ = shortcut.printableKeys;
     assert.calledWith(spy, keys);
   });
 
   it('should return the string as is if no formatter is given', function() {
     var keys = ['Meta', 'A'];
     var shortcut = createShortcut(keys, someFunction, someString);
-    assert.equal(shortcut.getPrintableKeys(), 'Meta+A');
+    assert.equal(shortcut.printableKeys, 'Meta+A');
   });
 });

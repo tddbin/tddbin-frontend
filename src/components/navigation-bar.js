@@ -3,11 +3,12 @@ import React from 'react';
 export default class NavigationBar extends React.Component {
 
   render() {
+    const {onSave, metaKeySymbol, onResetCode} = this.props;
     return (
       <header className="navigation-bar">
         <button className="logo"></button>
-        <button className="icon save" title="Run tests (⌘S)" onClick={this.props.onSave}>Run tests ({this.props.metaKeySymbol}S)</button>
-        <button title="Reset code" onClick={this.props.onResetCode}>Reset code</button>
+        <button className="icon save" title="Run tests (⌘S)" onClick={onSave}>Run tests ({metaKeySymbol}S)</button>
+        <button title="Reset code" onClick={onResetCode}>Reset code</button>
 
         <a href="http://uxebu.com" className="icon uxebu" title="Made by uxebu."></a>
         <a href="http://twitter.com/tddbin" className="icon twitter" title="Get in touch."></a>

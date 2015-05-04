@@ -3,7 +3,7 @@ export default class Shortcut {
   constructor(keys, fn, helpText) {
     this._keys = keys;
     this._fn = fn;
-    this._helpText = helpText;
+    this.helpText = helpText;
     this._printableKeysFormatter = null;
   }
 
@@ -20,20 +20,16 @@ export default class Shortcut {
     this._fn();
   }
 
-  setPrintableKeysFormatter(formatterFunction) {
+  set printableKeysFormatter(formatterFunction) {
     this._printableKeysFormatter = formatterFunction;
   }
 
-  getPrintableKeys() {
+  get printableKeys() {
     var format = this._printableKeysFormatter;
     var keys = this._keys;
     if (format) {
       keys = format(this._keys);
     }
     return keys.join('+');
-  }
-
-  getHelpText() {
-    return this._helpText;
   }
 }

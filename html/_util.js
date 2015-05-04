@@ -14,7 +14,7 @@ const format = function(keys) {
 
 export const getShortcutObject = function(keys, fn, helpText) {
   var shortcut = new Shortcut(keys, fn, helpText);
-  shortcut.setPrintableKeysFormatter(format);
+  shortcut.printableKeysFormatter = format;
   return shortcut;
 };
 
