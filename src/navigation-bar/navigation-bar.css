@@ -19,6 +19,7 @@
 
 .navigation-bar a,
 .navigation-bar button {
+  background-color: #454445;
   border: none;
   font-size: inherit;
   vertical-align: middle;
@@ -57,13 +58,9 @@
   background-repeat: no-repeat;
 }
 
-.navigation-bar .icon.new {
-  background-image: url(./img/icon-new.png);
-}
-
-.navigation-bar .icon.save {
-  background-image: url(./img/icon-reload.png);
-}
+/*.navigation-bar .icon.save {*/
+  /*background-image: url(./img/arrow.svg);*/
+/*}*/
 
 .navigation-bar .icon.twitter,
 .navigation-bar .icon.trello,
@@ -75,19 +72,20 @@
 }
 
 .navigation-bar .icon.uxebu {
-  background-image: url(./img/uxebu-logo.png);
+  background-image: url(./img/uxebu_icon.svg);
+  width: 100px;
 }
 
 .navigation-bar .icon.trello {
-  background-image: url(./img/trello-logo.png);
+  background-image: url(./img/trello_icon.svg);
 }
 
 .navigation-bar .icon.github {
-  background-image: url(./img/GitHub-Mark-Light-64px.png);
+  background-image: url(./img/github_icon.svg);
 }
 
 .navigation-bar .icon.twitter {
-  background-image: url(./img/Twitter_logo_white.png);
+  background-image: url(./img/twitter_icon.svg);
 }
 
 
