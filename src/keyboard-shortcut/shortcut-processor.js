@@ -19,9 +19,8 @@ export default class ShortcutProcessor {
   }
 
   registerShortcuts(shortcuts) {
-    var self = this;
-    shortcuts.forEach(function(shortcut) {
-      self.registerShortcut(shortcut);
+    shortcuts.forEach((shortcut) => {
+      this.registerShortcut(shortcut);
     });
   }
 
