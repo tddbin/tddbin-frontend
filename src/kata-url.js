@@ -1,9 +1,10 @@
 /* global process */
+import {parse as parseQueryString} from 'query-string';
+
 export default class KataUrl {
   static fromQueryString(queryString) {
-    var kataName = queryString.match(/kata=([^&]+)/);
-    if (kataName && kataName.length === 2) {
-      kataName = kataName[1];
+    const kataName = parseQueryString(queryString).kata;
+    if (kataName) {
       return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
     }
   }
