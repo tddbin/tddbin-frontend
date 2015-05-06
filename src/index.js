@@ -8,22 +8,17 @@ import KataUrl from './kata-url.js';
 
 import {encode as toQueryString, decode as fromQueryString} from './querystring.js';
 
-const queryString = window.location.search.replace(/^\?/, '');
-const kataUrl = KataUrl.fromQueryString(queryString);
-console.log(kataUrl);
-
-const query = fromQueryString(queryString);
-const kataName = query.kata;
-const kataId = query.id;
-
 function onSave() {
+  const queryString = window.location.search.replace(/^\?/, '');
+  const query = fromQueryString(queryString);
+
   main.onSave();
   var data = {
     sourceCode: main.getEditorContent(),
-    previousId: kataId
+    parentId: query.id || null
   };
-  if (kataName) {
-    data.kataName = kataName;
+  if (query.kata) {
+    data.kataName = query.kata;
   }
   dpd.katas.post(data, function({id}) {
     const newQueryString = toQueryString({id: id});
@@ -52,4 +47,6 @@ var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
 
+const queryString = window.location.search.replace(/^\?/, '');
+const kataUrl = KataUrl.fromQueryString(queryString);
 startUp.loadSourceCode(kataUrl, withSourceCode);
