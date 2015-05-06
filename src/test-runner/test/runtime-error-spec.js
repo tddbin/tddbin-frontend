@@ -13,7 +13,7 @@ describe('runtime error', function() {
 `;
     sourceCode = ['"use strict";', '', 'y++;'];
     expected = ['  1 | "use strict";', '  2 | ', '> 3 | y++;', '       ^'];
-    result = RuntimeError.prettyPrint(stackTraceDump, sourceCode.join('\n'))
+    result = RuntimeError.prettyPrint(stackTraceDump, sourceCode.join('\n'));
   });
 
   it('first line should be prefixed with 1', () => {

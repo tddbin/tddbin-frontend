@@ -1,3 +1,4 @@
+/* global process */
 import assert from '../_test-helper/assert.js';
 import KataUrl from '../kata-url.js';
 

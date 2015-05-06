@@ -1,3 +1,4 @@
+/* global process */
 export default class KataUrl {
   static fromQueryString(queryString) {
     var kataName = queryString.match(/kata=([^&]+)/);

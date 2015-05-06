@@ -1,0 +1,39 @@
+{
+  "ecmaFeatures": {
+    "blockBindings": true,
+    "forOf": true,
+    "jsx": true,
+    "modules": true,
+    "classes": true,
+    "blockBindings": true,
+    "destructuring": true,
+    "arrowFunctions": true,
+    "defaultParams": true,
+    "forOf": true,
+    "generators": true
+  },
+  "rules": {
+    "semi": 2,
+    "quotes": [
+      2,
+      "single"
+    ],
+    "no-console": 2,
+    "no-underscore-dangle": 0, // would be nice to refactor this, may points to design issue!?
+    "no-use-before-define": 0, // should be covered by unit tests
+    "consistent-this": 2,
+    "complexity": [2, 3], // <1st number>=error, <2nd number>=max number of paths through a function ... actually should be 2
+    "max-nested-callbacks": [2, 4],
+    "max-depth": [2, 2], // indention level no more than 2 allowed
+    "max-params": [2, 3],
+    "max-statements": [2, 8]
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "mocha": true
+  },
+  "plugins": [
+    "react"
+  ]
+}

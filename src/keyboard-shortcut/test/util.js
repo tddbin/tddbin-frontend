@@ -17,11 +17,11 @@ export class KeyPressEmulation {
   }
 
   keyDownByKeyNames(keyNames) {
-    keyNames.forEach((...args) => { this.keyDownByKeyName(...args)});
+    keyNames.forEach((...args) => { this.keyDownByKeyName(...args); });
   }
 
   keyUpByKeyNames(keyNames) {
-    keyNames.forEach((...args) => { this.keyUpByKeyName(...args)});
+    keyNames.forEach((...args) => { this.keyUpByKeyName(...args); });
   }
 
   pressByKeyNames(keyNames) {

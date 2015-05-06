@@ -19,9 +19,8 @@ export default class ShortcutProcessor {
   }
 
   registerShortcuts(shortcuts) {
-    var self = this;
-    shortcuts.forEach(function(shortcut) {
-      self.registerShortcut(shortcut);
+    shortcuts.forEach((shortcut) => {
+      this.registerShortcut(shortcut);
     });
   }
 
@@ -67,7 +66,7 @@ export default class ShortcutProcessor {
   _handleConsecutiveKey(keyName) {
     var isFirstKeyRepition = this._pressedKeys.length === 1 && this._pressedKeys[0] === keyName;
     if (isFirstKeyRepition) {
-      return;
+      return null;
     }
 
     this._pressedKeys.push(keyName);
@@ -76,6 +75,7 @@ export default class ShortcutProcessor {
     if (this._isRegisteredShortcut(this._pressedKeys)) {
       return keyboardEventUtil.PREVENT_DEFAULT_ACTION;
     }
+    return null;
   }
 
   _keyUp(keyName) {

@@ -7,7 +7,7 @@ export var shortcuts = [
   getShortcutObject([metaKey, 'Z'], noop, 'Undo'),
   getShortcutObject([metaKey, 'Shift', 'D'], noop, 'Duplicate line'),
   getShortcutObject([metaKey, 'Shift', 'Z'], noop, 'Redo'),
-  getShortcutObject([metaKey, '/'], noop, 'Comment in/out line'),
+  getShortcutObject([metaKey, '/'], noop, 'Comment in/out line')
   //
   //getShortcutObject([metaKey, 'I', 'E'], noop, '???'),
   //getShortcutObject([metaKey, 'I', 'I'], noop, '???'),

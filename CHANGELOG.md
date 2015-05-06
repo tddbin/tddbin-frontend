@@ -7,6 +7,8 @@
 - [code] remove react from the built file, much smaller JS file loaded in browser, and CDN used
 - [code] minify build JS file
 - [code] use myth CSS preprocessing, to allow some css future features
+- [code] switch to JSCS for coding style checks, removed jsxcs since jscs has jsx built in now
+- [code] switch to eslint and apply some rules that hopefully help the code to stay in better shape
 
 # 1.2.0  2015-03-26
 

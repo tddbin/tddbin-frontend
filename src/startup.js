@@ -18,16 +18,18 @@ export default class StartUp {
 
   loadDefaultKata(onLoaded) {
     this.xhrGetDefaultKata(
-      (_, {status}) => onLoaded(`// Default kata not found (status ${status})\n// Maybe try a different kata (see URL).`),
-      data => {onLoaded(data)}
+      (_, {status}) =>
+        onLoaded(`// Default kata not found (status ${status})\n// Maybe try a different kata (see URL).`),
+      data => { onLoaded(data); }
     );
   }
 
   loadKataFromUrl(kataUrl, onLoaded) {
     this.xhrGet(
       kataUrl,
-      (_, {status}) => onLoaded(`// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`),
-      data => {onLoaded(data)}
+      (_, {status}) =>
+        onLoaded(`// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`),
+      data => { onLoaded(data); }
     );
   }
 

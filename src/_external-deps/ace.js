@@ -1,3 +1,4 @@
+/* global ace */
 export default class Ace {
 
   setDomNodeId(domNodeId) {
@@ -25,7 +26,7 @@ export default class Ace {
   }
 
   getContent() {
-    return this._editor.getValue()
+    return this._editor.getValue();
   }
 
 }

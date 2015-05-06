@@ -12,7 +12,7 @@ export default class KeyboardShortcutOverlay extends React.Component {
         {shortcuts.map((shortcut, idx) => <KeyboardShortcut shortcut={shortcut} key={idx}/>)}
         <div className="hint">
           Note: All keyboard shortcuts fire <b>when you release the {metaKeySymbol}</b>  key.<br/>
-          This allows for combinations such as  {metaKeySymbol}+I+E  and  {metaKeySymbol}+I+E+E , and way more<br/>
+          This allows for combinations such as {metaKeySymbol}+I+E and {metaKeySymbol}+I+E+E , and way more<br/>
           combinations for faster working with your code.
         </div>
       </div>
