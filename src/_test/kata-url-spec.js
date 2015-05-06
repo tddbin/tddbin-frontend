@@ -12,5 +12,17 @@ describe('get kata from katas.tddbin.com', function() {
     assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
   });
 
+  it('make sure even `wrong` encoded URLs decode', function() {
+    const kataUrlParam = 'kata=es5/mocha+assert/assert-api';
+    const expectedUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/es5/mocha+assert/assert-api.js`;
+    assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
+  });
+
+  it('make sure even `properly` encoded URLs decode', function() {
+    const kataUrlParam = 'kata=es5%2Fmocha%2Bassert%2Fassert-api';
+    const expectedUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/es5/mocha+assert/assert-api.js`;
+    assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
+  });
+
 });
 
