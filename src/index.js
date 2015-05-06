@@ -5,7 +5,10 @@ import StartUp from './startup';
 import {xhrGet} from './_external-deps/xhr.js';
 import KataUrl from './kata-url.js'
 
-const onSave = () => main.onSave();
+function onSave() {
+  main.onSave();
+  dpd.katas.post({sourceCode: main.getEditorContent()});
+}
 
 const shortcuts = aceDefaultShortcuts.concat([
   getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
