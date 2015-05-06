@@ -18,7 +18,6 @@ export const keyboardEventUtil = {
   }
 };
 
-
 const keyCodeToReadableKeyMap = {
   16: 'Shift',
   17: 'Control',
@@ -45,4 +44,3 @@ const getKeyNameFromEvent = function(evt) {
   }
   return mapKeyCodeToReadable(evt.keyCode);
 };
-

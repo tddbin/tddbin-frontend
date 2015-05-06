@@ -3,7 +3,7 @@ import {LinePrefix, MarkedLinePrefix} from './line-prefix.js';
 
 const COLUMN_HIGHLIGHT_CHARACTER = '^';
 export default class RuntimeError {
-  static prettyPrint(dump, sourceCode){
+  static prettyPrint(dump, sourceCode) {
     let stackTrace = new StackTrace(dump);
     let line = stackTrace.lineOfOrigin();
     let column = stackTrace.columnOfOrigin();
@@ -18,7 +18,7 @@ export default class RuntimeError {
       return LinePrefix.getPrefix(lineNumber, maxDigits) + sourceLine;
     });
     var neew = markedLines.splice(0, line);
-    neew = neew.concat(getSpaces(7 + column-1) + COLUMN_HIGHLIGHT_CHARACTER).concat(markedLines);
+    neew = neew.concat(getSpaces(7 + column - 1) + COLUMN_HIGHLIGHT_CHARACTER).concat(markedLines);
     return neew.join('\n');
   }
 }

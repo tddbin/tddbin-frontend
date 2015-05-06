@@ -69,7 +69,8 @@ describe('start up', function() {
       var kataUrl = 'some';
       loadSourceCode(kataUrl, withSourceCode, (_, onError) => onError(null, {status: status}));
 
-      const errorString = `// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`
+      const errorString =
+        `// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`;
       assert.calledWith(withSourceCode, errorString);
     });
   });

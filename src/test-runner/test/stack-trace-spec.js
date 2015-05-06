@@ -8,12 +8,12 @@ describe('StackTrace', function() {
     const lineOfOrigin = (stackTrace) => new StackTrace(stackTrace).lineOfOrigin();
     const columnOfOrigin = (stackTrace) => new StackTrace(stackTrace).columnOfOrigin();
 
-        var stackTraceDump =
+    var stackTraceDump =
 `ReferenceError: y is not defined
     at eval (eval at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:10), <anonymous>:42:23)
     at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:5)
 `;
-        var stackTraceDump1 =
+    var stackTraceDump1 =
 `ReferenceError: y is not defined
     at eval (eval at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:10), <anonymous>:11:22)
     at consumeMessage (http://tddbin/dist/mocha/spec-runner.js:53280:5)

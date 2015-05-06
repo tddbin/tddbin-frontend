@@ -24,14 +24,15 @@ function consumeMessage(messageData) {
   var es5Code;
   try {
     es5Code = es6ToEs5(specCode);
-  } catch(e) {
+  } catch (e) {
     document.getElementById('errorOutput').innerText = 'Syntax or ES6 transpile error\n\n' + e;
     return;
   }
   try {
     eval(es5Code);
-  } catch(e) {
-    document.getElementById('errorOutput').innerText = 'Runtime error\n\n' + e + '\n\n' + RuntimeError.prettyPrint(e.stack, es5Code);
+  } catch (e) {
+    const errorMessage = 'Runtime error\n\n' + e + '\n\n' + RuntimeError.prettyPrint(e.stack, es5Code);
+    document.getElementById('errorOutput').innerText = errorMessage;
     return;
   }
 
