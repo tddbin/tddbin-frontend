@@ -1,4 +1,4 @@
-/* global process */
+/* global process, dpd */
 import {Controller as Main} from './main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
@@ -32,7 +32,6 @@ var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
 
-const queryString = window.location.hash.replace(/^#\?/, '');
-var kataUrl = KataUrl.fromQueryString(queryString);
+var kataUrl = KataUrl.fromQueryString(window.location.search);
 
 startUp.loadSourceCode(kataUrl, withSourceCode);
