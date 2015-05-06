@@ -20,7 +20,7 @@ export default class StartUp {
     this.xhrGetDefaultKata(
       (_, {status}) =>
         onLoaded(`// Default kata not found (status ${status})\n// Maybe try a different kata (see URL).`),
-      data => {onLoaded(data)}
+      data => { onLoaded(data); }
     );
   }
 
@@ -29,7 +29,7 @@ export default class StartUp {
       kataUrl,
       (_, {status}) =>
         onLoaded(`// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`),
-      data => {onLoaded(data)}
+      data => { onLoaded(data); }
     );
   }
 

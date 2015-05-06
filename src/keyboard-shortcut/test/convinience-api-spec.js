@@ -11,7 +11,7 @@ describe('registering multiple shortcuts', function() {
     // TODO simplify the necessary mocking for every shortcut test
     //spyOn(browserEventUtil, 'onWindowBlur');
     this.sinon.stub(browserEventUtil, 'onWindowBlur');
-    new KeyPressEmulation(this.sinon);
+    new KeyPressEmulation(this.sinon); //eslint-disable-line no-new
     var processor = new ShortcutProcessor();
     this.sinon.stub(processor, 'registerShortcut');
 

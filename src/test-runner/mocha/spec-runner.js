@@ -1,9 +1,12 @@
+/* global Mocha */
+/* eslint-disable no-unused-vars */
 import expect from 'referee/lib/expect';
 import should from 'should';
 import assert from 'assert';
+/* eslint-enable no-unused-vars */
 import {transform} from 'babel-core'; // the es6 transpiler
 import 'babel-core/lib/babel/polyfill';
-import RuntimeError from '../runtime-error'
+import RuntimeError from '../runtime-error';
 
 function es6ToEs5(sourceCode) {
   return transform(sourceCode).code;
@@ -29,7 +32,7 @@ function consumeMessage(messageData) {
     return;
   }
   try {
-    eval(es5Code);
+    eval(es5Code); // eslint-disable-line no-eval
   } catch (e) {
     const errorMessage = 'Runtime error\n\n' + e + '\n\n' + RuntimeError.prettyPrint(e.stack, es5Code);
     document.getElementById('errorOutput').innerText = errorMessage;

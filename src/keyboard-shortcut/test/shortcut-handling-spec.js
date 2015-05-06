@@ -112,14 +112,13 @@ describe('keyboard shortcut', function() {
     });
   });
 
-  // test utils
-
-  function mapShortcuts(shortcuts) {
-    var processor = new ShortcutProcessor();
-    shortcuts.forEach(function(shortcut) {
-      var keys = shortcut[0];
-      var callback = shortcut[1];
-      processor.registerShortcut(new Shortcut(keys, callback));
-    });
-  }
 });
+
+function mapShortcuts(shortcuts) {
+  var processor = new ShortcutProcessor();
+  shortcuts.forEach(function(shortcut) {
+    var keys = shortcut[0];
+    const callback = shortcut[1];
+    processor.registerShortcut(new Shortcut(keys, callback));
+  });
+}

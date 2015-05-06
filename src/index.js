@@ -1,9 +1,10 @@
+/* global process */
 import {Controller as Main} from './main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import StartUp from './startup';
 import {xhrGet} from './_external-deps/xhr.js';
-import KataUrl from './kata-url.js'
+import KataUrl from './kata-url.js';
 
 const onSave = () => main.onSave();
 
@@ -18,7 +19,6 @@ var main = new Main(appDomNode, {
 });
 
 const withSourceCode = (sourceCode) => {
-  const onSave = () => main.onSave();
   main.setEditorContent(sourceCode);
   setTimeout(onSave, 1000);
 };
