@@ -18,7 +18,6 @@ var main = new Main(appDomNode, {
 });
 
 const withSourceCode = (sourceCode) => {
-  const onSave = () => main.onSave();
   main.setEditorContent(sourceCode);
   setTimeout(onSave, 1000);
 };
