@@ -6,9 +6,29 @@ import StartUp from './startup';
 import {xhrGet} from './_external-deps/xhr.js';
 import KataUrl from './kata-url.js';
 
+import {encode as toQueryString, decode as fromQueryString} from './querystring.js';
+
+const queryString = window.location.search.replace(/^\?/, '');
+const kataUrl = KataUrl.fromQueryString(queryString);
+console.log(kataUrl);
+
+const query = fromQueryString(queryString);
+const kataName = query.kata;
+const kataId = query.id;
+
 function onSave() {
   main.onSave();
-  dpd.katas.post({sourceCode: main.getEditorContent()});
+  var data = {
+    sourceCode: main.getEditorContent(),
+    previousId: kataId
+  };
+  if (kataName) {
+    data.kataName = kataName;
+  }
+  dpd.katas.post(data, function({id}) {
+    const newQueryString = toQueryString({id: id});
+    history.pushState(null, '', `?${newQueryString}`);
+  });
 }
 
 const shortcuts = aceDefaultShortcuts.concat([
@@ -26,12 +46,10 @@ const withSourceCode = (sourceCode) => {
   setTimeout(onSave, 1000);
 };
 
-const kataName = 'es5/mocha+assert/assert-api';
-export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
+const defaultKataName = 'es5/mocha+assert/assert-api';
+export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${defaultKataName}.js`;
 var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
-
-var kataUrl = KataUrl.fromQueryString(window.location.search);
 
 startUp.loadSourceCode(kataUrl, withSourceCode);
