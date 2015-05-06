@@ -1,5 +1,4 @@
 /* global process */
-import {parse as parseQueryString} from 'query-string';
 
 export default class KataUrl {
   static fromQueryString(queryString) {
@@ -8,4 +7,13 @@ export default class KataUrl {
       return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
     }
   }
+}
+
+function parseQueryString(queryString) {
+  const parts = queryString.split('&');
+  return parts.reduce(function(query, part) {
+    const [key, value] = part.split('=');
+    query[key] = decodeURIComponent(value);
+    return query;
+  }, {});
 }
