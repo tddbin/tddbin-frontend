@@ -65,6 +65,7 @@
     "myth": "^1.4.0",
     "eslint": "^0.20.0",
     "jscs": "^1.13.1",
-    "esprima-fb": "^15001.1.0-dev-harmony-fb"
+    "esprima-fb": "^15001.1.0-dev-harmony-fb",
+    "eslint-plugin-react": "^2.2.0"
   }
 }
