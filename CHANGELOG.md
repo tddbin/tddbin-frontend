@@ -9,6 +9,7 @@
 - [code] use myth CSS preprocessing, to allow some css future features
 - [code] switch to JSCS for coding style checks, removed jsxcs since jscs has jsx built in now
 - [code] switch to eslint and apply some rules that hopefully help the code to stay in better shape
+- [code] add analytics
 
 # 1.2.0  2015-03-26
 
