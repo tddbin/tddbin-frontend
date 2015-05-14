@@ -27232,6 +27232,8 @@ module.exports = function(val, options){
  */
 
 function parse(str) {
+  str = '' + str;
+  if (str.length > 10000) return;
   var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
   if (!match) return;
   var n = parseFloat(match[1]);
@@ -57408,7 +57410,7 @@ function es6ToEs5Code(sourceCode) {
   try {
     return transform(sourceCode).code;
   } catch (e) {
-    document.getElementById("errorOutput").innerText = "Syntax or ES6 (babeljs) transpile error\n\n" + e;
+    document.getElementById("errorOutput").innerHTML = "Syntax or ES6 (babeljs) transpile error\n\n" + e;
   }
   return null;
 }
