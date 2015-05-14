@@ -12,7 +12,7 @@ function es6ToEs5Code(sourceCode) {
   try {
     return transform(sourceCode).code;
   } catch (e) {
-    document.getElementById('errorOutput').innerText = 'Syntax or ES6 (babeljs) transpile error\n\n' + e;
+    document.getElementById('errorOutput').innerHTML = 'Syntax or ES6 (babeljs) transpile error\n\n' + e;
   }
   return null;
 }
