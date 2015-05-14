@@ -10,6 +10,7 @@
 - [code] switch to JSCS for coding style checks, removed jsxcs since jscs has jsx built in now
 - [code] switch to eslint and apply some rules that hopefully help the code to stay in better shape
 - [code] add analytics
+- [fix] show errors correctly in FF, closes #4
 
 # 1.2.0  2015-03-26
 
