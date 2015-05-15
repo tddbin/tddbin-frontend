@@ -9,6 +9,8 @@ import {transform} from 'babel-core'; // the es6 transpiler
 import 'babel-core/lib/babel/polyfill';
 import RuntimeError from '../runtime-error';
 
+import HTML from './reporter.js';
+
 function es6ToEs5Code(sourceCode) {
   try {
     return transform(sourceCode).code;
@@ -24,7 +26,7 @@ function consumeMessage(messageData) {
 
   // Reset mocha env
   document.getElementById('mocha').innerHTML = '';
-  var mocha = new Mocha({reporter: 'html', ui: 'bdd'});
+  var mocha = new Mocha({reporter: HTML, ui: 'bdd'});
   mocha.suite.emit('pre-require', this, null, this);
 
   runSpecs(specCode);
