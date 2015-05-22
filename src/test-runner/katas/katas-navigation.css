@@ -1,0 +1,6 @@
+#katas-navigation {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border: 1px solid black
+}

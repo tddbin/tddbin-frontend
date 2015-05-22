@@ -11,6 +11,7 @@ ORIGIN_ROOT="."
 DIST_ROOT="$ORIGIN_ROOT/dist"
 DIST_MOCHA_DIR="$DIST_ROOT/mocha"
 DIST_JASMINE_DIR="$DIST_ROOT/jasmine"
+DIST_KATAS_DIR="$DIST_ROOT/katas"
 
 # clean up
 rm -Rf $DIST_ROOT;
@@ -18,6 +19,7 @@ rm -Rf $DIST_ROOT;
 # create build directory (structure)
 mkdir -p $DIST_MOCHA_DIR;
 mkdir -p $DIST_JASMINE_DIR;
+mkdir -p $DIST_KATAS_DIR;
 
 # copy html assets
 cp $ORIGIN_ROOT/src/_html/index.html $DIST_ROOT;
@@ -35,6 +37,8 @@ fi;
 cp $ORIGIN_ROOT/src/_html/favicon.ico $DIST_ROOT;
 cp $ORIGIN_ROOT/src/test-runner/mocha/spec-runner.html $DIST_MOCHA_DIR;
 cp $ORIGIN_ROOT/src/test-runner/jasmine/spec-runner.html $DIST_JASMINE_DIR;
+cp $ORIGIN_ROOT/src/test-runner/katas/spec-runner.html $DIST_KATAS_DIR;
+cp $ORIGIN_ROOT/src/test-runner/katas/*.css $DIST_KATAS_DIR;
 
 # run all build scripts, `&&` ensures to stop on any fail
 (
