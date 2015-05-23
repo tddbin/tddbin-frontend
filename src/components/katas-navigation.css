@@ -7,18 +7,26 @@
   background-color: var(--navigation-background-color);
   box-shadow: 5px 0 5px 2px grey;
 }
+#katas-navigation > span,
+#katas-navigation a {
+  padding: 0.5em;
+}
 
 #katas-navigation a {
   background-color: var(--navigation-hover-color);
   color: var(--navigation-foreground-color);
-  padding: 0.5em;
   margin-right: 1px;
   text-decoration: none;
 }
+#katas-navigation a.selected:hover,
 #katas-navigation a:hover {
   color: var(--navigation-hover-color);
   background-color: var(--navigation-hover-background-color);
 }
 #katas-navigation a.selected {
-  color: var(--navigation-hover-color);
+  background-color: color(var(--navigation-hover-background-color) blackness(50%));
+}
+#katas-navigation .scrollable {
+  overflow: auto;
+  width: 30%;
 }
