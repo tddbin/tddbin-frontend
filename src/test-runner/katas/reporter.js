@@ -39,8 +39,6 @@ var statsTemplate = '<ul id="mocha-stats">'
   + '<li class="passes"><a href="#">passes:</a> <em>0</em></li>'
   + '<li class="failures"><a href="#">failures:</a> <em>0</em></li>'
   + '<li class="duration">duration: <em>0</em>s</li>'
-  + '<li>previous kata</li>'
-  + '<li>next kata</li>'
   + '</ul>';
 
 /**

@@ -38,7 +38,6 @@ cp $ORIGIN_ROOT/src/_html/favicon.ico $DIST_ROOT;
 cp $ORIGIN_ROOT/src/test-runner/mocha/spec-runner.html $DIST_MOCHA_DIR;
 cp $ORIGIN_ROOT/src/test-runner/jasmine/spec-runner.html $DIST_JASMINE_DIR;
 cp $ORIGIN_ROOT/src/test-runner/katas/spec-runner.html $DIST_KATAS_DIR;
-cp $ORIGIN_ROOT/src/test-runner/katas/*.css $DIST_KATAS_DIR;
 
 # run all build scripts, `&&` ensures to stop on any fail
 (
