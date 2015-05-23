@@ -13,19 +13,22 @@ html, body, #tddbin, #main {
   top: 50px;
 }
 
-.editor-and-runner .editor {
+.editor-and-runner .editor,
+.editor-and-runner .runner {
   position: fixed;
   width: 50%;
   height: calc(100% - 50px);
+}
+.editor-and-runner .editor {
   float: left;
   border: none;
 }
+.editor-and-runner #runnerId {
+  height: 100%;
+}
 
 .editor-and-runner .runner {
-  position: fixed;
   left: 50%;
-  width: 50%;
-  height: calc(100% - 50px);
   background-color: var(--runner-background-color);
 }
 

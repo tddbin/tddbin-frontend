@@ -1,6 +1,7 @@
 import React from 'react';
 import NavigationBar from '../components/navigation-bar.js';
 import KeyboardShortcutOverlay from '../components/keyboard-shortcut-overlay.js';
+import KatasNavigation from '../components/katas-navigation.js';
 
 export default class Main extends React.Component {
 
@@ -16,7 +17,10 @@ export default class Main extends React.Component {
 
         <div className="editor-and-runner">
           <div id={editorId} className="editor"></div>
-          <div id={runnerId} className="runner"></div>
+          <div className="runner">
+            <div id={runnerId}></div>
+            <KatasNavigation />
+          </div>
         </div>
 
         <KeyboardShortcutOverlay
