@@ -5,7 +5,7 @@
   width: 100%;
   color: var(--navigation-foreground-color);
   background-color: var(--navigation-background-color);
-  box-shadow: 5px 0 5px 2px grey;
+  box-shadow: 0 0 5px 2px grey;
 }
 #katas-navigation > span,
 #katas-navigation a {
@@ -28,5 +28,6 @@
 }
 #katas-navigation .scrollable {
   overflow: auto;
-  width: 30%;
+  width: 40%;
+  display: flex;
 }

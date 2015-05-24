@@ -17,12 +17,10 @@ export default class Main extends React.Component {
 
         <div className="editor-and-runner">
           <div id={editorId} className="editor"></div>
-          <div className="runner">
-            <div id={runnerId}></div>
-            <KatasNavigation />
-          </div>
+          <div id={runnerId} className="runner"></div>
         </div>
 
+        <KatasNavigation />
         <KeyboardShortcutOverlay
           metaKeySymbol={metaKeySymbol}
           shortcuts={shortcuts}
