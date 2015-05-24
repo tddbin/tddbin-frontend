@@ -21,6 +21,7 @@ export default class Main extends React.Component {
         </div>
 
         <KatasNavigation />
+
         <KeyboardShortcutOverlay
           metaKeySymbol={metaKeySymbol}
           shortcuts={shortcuts}
