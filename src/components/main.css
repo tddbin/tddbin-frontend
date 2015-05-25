@@ -7,31 +7,32 @@ html, body, #tddbin, #main {
   height: 100%;
 }
 
-.editor-and-runner {
-  position: fixed;
-  /* 50px - the height of the navigation bar, variables would be nice :) */
-  top: 50px;
-}
-
-.editor-and-runner .editor,
-.editor-and-runner .runner {
-  position: fixed;
-  width: 50%;
-  height: calc(100% - 50px);
-}
-.editor-and-runner .editor {
-  float: left;
-  border: none;
-}
-.editor-and-runner #runnerId {
+.flex-rows-full-height {
+  display: flex;
+  flex-direction: column;
   height: 100%;
 }
-
-.editor-and-runner .runner {
-  left: 50%;
-  background-color: var(--runner-background-color);
+.flex-columns-full-width {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
 
+.editor-and-runner {
+  flex: 1;
+}
+  .editor-and-runner .editor,
+  .editor-and-runner .runner {
+    flex: 1;
+  }
+  .editor-and-runner .editor,
   .editor-and-runner .runner iframe {
     border: none;
   }
+
+  .editor-and-runner .runner {
+    background-color: var(--runner-background-color);
+  }
+    .editor-and-runner .runner iframe {
+      flex: 1;
+    }

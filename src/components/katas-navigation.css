@@ -1,13 +1,10 @@
 #katas-navigation {
-  display: flex;
-  position: fixed;
-  bottom: 0;
   width: 100%;
   color: var(--navigation-foreground-color);
   background-color: var(--navigation-background-color);
   box-shadow: 0 0 5px 2px grey;
 }
-#katas-navigation > span,
+#katas-navigation .headline,
 #katas-navigation a {
   padding: 0.5em;
 }

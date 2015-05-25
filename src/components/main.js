@@ -8,16 +8,16 @@ export default class Main extends React.Component {
   render() {
     const {metaKeySymbol, onSave, onResetCode, editorId, runnerId, shortcuts} = this.props;
     return (
-      <div>
+      <div className="flex-rows-full-height">
         <NavigationBar
           metaKeySymbol={metaKeySymbol}
           onSave={onSave}
           onResetCode={onResetCode}
         />
 
-        <div className="editor-and-runner">
+        <div className="flex-columns-full-width editor-and-runner">
           <div id={editorId} className="editor"></div>
-          <div id={runnerId} className="runner"></div>
+          <div id={runnerId} className="flex-rows-full-height runner"></div>
         </div>
 
         <KatasNavigation />
