@@ -1,4 +1,5 @@
 .keyboard-shortcut-overlay {
+  flex: 0;
   display:none;
 
   /* positioning */
