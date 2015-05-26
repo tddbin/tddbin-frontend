@@ -12,12 +12,10 @@ body {
 .flex-rows-full-height {
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 .flex-columns-full-width {
   display: flex;
   flex-direction: row;
-  width: 100%;
 }
 
 .editor-and-runner {
