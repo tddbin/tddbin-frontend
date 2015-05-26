@@ -1,3 +1,4 @@
+/* global process */
 import React from 'react';
 import NavigationBar from '../components/navigation-bar.js';
 import KeyboardShortcutOverlay from '../components/keyboard-shortcut-overlay.js';
@@ -26,8 +27,28 @@ export default class Main extends React.Component {
           metaKeySymbol={metaKeySymbol}
           shortcuts={shortcuts}
         />
+
+        <script src="./index.min.js" type="application/javascript"></script>
+        <Analytics />
       </body>
     );
   }
+}
 
+class Analytics extends React.Component {
+  render() {
+    const trackingId = process.env.GA_TRACKING_ID;
+    const trackingDomain = process.env.GA_TRACKING_DOMAIN;
+    if (!trackingId || !trackingDomain) {
+      return null;
+    }
+    const jsCode = `(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      ga('create', '${trackingId}', '${trackingDomain}');
+      ga('send', 'pageview');
+    `;
+    return <script dangerouslySetInnerHTML={{__html: jsCode}}></script>
+  }
 }
