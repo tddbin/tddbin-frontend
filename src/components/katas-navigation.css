@@ -2,7 +2,6 @@
   width: 100%;
   color: var(--navigation-foreground-color);
   background-color: var(--navigation-background-color);
-  box-shadow: 0 0 5px 2px grey;
 }
 #katas-navigation .headline,
 #katas-navigation a {
