@@ -8,7 +8,7 @@ export default class Main extends React.Component {
   render() {
     const {metaKeySymbol, onSave, onResetCode, editorId, runnerId, shortcuts} = this.props;
     return (
-      <div className="flex-rows-full-height">
+      <body>
         <NavigationBar
           metaKeySymbol={metaKeySymbol}
           onSave={onSave}
@@ -26,7 +26,7 @@ export default class Main extends React.Component {
           metaKeySymbol={metaKeySymbol}
           shortcuts={shortcuts}
         />
-      </div>
+      </body>
     );
   }
 
