@@ -14,7 +14,7 @@ const shortcuts = aceDefaultShortcuts.concat([
 
 const appDomNode = document.getElementById('tddbin');
 var main = new Main(appDomNode, {
-  iframeSrcUrl: `./katas/spec-runner.html`,
+  iframeSrcUrl: `./mocha/spec-runner.html`,
   shortcuts: shortcuts
 });
 
