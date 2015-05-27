@@ -7,7 +7,6 @@ import Editor from './editor';
 export function Controller(domNode, config) {
   this._domNode = domNode;
   this._config = config;
-  this.render();
 }
 
 Controller.prototype = {

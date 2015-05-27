@@ -17,6 +17,7 @@ var main = new Main(appDomNode, {
   iframeSrcUrl: `./mocha/spec-runner.html`,
   shortcuts: shortcuts
 });
+main.render();
 
 const withSourceCode = (sourceCode) => {
   main.setEditorContent(sourceCode);
