@@ -63,8 +63,6 @@ Controller.prototype = {
   },
 
   _hideOverlayView: function() {
-    //this._component.props = {shortcuts: []};
-    //this._component.setProps({shortcuts: []});
     this._render([]);
   },
 
@@ -74,9 +72,6 @@ Controller.prototype = {
       return shortcut.isStartOfKeyCombo(pressedKeys);
     });
     this._render(applicableShortcuts);
-    //this._component.props = {shortcuts: applicableShortcuts};
-    //this._component.props.shortcuts = applicableShortcuts;
-    //this._component.setProps({shortcuts: applicableShortcuts});
   }
 
 };
