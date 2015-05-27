@@ -34,7 +34,7 @@ Controller.prototype = {
       onResetCode: this._onResetCode,
       shortcuts: shortcuts
     };
-    this._component = React.render(<Main {...props}/>, document.querySelector('body'));
+    React.render(<Main {...props}/>, document.querySelector('#tddbin'));
   },
 
   onSave: function() {

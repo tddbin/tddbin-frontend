@@ -5,6 +5,12 @@ html, body {
 body {
   margin: 0;
   font-family: sans-serif;
+}
+
+#tddbin, #tddbin > div {
+  height: 100%;
+}
+#tddbin > div {
   display: flex;
   flex-direction: column;
 }

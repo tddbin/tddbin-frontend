@@ -5,21 +5,17 @@ import KeyboardShortcutOverlay from '../components/keyboard-shortcut-overlay.js'
 import KatasNavigation from '../components/katas-navigation.js';
 
 export default class Main extends React.Component {
-
   render() {
     const {metaKeySymbol, onSave, onResetCode, editorId, runnerId, shortcuts} = this.props;
     return (
-      <body>
+      <div>
         <NavigationBar
           metaKeySymbol={metaKeySymbol}
           onSave={onSave}
           onResetCode={onResetCode}
         />
 
-        <div className="flex-columns-full-width editor-and-runner">
-          <div id={editorId} className="editor"></div>
-          <div id={runnerId} className="flex-rows-full-height runner"></div>
-        </div>
+        <EditorAndRunner editorId={editorId} runnerId={runnerId} />
 
         <KatasNavigation />
 
@@ -28,9 +24,20 @@ export default class Main extends React.Component {
           shortcuts={shortcuts}
         />
 
-        <script src="./index.min.js" type="application/javascript"></script>
         <Analytics />
-      </body>
+      </div>
+    );
+  }
+}
+
+class EditorAndRunner extends React.Component {
+  render() {
+    const {editorId, runnerId} = this.props;
+    return (
+      <div className="flex-columns-full-width editor-and-runner">
+        <div id={editorId} className="editor"></div>
+        <div id={runnerId} className="flex-rows-full-height runner"></div>
+      </div>
     );
   }
 }
