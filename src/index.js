@@ -33,4 +33,7 @@ const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
 const queryString = window.location.hash.replace(/^#\?/, '');
 var kataUrl = KataUrl.fromQueryString(queryString);
 
-startUp.loadSourceCode(kataUrl, withSourceCode);
+startUp.loadSourceCode(kataUrl.toString(), withSourceCode);
+if (kataUrl.isEs6Kata) {
+  main.showEs6KatasNavigation();
+}

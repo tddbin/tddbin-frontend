@@ -30,9 +30,15 @@ export default class MainController {
       runnerId: this._runnerDomNodeId,
       onSave: this.onSave.bind(this),
       onResetCode: this._onResetCode,
-      shortcuts: shortcuts
+      shortcuts: shortcuts,
+      es6KatasNavigation: this._showEs6KatasNavigation
     };
     React.render(<Main {...props}/>, document.querySelector('#tddbin'));
+  }
+
+  showEs6KatasNavigation() {
+    this._showEs6KatasNavigation = true;
+    this._render();
   }
 
   onSave() {

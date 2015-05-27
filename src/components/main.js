@@ -6,7 +6,14 @@ import KatasNavigation from '../components/katas-navigation.js';
 
 export default class Main extends React.Component {
   render() {
-    const {metaKeySymbol, onSave, onResetCode, editorId, runnerId, shortcuts} = this.props;
+    const {
+      metaKeySymbol, onSave, onResetCode,
+      editorId, runnerId, shortcuts
+    } = this.props;
+    let es6KatasNavigation = null;
+    if (this.props.es6KatasNavigation) {
+      es6KatasNavigation = <KatasNavigation />;
+    }
     return (
       <div>
         <NavigationBar
@@ -17,7 +24,7 @@ export default class Main extends React.Component {
 
         <EditorAndRunner editorId={editorId} runnerId={runnerId} />
 
-        <KatasNavigation />
+        {es6KatasNavigation}
 
         <KeyboardShortcutOverlay
           metaKeySymbol={metaKeySymbol}
