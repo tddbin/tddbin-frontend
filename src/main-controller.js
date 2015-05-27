@@ -4,16 +4,15 @@ import TestRunner from './test-runner/runner';
 import ShortcutProcessor from './keyboard-shortcut/shortcut-processor';
 import Editor from './editor';
 
-export function Controller(domNode, config) {
-  this._domNode = domNode;
-  this._config = config;
-}
+export default class MainController {
 
-Controller.prototype = {
+  constructor(domNode, config) {
+    this._domNode = domNode;
+    this._config = config;
+  }
 
-  _component: null,
 
-  render: function() {
+  render() {
     this._editorDomNodeId = 'editorId';
     this._runnerDomNodeId = 'runnerId';
     this._render();
@@ -22,9 +21,9 @@ Controller.prototype = {
     this._runner.render(this._config.iframeSrcUrl);
     this.setEditorContent('');
     this._registerShortcuts(this._config.shortcuts);
-  },
+  }
 
-  _render: function(shortcuts=[]) {
+  _render(shortcuts=[]) {
     var props = {
       metaKeySymbol: '⌘',
       editorId: this._editorDomNodeId,
@@ -34,38 +33,38 @@ Controller.prototype = {
       shortcuts: shortcuts
     };
     React.render(<Main {...props}/>, document.querySelector('#tddbin'));
-  },
+  }
 
-  onSave: function() {
+  onSave() {
     window.localStorage.setItem('code', this._editor.getContent());
     this.runEditorContent();
-  },
+  }
 
-  _onResetCode: function() {
+  _onResetCode() {
     window.localStorage.removeItem('code');
     window.location.reload();
-  },
+  }
 
-  setEditorContent: function(sourceCode) {
+  setEditorContent(sourceCode) {
     this._editor.setContent(sourceCode);
-  },
+  }
 
-  runEditorContent: function() {
+  runEditorContent() {
     this._runner.send(this._editor.getContent());
-  },
+  }
 
-  _registerShortcuts: function(shortcuts) {
+  _registerShortcuts(shortcuts) {
     var processor = new ShortcutProcessor();
     processor.registerShortcuts(shortcuts);
     processor.onKeyDown(this._updateOverlayView.bind(this));
     processor.onShortcutEnd(this._hideOverlayView.bind(this));
-  },
+  }
 
-  _hideOverlayView: function() {
+  _hideOverlayView() {
     this._render([]);
-  },
+  }
 
-  _updateOverlayView: function(pressedKeys) {
+  _updateOverlayView(pressedKeys) {
     var allShortcuts = this._config.shortcuts;
     var applicableShortcuts = allShortcuts.filter(function(shortcut) {
       return shortcut.isStartOfKeyCombo(pressedKeys);
@@ -73,4 +72,4 @@ Controller.prototype = {
     this._render(applicableShortcuts);
   }
 
-};
+}

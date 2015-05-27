@@ -1,5 +1,5 @@
 /* global process */
-import {Controller as Main} from './main-controller';
+import MainController from './main-controller';
 import {getShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import StartUp from './startup';
@@ -13,7 +13,7 @@ const shortcuts = aceDefaultShortcuts.concat([
 ]);
 
 const appDomNode = document.getElementById('tddbin');
-var main = new Main(appDomNode, {
+var main = new MainController(appDomNode, {
   iframeSrcUrl: `./mocha/spec-runner.html`,
   shortcuts: shortcuts
 });
