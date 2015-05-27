@@ -3,7 +3,7 @@ import React from 'react';
 export default class KatasNavigation extends React.Component {
 
   render() {
-    const selectedKataId = 4;
+    const selectedKataId = null;
     return (
       <div id="katas-navigation" className="flex-columns-full-width">
         <div className="headline">ES6 Katas</div>
