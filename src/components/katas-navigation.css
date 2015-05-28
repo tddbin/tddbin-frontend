@@ -6,6 +6,7 @@
 #katas-navigation .headline,
 #katas-navigation a {
   padding: 0.5em;
+  white-space: nowrap;
 }
 
 #katas-navigation a {
@@ -24,6 +25,5 @@
 }
 #katas-navigation .scrollable {
   overflow: auto;
-  width: 40%;
   display: flex;
 }
