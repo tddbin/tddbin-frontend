@@ -31,13 +31,13 @@ export default class MainController {
       onSave: this.onSave.bind(this),
       onResetCode: this._onResetCode,
       shortcuts: shortcuts,
-      es6KatasNavigation: this._showEs6KatasNavigation
+      es6Katas: this._es6Katas || null
     };
     React.render(<Main {...props}/>, document.querySelector('#tddbin'));
   }
 
-  showEs6KatasNavigation() {
-    this._showEs6KatasNavigation = true;
+  showEs6KatasNavigation(es6KataData) {
+    this._es6Katas = es6KataData;
     this._render();
   }
 

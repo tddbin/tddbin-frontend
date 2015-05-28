@@ -8,12 +8,8 @@ export default class Main extends React.Component {
   render() {
     const {
       metaKeySymbol, onSave, onResetCode,
-      editorId, runnerId, shortcuts
+      editorId, runnerId, shortcuts, es6Katas
     } = this.props;
-    let es6KatasNavigation = null;
-    if (this.props.es6KatasNavigation) {
-      es6KatasNavigation = <KatasNavigation />;
-    }
     return (
       <div>
         <NavigationBar
@@ -24,7 +20,7 @@ export default class Main extends React.Component {
 
         <EditorAndRunner editorId={editorId} runnerId={runnerId} />
 
-        {es6KatasNavigation}
+        <KatasNavigation katas={es6Katas}/>
 
         <KeyboardShortcutOverlay
           metaKeySymbol={metaKeySymbol}

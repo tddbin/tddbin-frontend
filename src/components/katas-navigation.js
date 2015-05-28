@@ -3,12 +3,16 @@ import React from 'react';
 export default class KatasNavigation extends React.Component {
 
   render() {
+    if (!this.props.katas) {
+      return null;
+    }
     const selectedKataId = null;
+    const katas = this.props.katas.items;
     return (
       <div id="katas-navigation" className="flex-columns-full-width">
         <div className="headline">ES6 Katas</div>
         <div className="scrollable">
-          {[1,2,3,4,5,6,7].map(id => <KataLink id={id} selected={selectedKataId==id} />)}
+          {katas.map(kata => <KataLink kata={kata} selected={selectedKataId==kata.id} />)}
         </div>
       </div>
     );
@@ -19,10 +23,12 @@ export default class KatasNavigation extends React.Component {
 class KataLink extends React.Component {
 
   render() {
-    const {id, selected} = this.props;
+    const {kata, selected} = this.props;
+    const {id, path} = kata;
+    const url = '/#?kata=es6/language/' + path;
     const className = selected ? 'selected' : '';
     return (
-      <a href="/#?kata=some/kata" title={`Kata ${id}`} className={className}>{id}</a>
+      <a href={url} title={`Kata ${id}`} className={className}>{id}</a>
     );
   }
 

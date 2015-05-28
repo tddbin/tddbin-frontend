@@ -35,5 +35,8 @@ var kataUrl = KataUrl.fromQueryString(queryString);
 
 startUp.loadSourceCode(kataUrl.toString(), withSourceCode);
 if (kataUrl.isEs6Kata) {
-  main.showEs6KatasNavigation();
+  function onSuccess(es6KataData) {
+    main.showEs6KatasNavigation(es6KataData);
+  }
+  xhrGet(`http://${process.env.KATAS_SERVICE_DOMAIN}/katas/es6/language/__all__.json`, function() {}, onSuccess);
 }
