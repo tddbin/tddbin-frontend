@@ -16,6 +16,12 @@ export default class KataUrl {
     return new KataUrl();
   }
 
+  static fromKataName(kataName) {
+    let kataUrl = new KataUrl();
+    kataUrl.kataName = kataName;
+    return kataUrl;
+  }
+
   toString() {
     if (this.kataName) {
       return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${this.kataName}.js`;

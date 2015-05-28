@@ -4,12 +4,18 @@ import KataUrl from '../kata-url.js';
 
 process.env.KATAS_SERVICE_DOMAIN = 'katas.tddbin.test';
 
-describe('get kata from katas.tddbin.com', function() {
+describe('KataUrl', function() {
 
-  it('request from the right URL', function() {
+  it('create it out of the query string', function() {
     const kataUrlParam = 'kata=my/kata';
     const expectedUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
     assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
+  });
+
+  it('create it from the kata name', function() {
+    const kataUrlParam = 'my/kata';
+    const expectedUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
+    assert.equal(KataUrl.fromKataName(kataUrlParam), expectedUrl);
   });
 
   describe('if no valid kata is given', function() {
