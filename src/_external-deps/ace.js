@@ -29,4 +29,7 @@ export default class Ace {
     return this._editor.getValue();
   }
 
+  resize() {
+    this._editor.resize();
+  }
 }

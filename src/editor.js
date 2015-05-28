@@ -15,4 +15,8 @@ export default class Editor {
     return this.ace.getContent();
   }
 
+  resize() {
+    this.ace.resize();
+  }
+
 }

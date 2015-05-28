@@ -39,6 +39,7 @@ export default class MainController {
   showEs6KatasNavigation(es6KataData) {
     this._es6Katas = es6KataData;
     this._render();
+    this._editor.resize(); // adding the katas navigation changes the space ACE can use, we must inform it to resize :/
   }
 
   onSave() {
