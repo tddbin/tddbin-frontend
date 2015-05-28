@@ -12,12 +12,6 @@ describe('KataUrl', function() {
     assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
   });
 
-  it('create it from the kata name', function() {
-    const kataUrlParam = 'my/kata';
-    const expectedUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
-    assert.equal(KataUrl.fromKataName(kataUrlParam), expectedUrl);
-  });
-
   describe('if no valid kata is given', function() {
     it('returns a new instance', function() {
       assert.ok(KataUrl.fromQueryString('') instanceof KataUrl);

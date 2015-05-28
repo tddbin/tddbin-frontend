@@ -8,10 +8,7 @@ export default class KataUrl {
   static fromQueryString(queryString) {
     var kataName = queryString.match(/kata=([^&]+)/);
     if (kataName && kataName.length === 2) {
-
-      let kataUrl = new KataUrl();
-      kataUrl.kataName = kataName[1];
-      return kataUrl;
+      return KataUrl.fromKataName(kataName[1]);
     }
     return new KataUrl();
   }
