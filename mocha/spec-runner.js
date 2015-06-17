@@ -31255,7 +31255,8 @@ module.exports = baseIndexOf;
 
 },{"./indexOfNaN":267}],222:[function(require,module,exports){
 var baseIsEqualDeep = require('./baseIsEqualDeep'),
-    isObject = require('../lang/isObject');
+    isObject = require('../lang/isObject'),
+    isObjectLike = require('./isObjectLike');
 
 /**
  * The base implementation of `_.isEqual` without support for `this` binding
@@ -31274,7 +31275,7 @@ function baseIsEqual(value, other, customizer, isLoose, stackA, stackB) {
   if (value === other) {
     return true;
   }
-  if (value == null || other == null || (!isObject(value) && !isObject(other))) {
+  if (value == null || other == null || (!isObject(value) && !isObjectLike(other))) {
     return value !== value && other !== other;
   }
   return baseIsEqualDeep(value, other, baseIsEqual, customizer, isLoose, stackA, stackB);
@@ -31282,7 +31283,7 @@ function baseIsEqual(value, other, customizer, isLoose, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"../lang/isObject":299,"./baseIsEqualDeep":223}],223:[function(require,module,exports){
+},{"../lang/isObject":299,"./baseIsEqualDeep":223,"./isObjectLike":277}],223:[function(require,module,exports){
 var equalArrays = require('./equalArrays'),
     equalByTag = require('./equalByTag'),
     equalObjects = require('./equalObjects'),
@@ -31538,8 +31539,7 @@ var baseGet = require('./baseGet'),
     toPath = require('./toPath');
 
 /**
- * The base implementation of `_.matchesProperty` which does not which does
- * not clone `value`.
+ * The base implementation of `_.matchesProperty` which does not clone `srcValue`.
  *
  * @private
  * @param {string} path The path of the property to get.
@@ -33037,6 +33037,9 @@ function isArrayLike(value) {
 module.exports = isArrayLike;
 
 },{"./getLength":264,"./isLength":276}],272:[function(require,module,exports){
+/** Used to detect unsigned integer values. */
+var reIsUint = /^\d+$/;
+
 /**
  * Used as the [maximum length](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
  * of an array-like value.
@@ -33052,7 +33055,7 @@ var MAX_SAFE_INTEGER = 9007199254740991;
  * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
  */
 function isIndex(value, length) {
-  value = typeof value == 'number' ? value : parseFloat(value);
+  value = (typeof value == 'number' || reIsUint.test(value)) ? +value : -1;
   length = length == null ? MAX_SAFE_INTEGER : length;
   return value > -1 && value % 1 == 0 && value < length;
 }
@@ -33121,6 +33124,7 @@ module.exports = isKey;
 
 },{"../lang/isArray":293,"./toObject":288}],275:[function(require,module,exports){
 var LazyWrapper = require('./LazyWrapper'),
+    getData = require('./getData'),
     getFuncName = require('./getFuncName'),
     lodash = require('../chain/lodash');
 
@@ -33133,12 +33137,20 @@ var LazyWrapper = require('./LazyWrapper'),
  */
 function isLaziable(func) {
   var funcName = getFuncName(func);
-  return !!funcName && func === lodash[funcName] && funcName in LazyWrapper.prototype;
+  if (!(funcName in LazyWrapper.prototype)) {
+    return false;
+  }
+  var other = lodash[funcName];
+  if (func === other) {
+    return true;
+  }
+  var data = getData(other);
+  return !!data && func === data[0];
 }
 
 module.exports = isLaziable;
 
-},{"../chain/lodash":183,"./LazyWrapper":196,"./getFuncName":263}],276:[function(require,module,exports){
+},{"../chain/lodash":183,"./LazyWrapper":196,"./getData":262,"./getFuncName":263}],276:[function(require,module,exports){
 /**
  * Used as the [maximum length](https://people.mozilla.org/~jorendorff/es6-draft.html#sec-number.max_safe_integer)
  * of an array-like value.
@@ -34618,7 +34630,7 @@ module.exports = identity;
 
 },{}],315:[function(require,module,exports){
 /**
- * A no-operation function which returns `undefined` regardless of the
+ * A no-operation function that returns `undefined` regardless of the
  * arguments it receives.
  *
  * @static
@@ -34643,7 +34655,7 @@ var baseProperty = require('../internal/baseProperty'),
     isKey = require('../internal/isKey');
 
 /**
- * Creates a function which returns the property value at `path` on a
+ * Creates a function that returns the property value at `path` on a
  * given object.
  *
  * @static
@@ -43293,9 +43305,11 @@ function amdefine(module, requireFn) {
                 });
 
                 //Wait for next tick to call back the require call.
-                process.nextTick(function () {
-                    callback.apply(null, deps);
-                });
+                if (callback) {
+                    process.nextTick(function () {
+                        callback.apply(null, deps);
+                    });
+                }
             }
         }
 
@@ -45490,14 +45504,14 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 },{}],358:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i]
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
   i += d
 
@@ -45523,14 +45537,14 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 }
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
   value = Math.abs(value)
 
@@ -49180,7 +49194,866 @@ function hasOwnProperty(obj, prop) {
     return expect;
 });
 
-},{"lodash":382}],382:[function(require,module,exports){
+},{"lodash":384}],382:[function(require,module,exports){
+((typeof define === "function" && define.amd && function (m) {
+    define("referee", ["expect", "lodash", "samsam", "bane"], m);
+}) || (typeof module === "object" && function (m) {
+    module.exports = m(
+        require("./expect"),
+        require("lodash"),
+        require("samsam"),
+        require("bane")
+    );
+}) || function (m) {
+    this.referee = m(
+        this.expect,
+        this._,
+        this.samsam,
+        this.bane
+    );
+})(function (expect, _, samsam, bane) {
+    "use strict";
+
+    var toString = Object.prototype.toString;
+    var slice = Array.prototype.slice;
+    var assert, refute, referee = bane.createEventEmitter();
+
+    referee.countAssertion = function countAssertion() {
+        if (typeof referee.count !== "number") { referee.count = 0; }
+        referee.count += 1;
+    };
+
+    function interpolate(string, prop, value) {
+        return string.replace(new RegExp("\\$\\{" + prop + "\\}", "g"), value);
+    }
+
+    // Interpolate positional arguments. Replaces occurences of ${<index>} in
+    // the string with the corresponding entry in values[<index>]
+    function interpolatePosArg(message, values) {
+        return _.reduce(values, function (msg, value, index) {
+            return interpolate(msg, index, referee.format(value));
+        }, message);
+    }
+
+    function interpolateProperties(message, properties) {
+        return _.reduce(_.keys(properties), function (str, name) {
+            var formattedValue = name == "customMessage" ? referee.prepareMessage(properties[name]) : referee.format(properties[name]);
+            return interpolate(str, name, formattedValue);
+        }, message || "");
+    }
+
+    // Internal helper. Used throughout to fail assertions if they receive
+    // too few arguments. The name is provided for a helpful error message.
+    function assertArgNum(name, args, num) {
+        if (args.length < num) {
+            referee.fail("[" + name + "] Expected to receive at least " +
+                        num + " argument" + (num > 1 ? "s" : ""));
+            return false;
+        }
+        return true;
+    }
+
+    // Internal helper. Not the most elegant of functions, but it takes
+    // care of all the nitty-gritty of assertion functions: counting,
+    // verifying parameter count, interpolating messages with actual
+    // values and so on.
+    function defineAssertion(type, name, func, minArgs, messageValues) {
+        referee[type][name] = function () {
+            referee.countAssertion();
+            var fullName = type + "." + name, failed = false;
+
+            if (!assertArgNum(fullName, arguments, minArgs || func.length)) {
+                return;
+            }
+
+            var args = slice.call(arguments, 0),
+                namedValues = {};
+
+            if (typeof messageValues === "function") {
+                var replacedValues = messageValues.apply(this, args);
+                if (typeof(replacedValues) === "object") {
+                    namedValues = replacedValues;
+                } else {
+                    args = replacedValues
+                }
+            }
+
+            var ctx = {
+                fail: function (msg) {
+                    failed = true;
+                    delete this.fail;
+                    var message = referee[type][name][msg] || msg;
+                    message = interpolatePosArg(message, args);
+                    message = interpolateProperties(message, this);
+                    message = interpolateProperties(message, namedValues);
+                    referee.fail("[" + type + "." + name + "] " + message);
+                    return false;
+                }
+            };
+
+            if (!func.apply(ctx, arguments) && !failed) {
+                // when a function returns false and hasn't already failed with a custom message,
+                // fail with default message
+                ctx.fail("message");
+            }
+
+            if (!failed) {
+                referee.emit.apply(referee, ["pass", fullName].concat(args));
+            }
+        };
+    }
+
+    referee.add = function (name, opt) {
+        var refuteArgs;
+
+        if (opt.refute) {
+            refuteArgs = opt.refute.length;
+        } else {
+            refuteArgs = opt.assert.length;
+            opt.refute = function () {
+                return !opt.assert.apply(this, arguments);
+            };
+        }
+
+        var values = opt.values;
+        defineAssertion("assert", name, opt.assert, opt.assert.length, values);
+        defineAssertion("refute", name, opt.refute, refuteArgs, values);
+
+        assert[name].message = opt.assertMessage;
+        refute[name].message = opt.refuteMessage;
+
+        if (opt.expectation) {
+            if (referee.expect && referee.expect.wrapAssertion) {
+                referee.expect.wrapAssertion(name, opt.expectation, referee);
+            } else {
+                assert[name].expectationName = opt.expectation;
+                refute[name].expectationName = opt.expectation;
+            }
+        }
+    };
+
+    assert = referee.assert = function assert(actual, message) {
+        referee.countAssertion();
+        if (!assertArgNum("assert", arguments, 1)) { return; }
+
+        if (!actual) {
+            var v = referee.format(actual);
+            referee.fail(message || "[assert] Expected " + v + " to be truthy");
+        } else {
+            referee.emit("pass", "assert", message || "", actual);
+        }
+    };
+
+    assert.toString = function () {
+        return "referee.assert()";
+    };
+
+    refute = referee.refute = function (actual, message) {
+        referee.countAssertion();
+        if (!assertArgNum("refute", arguments, 1)) { return; }
+
+        if (actual) {
+            var v = referee.format(actual);
+            referee.fail(message || "[refute] Expected " + v + " to be falsy");
+        } else {
+            referee.emit("pass", "refute", message || "", actual);
+        }
+    };
+
+    referee.count = 0;
+
+    referee.fail = function (message) {
+        var exception = new Error(message);
+        exception.name = "AssertionError";
+
+        try {
+            throw exception;
+        } catch (e) {
+            referee.emit("failure", e);
+        }
+
+        if (typeof referee.throwOnFailure !== "boolean" ||
+                referee.throwOnFailure) {
+            throw exception;
+        }
+    };
+
+    referee.format = function (object) { return String(object); };
+
+    referee.prepareMessage = function msg(message) {
+        if (!message) {
+            return "";
+        }
+        return message + (/[.:!?]$/.test(message) ? " " : ": ");
+    };
+
+    function actualAndExpectedMessageValues(actual, expected, message) {
+        return {
+            actual: actual,
+            expected: expected,
+            customMessage: message
+        };
+    }
+
+    function actualMessageValues(actual, message) {
+        return {
+            actual: actual,
+            customMessage: message
+        };
+    }
+
+    function actualAndTypeOfMessageValues(actual, message) {
+        return {
+            actual: actual,
+            actualType: typeof actual,
+            customMessage: message
+        };
+    }
+
+    referee.add("same", {
+        assert: function (actual, expected) {
+            return samsam.identical(actual, expected);
+        },
+        refute: function (actual, expected) {
+            return !samsam.identical(actual, expected);
+        },
+        assertMessage: "${customMessage}${actual} expected to be the same object as ${expected}",
+        refuteMessage: "${customMessage}${actual} expected not to be the same object as ${expected}",
+        expectation: "toBe",
+        values: actualAndExpectedMessageValues
+    });
+
+    // Extract/replace with separate module that does a more detailed
+    // visualization of multi-line strings
+    function multiLineStringDiff(actual, expected, message) {
+        if (actual === expected) { return true; }
+
+        var heading = assert.equals.multiLineStringHeading;
+        var failureText = interpolateProperties(heading, { customMessage: message });
+        var actualLines = actual.split("\n");
+        var expectedLines = expected.split("\n");
+        var lineCount = Math.max(expectedLines.length, actualLines.length);
+        var i, lines = [];
+
+        for (i = 0; i < lineCount; ++i) {
+            if (expectedLines[i] !== actualLines[i]) {
+                lines.push("line " + (i + 1) + ": " + (expectedLines[i] || "") +
+                           "\nwas:    " + (actualLines[i] || ""));
+            }
+        }
+
+        referee.fail("[assert.equals] " + failureText + lines.join("\n\n"));
+        return false;
+    }
+
+    referee.add("equals", {
+        // Uses arguments[2] because the function's .length is used to determine
+        // the minimum required number of arguments.
+        assert: function (actual, expected) {
+            if (typeof actual === "string" && typeof expected === "string" &&
+                    (actual.indexOf("\n") >= 0 ||
+                     expected.indexOf("\n") >= 0)) {
+                return multiLineStringDiff(actual, expected, arguments[2]);
+            }
+
+            return samsam.deepEqual(actual, expected);
+        },
+
+        refute: function (actual, expected) {
+            return !samsam.deepEqual(actual, expected);
+        },
+
+        assertMessage: "${customMessage}${actual} expected to be equal to ${expected}",
+        refuteMessage: "${customMessage}${actual} expected not to be equal to ${expected}",
+        expectation: "toEqual",
+        values: actualAndExpectedMessageValues
+    });
+
+    assert.equals.multiLineStringHeading = "${customMessage}Expected multi-line strings " +
+        "to be equal:\n";
+
+    referee.add("greater", {
+        assert: function (actual, expected) {
+            return actual > expected;
+        },
+
+        assertMessage: "${customMessage}Expected ${actual} to be greater than ${expected}",
+        refuteMessage: "${customMessage}Expected ${actual} to be less than or equal to ${expected}",
+        expectation: "toBeGreaterThan",
+        values: actualAndExpectedMessageValues
+    });
+
+    referee.add("less", {
+        assert: function (actual, expected) {
+            return actual < expected;
+        },
+
+        assertMessage: "${customMessage}Expected ${actual} to be less than ${expected}",
+        refuteMessage: "${customMessage}Expected ${actual} to be greater than or equal to ${expected}",
+        expectation: "toBeLessThan",
+        values: actualAndExpectedMessageValues
+    });
+
+    referee.add("defined", {
+        assert: function (actual) {
+            return typeof actual !== "undefined";
+        },
+        assertMessage: "${customMessage}Expected to be defined",
+        refuteMessage: "${customMessage}Expected ${actual} (${actualType}) not to be defined",
+        expectation: "toBeDefined",
+        values: actualAndTypeOfMessageValues
+    });
+
+    referee.add("isNull", {
+        assert: function (actual) {
+            return actual === null;
+        },
+        assertMessage: "${customMessage}Expected ${actual} to be null",
+        refuteMessage: "${customMessage}Expected not to be null",
+        expectation: "toBeNull",
+        values: actualMessageValues
+    });
+
+
+    referee.match = function (actual, matcher) {
+        try {
+            return samsam.match(actual, matcher);
+        } catch (e) {
+            throw new Error("Matcher (" + referee.format(matcher) +
+                            ") was not a string, a number, a function, " +
+                            "a boolean or an object");
+        }
+    };
+
+    referee.add("match", {
+        assert: function (actual, matcher) {
+            var passed;
+
+            try {
+                passed = referee.match(actual, matcher);
+            } catch (e) {
+                this.exceptionMessage = e.message;
+                return this.fail("exceptionMessage");
+            }
+
+            return passed;
+        },
+
+        refute: function (actual, matcher) {
+            var passed;
+
+            try {
+                passed = referee.match(actual, matcher);
+            } catch (e) {
+                this.exceptionMessage = e.message;
+                return this.fail("exceptionMessage");
+            }
+
+            return !passed;
+        },
+
+        assertMessage: "${customMessage}${actual} expected to match ${expected}",
+        refuteMessage: "${customMessage}${actual} expected not to match ${expected}",
+        expectation: "toMatch",
+        values: actualAndExpectedMessageValues
+    });
+
+    assert.match.exceptionMessage = refute.match.exceptionMessage = "${customMessage}${exceptionMessage}";
+
+    referee.add("isObject", {
+        assert: function (actual) {
+            return typeof actual === "object" && !!actual;
+        },
+        assertMessage: "${customMessage}${actual} (${actualType}) expected to be object and not null",
+        refuteMessage: "${customMessage}${actual} expected to be null or not an object",
+        expectation: "toBeObject",
+        values: actualAndTypeOfMessageValues
+    });
+
+    referee.add("isFunction", {
+        assert: function (actual) {
+            return typeof actual === "function";
+        },
+        assertMessage: "${customMessage}${actual} (${actualType}) expected to be function",
+        refuteMessage: "${customMessage}${actual} expected not to be function",
+        expectation: "toBeFunction",
+        values: function (actual, message) {
+            return {
+                actual: String(actual).replace("\n", ""),
+                actualType: typeof actual,
+                customMessage: message
+            };
+        }
+    });
+
+    referee.add("isTrue", {
+        assert: function (actual) {
+            return actual === true;
+        },
+        assertMessage: "${customMessage}Expected ${actual} to be true",
+        refuteMessage: "${customMessage}Expected ${actual} to not be true",
+        expectation: "toBeTrue",
+        values: actualMessageValues
+    });
+
+    referee.add("isFalse", {
+        assert: function (actual) {
+            return actual === false;
+        },
+        assertMessage: "${customMessage}Expected ${actual} to be false",
+        refuteMessage: "${customMessage}Expected ${actual} to not be false",
+        expectation: "toBeFalse",
+        values: actualMessageValues
+    });
+
+    referee.add("isString", {
+        assert: function (actual) {
+            return typeof actual === "string";
+        },
+        assertMessage: "${customMessage}Expected ${actual} (${actualType}) to be string",
+        refuteMessage: "${customMessage}Expected ${actual} not to be string",
+        expectation: "toBeString",
+        values: actualAndTypeOfMessageValues
+    });
+
+    referee.add("isBoolean", {
+        assert: function (actual) {
+            return typeof actual === "boolean";
+        },
+        assertMessage: "${customMessage}Expected ${actual} (${actualType}) to be boolean",
+        refuteMessage: "${customMessage}Expected ${actual} not to be boolean",
+        expectation: "toBeBoolean",
+        values: actualAndTypeOfMessageValues
+    });
+
+    referee.add("isNumber", {
+        assert: function (actual) {
+            return typeof actual === "number" && !isNaN(actual);
+        },
+        assertMessage: "${customMessage}Expected ${actual} (${actualType}) to be a non-NaN number",
+        refuteMessage: "${customMessage}Expected ${actual} to be NaN or a non-number value",
+        expectation: "toBeNumber",
+        values: actualAndTypeOfMessageValues
+    });
+
+    referee.add("isNaN", {
+        assert: function (actual) {
+            return typeof actual === "number" && isNaN(actual);
+        },
+        assertMessage: "${customMessage}Expected ${actual} to be NaN",
+        refuteMessage: "${customMessage}Expected not to be NaN",
+        expectation: "toBeNaN",
+        values: actualAndTypeOfMessageValues
+    });
+
+    referee.add("isArray", {
+        assert: function (actual) {
+            return toString.call(actual) === "[object Array]";
+        },
+        assertMessage: "${customMessage}Expected ${actual} to be array",
+        refuteMessage: "${customMessage}Expected ${actual} not to be array",
+        expectation: "toBeArray",
+        values: actualAndTypeOfMessageValues
+    });
+
+    function isArrayLike(object) {
+        return _.isArray(object) ||
+            (!!object && typeof object.length === "number" &&
+            typeof object.splice === "function") ||
+            _.isArguments(object);
+    }
+
+    referee.isArrayLike = isArrayLike;
+
+    referee.add("isArrayLike", {
+        assert: function (actual) {
+            return isArrayLike(actual);
+        },
+        assertMessage: "${customMessage}Expected ${actual} to be array like",
+        refuteMessage: "${customMessage}Expected ${actual} not to be array like",
+        expectation: "toBeArrayLike",
+        values: actualAndTypeOfMessageValues
+    });
+
+    function exactKeys(object, keys) {
+        var keyMap = {};
+        var keyCnt = 0;
+        for (var i = 0; i < keys.length; i++) {
+            keyMap[keys[i]] = true;
+            keyCnt += 1;
+        }
+        for (var key in object) {
+            if (object.hasOwnProperty(key)) {
+                if (! keyMap[key]) {
+                    return false;
+                }
+                keyCnt -= 1;
+            }
+        }
+        return keyCnt === 0;
+    }
+
+    referee.add("keys", {
+        assert: function (actual, keys) {
+            return exactKeys(actual, keys);
+        },
+        assertMessage: "${customMessage}Expected ${actualObject} to have exact keys ${keys}",
+        refuteMessage: "${customMessage}Expected not to have exact keys ${keys}",
+        expectation: "toHaveKeys",
+        values: function (actual, keys, message) {
+            return {
+                actualObject: actual,
+                keys: keys,
+                customMessage: message
+            }
+        }
+    });
+
+    function captureException(callback) {
+        try { callback(); } catch (e) { return e; }
+        return null;
+    }
+
+    referee.captureException = captureException;
+
+    referee.add("exception", {
+        assert: function (callback) {
+            var matcher = arguments[1];
+            var customMessage = arguments[2];
+
+            if (typeof matcher === "string") {
+                customMessage = matcher;
+                matcher = undefined;
+            }
+
+            this.expected = matcher;
+            this.customMessage = customMessage;
+
+            var err = captureException(callback);
+
+            if (err) {
+                this.actualExceptionType = err.name;
+                this.actualExceptionMessage = err.message;
+                this.actualExceptionStack = err.stack;
+            }
+
+            if (!err) {
+                if (typeof matcher === "object") {
+                    return this.fail("typeNoExceptionMessage");
+                } else {
+                    return this.fail("message");
+                }
+            }
+
+            if (typeof matcher === "object" && !referee.match(err, matcher)) {
+                return this.fail("typeFailMessage");
+            }
+
+            if (typeof matcher === "function" && matcher(err) !== true) {
+                return this.fail("matchFailMessage");
+            }
+
+            return true;
+        },
+
+        refute: function (callback) {
+            var err = captureException(callback);
+
+            if (err) {
+                this.customMessage = arguments[1];
+                this.actualExceptionType = err.name;
+                this.actualExceptionMessage = err.message;
+                return false;
+            }
+
+            return true;
+        },
+
+        expectation: "toThrow",
+        assertMessage: "${customMessage}Expected exception",
+        refuteMessage: "${customMessage}Expected not to throw but threw ${actualExceptionType} (${actualExceptionMessage})"
+    });
+
+    assert.exception.typeNoExceptionMessage = "${customMessage}Expected ${expected} but no exception was thrown";
+    assert.exception.typeFailMessage = "${customMessage}Expected ${expected} but threw ${actualExceptionType} (${actualExceptionMessage})\n${actualExceptionStack}";
+    assert.exception.matchFailMessage = "${customMessage}Expected thrown ${actualExceptionType} (${actualExceptionMessage}) to pass matcher function";
+
+
+    referee.add("near", {
+        assert: function (actual, expected, delta) {
+            return Math.abs(actual - expected) <= delta;
+        },
+        assertMessage: "${customMessage}Expected ${actual} to be equal to ${expected} +/- ${delta}",
+        refuteMessage: "${customMessage}Expected ${actual} not to be equal to ${expected} +/- ${delta}",
+        expectation: "toBeNear",
+        values: function (actual, expected, delta, message) {
+            return {
+                actual: actual,
+                expected: expected,
+                delta: delta,
+                customMessage: message
+            };
+        }
+    });
+
+    referee.add("hasPrototype", {
+        assert: function (actual, protoObj) {
+            return protoObj.isPrototypeOf(actual);
+        },
+        assertMessage: "${customMessage}Expected ${actual} to have ${expected} on its prototype chain",
+        refuteMessage: "${customMessage}Expected ${actual} not to have ${expected} on its " +
+            "prototype chain",
+        expectation: "toHavePrototype",
+        values: actualAndExpectedMessageValues
+    });
+
+    referee.add("contains", {
+        assert: function (haystack, needle) {
+            return _.include(haystack, needle);
+        },
+        assertMessage: "${customMessage}Expected [${actual}] to contain ${expected}",
+        refuteMessage: "${customMessage}Expected [${actual}] not to contain ${expected}",
+        expectation: "toContain",
+        values: actualAndExpectedMessageValues
+    });
+
+    referee.add("tagName", {
+        assert: function (element, tagName) {
+            // Uses arguments[2] because the function's .length is used to
+            // determine the minimum required number of arguments.
+            if (!element.tagName) {
+                return this.fail("noTagNameMessage");
+            }
+
+            return tagName.toLowerCase &&
+                tagName.toLowerCase() === element.tagName.toLowerCase();
+        },
+        assertMessage: "${customMessage}Expected tagName to be ${expected} but was ${actual}",
+        refuteMessage: "${customMessage}Expected tagName not to be ${actual}",
+        expectation: "toHaveTagName",
+        values: function (element, tagName, message) {
+            return {
+                actualElement: element,
+                actual: element.tagName,
+                expected: tagName,
+                customMessage: message
+            };
+        }
+    });
+
+    assert.tagName.noTagNameMessage = "${customMessage}Expected ${actualElement} to have tagName " +
+        "property";
+    refute.tagName.noTagNameMessage = "${customMessage}Expected ${actualElement} to have tagName " +
+        "property";
+
+    referee.add("className", {
+        assert: function (element, name) {
+            if (typeof element.className === "undefined") {
+                return this.fail("noClassNameMessage");
+            }
+
+            var expected = typeof name === "string" ? name.split(" ") : name;
+            var actual = element.className.split(" ");
+            var i, l;
+            for (i = 0, l = expected.length; i < l; i++) {
+                if (!_.include(actual, expected[i])) { return false; }
+            }
+
+            return true;
+        },
+        assertMessage: "${customMessage}Expected object's className to include ${expected} " +
+            "but was ${actual}",
+        refuteMessage: "${customMessage}Expected object's className not to include ${expected}",
+        expectation: "toHaveClassName",
+        values: function (element, className, message) {
+            return {
+                actualElement: element,
+                actual: element.className,
+                expected: className,
+                customMessage: message
+            };
+        }
+    });
+
+    assert.className.noClassNameMessage = "${customMessage}Expected object to have " +
+        "className property";
+    refute.className.noClassNameMessage = "${customMessage}Expected object to have " +
+        "className property";
+
+    referee.expect = function () {
+        expect.init(referee);
+        return expect.apply(referee, arguments);
+    };
+
+    return referee;
+});
+
+},{"./expect":381,"bane":383,"lodash":384,"samsam":385}],383:[function(require,module,exports){
+((typeof define === "function" && define.amd && function (m) { define("bane", m); }) ||
+ (typeof module === "object" && function (m) { module.exports = m(); }) ||
+ function (m) { this.bane = m(); }
+)(function () {
+    "use strict";
+    var slice = Array.prototype.slice;
+
+    function handleError(event, error, errbacks) {
+        var i, l = errbacks.length;
+        if (l > 0) {
+            for (i = 0; i < l; ++i) { errbacks[i](event, error); }
+            return;
+        }
+        setTimeout(function () {
+            error.message = event + " listener threw error: " + error.message;
+            throw error;
+        }, 0);
+    }
+
+    function assertFunction(fn) {
+        if (typeof fn !== "function") {
+            throw new TypeError("Listener is not function");
+        }
+        return fn;
+    }
+
+    function supervisors(object) {
+        if (!object.supervisors) { object.supervisors = []; }
+        return object.supervisors;
+    }
+
+    function listeners(object, event) {
+        if (!object.listeners) { object.listeners = {}; }
+        if (event && !object.listeners[event]) { object.listeners[event] = []; }
+        return event ? object.listeners[event] : object.listeners;
+    }
+
+    function errbacks(object) {
+        if (!object.errbacks) { object.errbacks = []; }
+        return object.errbacks;
+    }
+
+    /**
+     * @signature var emitter = bane.createEmitter([object]);
+     * 
+     * Create a new event emitter. If an object is passed, it will be modified
+     * by adding the event emitter methods (see below).
+     */
+    function createEventEmitter(object) {
+        object = object || {};
+
+        function notifyListener(event, listener, args) {
+            try {
+                listener.listener.apply(listener.thisp || object, args);
+            } catch (e) {
+                handleError(event, e, errbacks(object));
+            }
+        }
+
+        object.on = function (event, listener, thisp) {
+            if (typeof event === "function") {
+                return supervisors(this).push({
+                    listener: event,
+                    thisp: listener
+                });
+            }
+            listeners(this, event).push({
+                listener: assertFunction(listener),
+                thisp: thisp
+            });
+        };
+
+        object.off = function (event, listener) {
+            var fns, events, i, l;
+            if (!event) {
+                fns = supervisors(this);
+                fns.splice(0, fns.length);
+
+                events = listeners(this);
+                for (i in events) {
+                    if (events.hasOwnProperty(i)) {
+                        fns = listeners(this, i);
+                        fns.splice(0, fns.length);
+                    }
+                }
+
+                fns = errbacks(this);
+                fns.splice(0, fns.length);
+
+                return;
+            }
+            if (typeof event === "function") {
+                fns = supervisors(this);
+                listener = event;
+            } else {
+                fns = listeners(this, event);
+            }
+            if (!listener) {
+                fns.splice(0, fns.length);
+                return;
+            }
+            for (i = 0, l = fns.length; i < l; ++i) {
+                if (fns[i].listener === listener) {
+                    fns.splice(i, 1);
+                    return;
+                }
+            }
+        };
+
+        object.once = function (event, listener, thisp) {
+            var wrapper = function () {
+                object.off(event, wrapper);
+                listener.apply(this, arguments);
+            };
+
+            object.on(event, wrapper, thisp);
+        };
+
+        object.bind = function (object, events) {
+            var prop, i, l;
+            if (!events) {
+                for (prop in object) {
+                    if (typeof object[prop] === "function") {
+                        this.on(prop, object[prop], object);
+                    }
+                }
+            } else {
+                for (i = 0, l = events.length; i < l; ++i) {
+                    if (typeof object[events[i]] === "function") {
+                        this.on(events[i], object[events[i]], object);
+                    } else {
+                        throw new Error("No such method " + events[i]);
+                    }
+                }
+            }
+            return object;
+        };
+
+        object.emit = function (event) {
+            var toNotify = supervisors(this);
+            var args = slice.call(arguments), i, l;
+
+            for (i = 0, l = toNotify.length; i < l; ++i) {
+                notifyListener(event, toNotify[i], args);
+            }
+
+            toNotify = listeners(this, event).slice();
+            args = slice.call(arguments, 1);
+            for (i = 0, l = toNotify.length; i < l; ++i) {
+                notifyListener(event, toNotify[i], args);
+            }
+        };
+
+        object.errback = function (listener) {
+            if (!this.errbacks) { this.errbacks = []; }
+            this.errbacks.push(assertFunction(listener));
+        };
+
+        return object;
+    }
+
+    return { createEventEmitter: createEventEmitter };
+});
+
+},{}],384:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -54167,7 +55040,408 @@ function hasOwnProperty(obj, prop) {
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],383:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
+((typeof define === "function" && define.amd && function (m) { define("samsam", m); }) ||
+ (typeof module === "object" &&
+      function (m) { module.exports = m(); }) || // Node
+ function (m) { this.samsam = m(); } // Browser globals
+)(function () {
+    var o = Object.prototype;
+    var div = typeof document !== "undefined" && document.createElement("div");
+
+    function isNaN(value) {
+        // Unlike global isNaN, this avoids type coercion
+        // typeof check avoids IE host object issues, hat tip to
+        // lodash
+        var val = value; // JsLint thinks value !== value is "weird"
+        return typeof value === "number" && value !== val;
+    }
+
+    function getClass(value) {
+        // Returns the internal [[Class]] by calling Object.prototype.toString
+        // with the provided value as this. Return value is a string, naming the
+        // internal class, e.g. "Array"
+        return o.toString.call(value).split(/[ \]]/)[1];
+    }
+
+    /**
+     * @name samsam.isArguments
+     * @param Object object
+     *
+     * Returns ``true`` if ``object`` is an ``arguments`` object,
+     * ``false`` otherwise.
+     */
+    function isArguments(object) {
+        if (getClass(object) === 'Arguments') { return true; }
+        if (typeof object !== "object" || typeof object.length !== "number" ||
+                getClass(object) === "Array") {
+            return false;
+        }
+        if (typeof object.callee == "function") { return true; }
+        try {
+            object[object.length] = 6;
+            delete object[object.length];
+        } catch (e) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @name samsam.isElement
+     * @param Object object
+     *
+     * Returns ``true`` if ``object`` is a DOM element node. Unlike
+     * Underscore.js/lodash, this function will return ``false`` if ``object``
+     * is an *element-like* object, i.e. a regular object with a ``nodeType``
+     * property that holds the value ``1``.
+     */
+    function isElement(object) {
+        if (!object || object.nodeType !== 1 || !div) { return false; }
+        try {
+            object.appendChild(div);
+            object.removeChild(div);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @name samsam.keys
+     * @param Object object
+     *
+     * Return an array of own property names.
+     */
+    function keys(object) {
+        var ks = [], prop;
+        for (prop in object) {
+            if (o.hasOwnProperty.call(object, prop)) { ks.push(prop); }
+        }
+        return ks;
+    }
+
+    /**
+     * @name samsam.isDate
+     * @param Object value
+     *
+     * Returns true if the object is a ``Date``, or *date-like*. Duck typing
+     * of date objects work by checking that the object has a ``getTime``
+     * function whose return value equals the return value from the object's
+     * ``valueOf``.
+     */
+    function isDate(value) {
+        return typeof value.getTime == "function" &&
+            value.getTime() == value.valueOf();
+    }
+
+    /**
+     * @name samsam.isNegZero
+     * @param Object value
+     *
+     * Returns ``true`` if ``value`` is ``-0``.
+     */
+    function isNegZero(value) {
+        return value === 0 && 1 / value === -Infinity;
+    }
+
+    /**
+     * @name samsam.equal
+     * @param Object obj1
+     * @param Object obj2
+     *
+     * Returns ``true`` if two objects are strictly equal. Compared to
+     * ``===`` there are two exceptions:
+     *
+     *   - NaN is considered equal to NaN
+     *   - -0 and +0 are not considered equal
+     */
+    function identical(obj1, obj2) {
+        if (obj1 === obj2 || (isNaN(obj1) && isNaN(obj2))) {
+            return obj1 !== 0 || isNegZero(obj1) === isNegZero(obj2);
+        }
+    }
+
+
+    /**
+     * @name samsam.deepEqual
+     * @param Object obj1
+     * @param Object obj2
+     *
+     * Deep equal comparison. Two values are "deep equal" if:
+     *
+     *   - They are equal, according to samsam.identical
+     *   - They are both date objects representing the same time
+     *   - They are both arrays containing elements that are all deepEqual
+     *   - They are objects with the same set of properties, and each property
+     *     in ``obj1`` is deepEqual to the corresponding property in ``obj2``
+     *
+     * Supports cyclic objects.
+     */
+    function deepEqualCyclic(obj1, obj2) {
+
+        // used for cyclic comparison
+        // contain already visited objects
+        var objects1 = [],
+            objects2 = [],
+        // contain pathes (position in the object structure)
+        // of the already visited objects
+        // indexes same as in objects arrays
+            paths1 = [],
+            paths2 = [],
+        // contains combinations of already compared objects
+        // in the manner: { "$1['ref']$2['ref']": true }
+            compared = {};
+
+        /**
+         * used to check, if the value of a property is an object
+         * (cyclic logic is only needed for objects)
+         * only needed for cyclic logic
+         */
+        function isObject(value) {
+
+            if (typeof value === 'object' && value !== null &&
+                    !(value instanceof Boolean) &&
+                    !(value instanceof Date)    &&
+                    !(value instanceof Number)  &&
+                    !(value instanceof RegExp)  &&
+                    !(value instanceof String)) {
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * returns the index of the given object in the
+         * given objects array, -1 if not contained
+         * only needed for cyclic logic
+         */
+        function getIndex(objects, obj) {
+
+            var i;
+            for (i = 0; i < objects.length; i++) {
+                if (objects[i] === obj) {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        // does the recursion for the deep equal check
+        return (function deepEqual(obj1, obj2, path1, path2) {
+            var type1 = typeof obj1;
+            var type2 = typeof obj2;
+
+            // == null also matches undefined
+            if (obj1 === obj2 ||
+                    isNaN(obj1) || isNaN(obj2) ||
+                    obj1 == null || obj2 == null ||
+                    type1 !== "object" || type2 !== "object") {
+
+                return identical(obj1, obj2);
+            }
+
+            // Elements are only equal if identical(expected, actual)
+            if (isElement(obj1) || isElement(obj2)) { return false; }
+
+            var isDate1 = isDate(obj1), isDate2 = isDate(obj2);
+            if (isDate1 || isDate2) {
+                if (!isDate1 || !isDate2 || obj1.getTime() !== obj2.getTime()) {
+                    return false;
+                }
+            }
+
+            if (obj1 instanceof RegExp && obj2 instanceof RegExp) {
+                if (obj1.toString() !== obj2.toString()) { return false; }
+            }
+
+            var class1 = getClass(obj1);
+            var class2 = getClass(obj2);
+            var keys1 = keys(obj1);
+            var keys2 = keys(obj2);
+
+            if (isArguments(obj1) || isArguments(obj2)) {
+                if (obj1.length !== obj2.length) { return false; }
+            } else {
+                if (type1 !== type2 || class1 !== class2 ||
+                        keys1.length !== keys2.length) {
+                    return false;
+                }
+            }
+
+            var key, i, l,
+                // following vars are used for the cyclic logic
+                value1, value2,
+                isObject1, isObject2,
+                index1, index2,
+                newPath1, newPath2;
+
+            for (i = 0, l = keys1.length; i < l; i++) {
+                key = keys1[i];
+                if (!o.hasOwnProperty.call(obj2, key)) {
+                    return false;
+                }
+
+                // Start of the cyclic logic
+
+                value1 = obj1[key];
+                value2 = obj2[key];
+
+                isObject1 = isObject(value1);
+                isObject2 = isObject(value2);
+
+                // determine, if the objects were already visited
+                // (it's faster to check for isObject first, than to
+                // get -1 from getIndex for non objects)
+                index1 = isObject1 ? getIndex(objects1, value1) : -1;
+                index2 = isObject2 ? getIndex(objects2, value2) : -1;
+
+                // determine the new pathes of the objects
+                // - for non cyclic objects the current path will be extended
+                //   by current property name
+                // - for cyclic objects the stored path is taken
+                newPath1 = index1 !== -1
+                    ? paths1[index1]
+                    : path1 + '[' + JSON.stringify(key) + ']';
+                newPath2 = index2 !== -1
+                    ? paths2[index2]
+                    : path2 + '[' + JSON.stringify(key) + ']';
+
+                // stop recursion if current objects are already compared
+                if (compared[newPath1 + newPath2]) {
+                    return true;
+                }
+
+                // remember the current objects and their pathes
+                if (index1 === -1 && isObject1) {
+                    objects1.push(value1);
+                    paths1.push(newPath1);
+                }
+                if (index2 === -1 && isObject2) {
+                    objects2.push(value2);
+                    paths2.push(newPath2);
+                }
+
+                // remember that the current objects are already compared
+                if (isObject1 && isObject2) {
+                    compared[newPath1 + newPath2] = true;
+                }
+
+                // End of cyclic logic
+
+                // neither value1 nor value2 is a cycle
+                // continue with next level
+                if (!deepEqual(value1, value2, newPath1, newPath2)) {
+                    return false;
+                }
+            }
+
+            return true;
+
+        }(obj1, obj2, '$1', '$2'));
+    }
+
+    var match;
+
+    function arrayContains(array, subset) {
+        if (subset.length === 0) { return true; }
+        var i, l, j, k;
+        for (i = 0, l = array.length; i < l; ++i) {
+            if (match(array[i], subset[0])) {
+                for (j = 0, k = subset.length; j < k; ++j) {
+                    if (!match(array[i + j], subset[j])) { return false; }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @name samsam.match
+     * @param Object object
+     * @param Object matcher
+     *
+     * Compare arbitrary value ``object`` with matcher.
+     */
+    match = function match(object, matcher) {
+        if (matcher && typeof matcher.test === "function") {
+            return matcher.test(object);
+        }
+
+        if (typeof matcher === "function") {
+            return matcher(object) === true;
+        }
+
+        if (typeof matcher === "string") {
+            matcher = matcher.toLowerCase();
+            var notNull = typeof object === "string" || !!object;
+            return notNull &&
+                (String(object)).toLowerCase().indexOf(matcher) >= 0;
+        }
+
+        if (typeof matcher === "number") {
+            return matcher === object;
+        }
+
+        if (typeof matcher === "boolean") {
+            return matcher === object;
+        }
+
+        if (typeof(matcher) === "undefined") {
+            return typeof(object) === "undefined";
+        }
+
+        if (matcher === null) {
+            return object === null;
+        }
+
+        if (getClass(object) === "Array" && getClass(matcher) === "Array") {
+            return arrayContains(object, matcher);
+        }
+
+        if (matcher && typeof matcher === "object") {
+            if (matcher === object) {
+                return true;
+            }
+            var prop;
+            for (prop in matcher) {
+                var value = object[prop];
+                if (typeof value === "undefined" &&
+                        typeof object.getAttribute === "function") {
+                    value = object.getAttribute(prop);
+                }
+                if (matcher[prop] === null || typeof matcher[prop] === 'undefined') {
+                    if (value !== matcher[prop]) {
+                        return false;
+                    }
+                } else if (typeof  value === "undefined" || !match(value, matcher[prop])) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        throw new Error("Matcher was not a string, a number, a " +
+                        "function, a boolean or an object");
+    };
+
+    return {
+        isArguments: isArguments,
+        isElement: isElement,
+        isDate: isDate,
+        isNegZero: isNegZero,
+        identical: identical,
+        deepEqual: deepEqualCyclic,
+        match: match,
+        keys: keys
+    };
+});
+
+},{}],386:[function(require,module,exports){
 var util = require('./util');
 var format = require('should-format');
 
@@ -54193,7 +55467,7 @@ var AssertionError = function AssertionError(options) {
         configurable: true,
         enumerable: false
       }
-    )
+    );
   }
 
   if(Error.captureStackTrace) {
@@ -54255,10 +55529,10 @@ AssertionError.prototype = Object.create(Error.prototype, {
 });
 
 module.exports = AssertionError;
-},{"./util":399,"should-format":401}],384:[function(require,module,exports){
+
+},{"./util":402,"should-format":404}],387:[function(require,module,exports){
 var AssertionError = require('./assertion-error');
 var util = require('./util');
-var format = require('should-format');
 
 /**
  * should Assertion
@@ -54318,19 +55592,7 @@ Assertion.add = function(name, func, isGetter) {
           return this.proxied();
         }
 
-        //console.log('catch', name, context.params.operator, e.operator);
-        //console.log(name, e.actual, context.obj, context.params.actual, this.params.actual);
-        /*if(e.operator !== context.params.operator) {// it means assertion happen because own context
-         if(!('obj' in context.params)) {
-         if(!('actual' in context.params)) {
-         context.params.actual = context.obj;
-         }
-         }
-         util.merge(e, context.params);
-         //e.operato
-         //e.operator = context.params.operator;
-         }*/
-        if(context != e.assertion) {
+        if(context !== e.assertion) {
           context.params.previous = e;
         }
 
@@ -54345,7 +55607,7 @@ Assertion.add = function(name, func, isGetter) {
     //negative pass
     if(this.negate) {
       context.negate = true;//because .fail will set negate
-      context.params.details = "false negative fail";
+      context.params.details = 'false negative fail';
       context.fail();
     }
 
@@ -54486,20 +55748,21 @@ Assertion.prototype = {
             throw new Error('Assertion has no property ' + util.formatProp(name));
           }
         }
-      })
+      });
     }
     return this;
   }
 };
 
 module.exports = Assertion;
-},{"./assertion-error":383,"./util":399,"should-format":401}],385:[function(require,module,exports){
+
+},{"./assertion-error":386,"./util":402}],388:[function(require,module,exports){
 var config = {
   checkProtoEql: false
 };
 
 module.exports = config;
-},{}],386:[function(require,module,exports){
+},{}],389:[function(require,module,exports){
 // implement assert interface using already written peaces of should.js
 
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
@@ -54781,7 +56044,7 @@ assert.ifError = function(err) {
   }
 };
 
-},{"./../assertion":384,"./../util":399,"should-equal":400}],387:[function(require,module,exports){
+},{"./../assertion":387,"./../util":402,"should-equal":403}],390:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -54852,7 +56115,7 @@ module.exports = function(should) {
     }
   };
 };
-},{"../assertion-error":383,"../util":399,"./_assert":386}],388:[function(require,module,exports){
+},{"../assertion-error":386,"../util":402,"./_assert":389}],391:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -54920,7 +56183,7 @@ module.exports = function(should, Assertion) {
     this.assert(this.obj);
   }, true);
 };
-},{}],389:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 module.exports = function(should, Assertion) {
   /**
    * Simple chaining. It actually do nothing.
@@ -54932,10 +56195,12 @@ module.exports = function(should, Assertion) {
    * @alias Assertion#a
    * @alias Assertion#and
    * @alias Assertion#have
+   * @alias Assertion#has
    * @alias Assertion#with
    * @alias Assertion#is
    * @alias Assertion#which
    * @alias Assertion#the
+   * @alias Assertion#it
    * @category assertion chaining
    */
   ['an', 'of', 'a', 'and', 'be', 'has', 'have', 'with', 'is', 'which', 'the', 'it'].forEach(function(name) {
@@ -54943,7 +56208,7 @@ module.exports = function(should, Assertion) {
   });
 };
 
-},{}],390:[function(require,module,exports){
+},{}],393:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -54955,7 +56220,6 @@ var eql = require('should-equal');
 
 module.exports = function(should, Assertion) {
   var i = should.format;
-  var type = should.type;
 
   /**
    * Assert that given object contain something that equal to `other`. It uses `should-equal` for equality checks.
@@ -54987,9 +56251,8 @@ module.exports = function(should, Assertion) {
     this.is.not.null.and.not.undefined;
 
     var obj = this.obj;
-    var tpe = should.type(obj);
 
-    if(tpe == should.type.STRING) {
+    if(typeof obj == 'string') {
       this.assert(obj.indexOf(String(other)) >= 0);
     } else if(util.isIndexable(obj)) {
       this.assert(util.some(obj, function(v) {
@@ -55003,7 +56266,6 @@ module.exports = function(should, Assertion) {
   /**
    * Assert that given object is contain equally structured object on the same depth level.
    * If given object is an array and `other` is an array it checks that the eql elements is going in the same sequence in given array (recursive)
-   * For string it is working as `Assertion#containEql
    * If given object is an object it checks that the same keys contain deep equal values (recursive)
    * On other cases it try to check with `.eql`
    *
@@ -55016,8 +56278,6 @@ module.exports = function(should, Assertion) {
    * [ 1, 2, 3].should.containDeepOrdered([1, 2]);
    * [ 1, 2, [ 1, 2, 3 ]].should.containDeepOrdered([ 1, [ 2, 3 ]]);
    *
-   * '123'.should.containDeepOrdered('1')
-   *
    * ({ a: 10, b: { c: 10, d: [1, 2, 3] }}).should.containDeepOrdered({a: 10});
    * ({ a: 10, b: { c: 10, d: [1, 2, 3] }}).should.containDeepOrdered({b: {c: 10}});
    * ({ a: 10, b: { c: 10, d: [1, 2, 3] }}).should.containDeepOrdered({b: {d: [1, 3]}});
@@ -55026,8 +56286,8 @@ module.exports = function(should, Assertion) {
     this.params = {operator: 'to contain ' + i(other)};
 
     var obj = this.obj;
-    if(type(obj) == type.STRING) {// expect other to be string
-      this.assert(obj.indexOf(String(other)) >= 0);
+    if(typeof obj == 'string') {// expect other to be string
+      this.is.equal(String(other));
     } else if(util.isIndexable(obj) && util.isIndexable(other)) {
       for(var objIdx = 0, otherIdx = 0, objLength = util.length(obj), otherLength = util.length(other); objIdx < objLength && otherIdx < otherLength; objIdx++) {
         try {
@@ -55041,7 +56301,7 @@ module.exports = function(should, Assertion) {
         }
       }
 
-      this.assert(otherIdx == otherLength);
+      this.assert(otherIdx === otherLength);
     } else if(obj != null && other != null && typeof obj == 'object' && typeof other == 'object') {// object contains object case
       util.forEach(other, function(value, key) {
         should(obj[key]).containDeepOrdered(value);
@@ -55073,7 +56333,7 @@ module.exports = function(should, Assertion) {
 
     var obj = this.obj;
     if(typeof obj == 'string') {// expect other to be string
-      this.assert(obj.indexOf(String(other)) >= 0);
+      this.is.equal(String(other));
     } else if(util.isIndexable(obj) && util.isIndexable(other)) {
       var usedKeys = {};
       util.forEach(other, function(otherItem) {
@@ -55108,7 +56368,7 @@ module.exports = function(should, Assertion) {
 
 };
 
-},{"../util":399,"should-equal":400}],391:[function(require,module,exports){
+},{"../util":402,"should-equal":403}],394:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -55123,7 +56383,7 @@ function formatEqlResult(r, a, b, format) {
   return ((r.path.length > 0 ? 'at ' + r.path.map(util.formatProp).join(' -> ') : '') +
   (r.a === a ? '' : ', A has ' + format(r.a)) +
   (r.b === b ? '' : ' and B has ' + format(r.b)) +
-  (r.showReason ? ' because ' + r.reason: '')).trim();
+  (r.showReason ? ' because ' + r.reason : '')).trim();
 }
 
 module.exports = function(should, Assertion) {
@@ -55151,9 +56411,9 @@ module.exports = function(should, Assertion) {
     this.params = {operator: 'to equal', expected: val, message: description};
 
     var strictResult = eql(this.obj, val, should.config);
-    this.params.details = strictResult.result ? '': formatEqlResult(strictResult, this.obj, val, should.format);
+    this.params.details = strictResult.result ? '' : formatEqlResult(strictResult, this.obj, val, should.format);
 
-    this.params.showDiff = type(this.obj) == type(val);
+    this.params.showDiff = type(this.obj) === type(val);
 
     this.assert(strictResult.result);
   });
@@ -55184,7 +56444,8 @@ module.exports = function(should, Assertion) {
 
   Assertion.alias('equal', 'exactly');
 };
-},{"../util":399,"should-equal":400,"should-type":402}],392:[function(require,module,exports){
+
+},{"../util":402,"should-equal":403,"should-type":405}],395:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -55226,9 +56487,9 @@ module.exports = function(should, Assertion) {
       , thrown = false;
 
     if(util.isGeneratorFunction(fn)) {
-      return fn().should.throw(message, properties);
+      return should(fn()).throw(message, properties);
     } else if(util.isGeneratorObject(fn)) {
-      return fn.next.should.throw(message, properties);
+      return should(fn.next.bind(fn)).throw(message, properties);
     }
 
     this.is.a.Function;
@@ -55252,7 +56513,7 @@ module.exports = function(should, Assertion) {
           errorMatched = err instanceof message;
         } else if(null != message) {
           try {
-            err.should.match(message);
+            should(err).match(message);
           } catch(e) {
             if(e instanceof should.AssertionError) {
               errorInfo = ": " + e.message;
@@ -55271,7 +56532,7 @@ module.exports = function(should, Assertion) {
           }
         } else if('function' == typeof message && properties) {
           try {
-            err.should.match(properties);
+            should(err).match(properties);
           } catch(e) {
             if(e instanceof should.AssertionError) {
               errorInfo = ": " + e.message;
@@ -55294,7 +56555,8 @@ module.exports = function(should, Assertion) {
 
   Assertion.alias('throw', 'throwError');
 };
-},{"../util":399}],393:[function(require,module,exports){
+
+},{"../util":402}],396:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -55517,7 +56779,7 @@ module.exports = function(should, Assertion) {
   });
 };
 
-},{"../util":399,"should-equal":400}],394:[function(require,module,exports){
+},{"../util":402,"should-equal":403}],397:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -55642,7 +56904,7 @@ module.exports = function(should, Assertion) {
 
 };
 
-},{}],395:[function(require,module,exports){
+},{}],398:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -55739,7 +57001,7 @@ module.exports = function(should, Assertion) {
 
     var obj = this.obj;
     args.names.forEach(function(name) {
-      obj.should.have.enumerable(name);
+      should(obj).have.enumerable(name);
     });
   });
 
@@ -55914,11 +57176,11 @@ module.exports = function(should, Assertion) {
     this.params = {operator: 'to be empty'};
 
     if(util.length(this.obj) !== void 0) {
-      this.obj.should.have.property('length', 0);
+      should(this.obj).have.property('length', 0);
     } else {
       var obj = Object(this.obj); // wrap to reference for booleans and numbers
       for(var prop in obj) {
-        this.obj.should.not.have.ownProperty(prop);
+        should(this.obj).not.have.ownProperty(prop);
       }
     }
   }, true);
@@ -56015,7 +57277,7 @@ module.exports = function(should, Assertion) {
   });
 };
 
-},{"../util":399,"should-equal":400}],396:[function(require,module,exports){
+},{"../util":402,"should-equal":403}],399:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -56057,7 +57319,7 @@ module.exports = function(should, Assertion) {
     this.assert(this.obj.indexOf(str, this.obj.length - str.length) >= 0);
   });
 };
-},{}],397:[function(require,module,exports){
+},{}],400:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -56252,7 +57514,7 @@ module.exports = function(should, Assertion) {
   Assertion.add('iterable', function() {
     this.params = {operator: 'to be iterable'};
 
-    this.obj.should.have.property(Symbol.iterator).which.is.a.Function;
+    should(this.obj).have.property(Symbol.iterator).which.is.a.Function;
   }, true);
 
   /**
@@ -56265,7 +57527,7 @@ module.exports = function(should, Assertion) {
   Assertion.add('iterator', function() {
     this.params = {operator: 'to be iterator'};
 
-    this.obj.should.have.property('next').which.is.a.Function;
+    should(this.obj).have.property('next').which.is.a.Function;
   }, true);
 
   /**
@@ -56277,13 +57539,13 @@ module.exports = function(should, Assertion) {
   Assertion.add('generator', function() {
     this.params = {operator: 'to be generator'};
 
-    this.obj.should.be.iterable
+    should(this.obj).be.iterable
       .and.iterator
       .and.it.is.equal(this.obj[Symbol.iterator]());
   }, true);
 };
 
-},{"../util":399}],398:[function(require,module,exports){
+},{"../util":402}],401:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -56450,7 +57712,7 @@ var defaultProperty = 'should';
 //Expose api via `Object#should`.
 var prevShould = should.extend(defaultProperty, defaultProto);
 
-},{"./assertion":384,"./assertion-error":383,"./config":385,"./ext/assert":387,"./ext/bool":388,"./ext/chain":389,"./ext/contain":390,"./ext/eql":391,"./ext/error":392,"./ext/match":393,"./ext/number":394,"./ext/property":395,"./ext/string":396,"./ext/type":397,"./util":399,"should-format":401,"should-type":402}],399:[function(require,module,exports){
+},{"./assertion":387,"./assertion-error":386,"./config":388,"./ext/assert":390,"./ext/bool":391,"./ext/chain":392,"./ext/contain":393,"./ext/eql":394,"./ext/error":395,"./ext/match":396,"./ext/number":397,"./ext/property":398,"./ext/string":399,"./ext/type":400,"./util":402,"should-format":404,"should-type":405}],402:[function(require,module,exports){
 /*!
  * Should
  * Copyright(c) 2010-2014 TJ Holowaychuk <tj@vision-media.ca>
@@ -56586,7 +57848,8 @@ exports.isGeneratorFunction = function(f) {
 
   return /^function\s*\*\s*/.test(f.toString());
 }
-},{"should-format":401,"should-type":402}],400:[function(require,module,exports){
+
+},{"should-format":404,"should-type":405}],403:[function(require,module,exports){
 var getType = require('should-type');
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
@@ -56815,7 +58078,7 @@ module.exports = eq;
 
 eq.r = REASON;
 
-},{"should-type":402}],401:[function(require,module,exports){
+},{"should-type":405}],404:[function(require,module,exports){
 var getType = require('should-type');
 
 function genKeysFunc(f) {
@@ -57068,7 +58331,7 @@ add('document', function(value) {
 add('window', function(value) {
   return '[Window]';
 });
-},{"should-type":402}],402:[function(require,module,exports){
+},{"should-type":405}],405:[function(require,module,exports){
 (function (Buffer){
 var toString = Object.prototype.toString;
 
@@ -57227,7 +58490,7 @@ Object.keys(types).forEach(function(typeName) {
 });
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":356}],403:[function(require,module,exports){
+},{"buffer":356}],406:[function(require,module,exports){
 "use strict";
 
 var _inherits = function _inherits(subClass, superClass) {
@@ -57307,7 +58570,7 @@ var MarkedLinePrefix = exports.MarkedLinePrefix = (function (_LinePrefix) {
   return MarkedLinePrefix;
 })(LinePrefix);
 
-},{}],404:[function(require,module,exports){
+},{}],407:[function(require,module,exports){
 "use strict";
 
 var _interopRequire = function _interopRequire(obj) {
@@ -57317,7 +58580,7 @@ var _interopRequire = function _interopRequire(obj) {
 /* global Mocha */
 /* eslint-disable no-unused-vars */
 
-var expect = _interopRequire(require("referee/lib/expect"));
+var expect = require("referee").expect;
 
 var should = _interopRequire(require("should"));
 
@@ -57383,7 +58646,7 @@ function runMochaAndReportStats(mocha, sender) {
 
 window.addEventListener("message", consumeMessage, false);
 
-},{"../runtime-error":405,"assert":354,"babel-core":1,"babel-core/lib/babel/polyfill":29,"referee/lib/expect":381,"should":398}],405:[function(require,module,exports){
+},{"../runtime-error":408,"assert":354,"babel-core":1,"babel-core/lib/babel/polyfill":29,"referee":382,"should":401}],408:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () {
@@ -57456,7 +58719,7 @@ function getLineAndColumnOfOriginFromDump(dump) {
   return { line: line, column: column };
 }
 
-},{"./line-prefix.js":403,"./stack-trace.js":406}],406:[function(require,module,exports){
+},{"./line-prefix.js":406,"./stack-trace.js":409}],409:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () {
@@ -57511,4 +58774,4 @@ var StackTrace = exports.StackTrace = (function () {
   return StackTrace;
 })();
 
-},{}]},{},[404]);
+},{}]},{},[407]);
