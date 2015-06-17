@@ -53,7 +53,6 @@
     "react": "^0.13.0-rc2",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2",
-    "should": "^5.0.1",
     "atomic": "git+https://github.com/toddmotto/atomic.git",
     "envify": "^3.3.0",
     "babel-core": "^4.7.8",
@@ -65,6 +64,7 @@
     "eslint": "^0.20.0",
     "jscs": "^1.13.1",
     "esprima-fb": "^15001.1.0-dev-harmony-fb",
-    "eslint-plugin-react": "^2.2.0"
+    "eslint-plugin-react": "^2.2.0",
+    "should": "^6.0.3"
   }
 }
