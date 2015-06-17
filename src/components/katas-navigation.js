@@ -12,7 +12,7 @@ export default class KatasNavigation extends React.Component {
       <div id="katas-navigation" className="flex-columns-full-width">
         <div className="headline">ES6 Katas</div>
         <div className="scrollable">
-          {katas.map(kata => <KataLink kata={kata} selected={selectedKataId==kata.id} />)}
+          {katas.map(kata => <KataLink kata={kata} selected={selectedKataId === kata.id} />)}
         </div>
       </div>
     );

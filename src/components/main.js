@@ -59,6 +59,6 @@ class Analytics extends React.Component {
       ga('create', '${trackingId}', '${trackingDomain}');
       ga('send', 'pageview');
     `;
-    return <script dangerouslySetInnerHTML={{__html: jsCode}}></script>
+    return <script dangerouslySetInnerHTML={{__html: jsCode}}></script>;
   }
 }
