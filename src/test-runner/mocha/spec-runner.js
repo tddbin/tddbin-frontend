@@ -1,9 +1,10 @@
 /* global Mocha */
 /* eslint-disable no-unused-vars */
-import expect from 'referee/lib/expect';
+import {expect} from 'referee';
 import should from 'should';
 import assert from 'assert';
 /* eslint-enable no-unused-vars */
+
 import {transform} from 'babel-core'; // the es6 transpiler
 import 'babel-core/lib/babel/polyfill';
 import RuntimeError from '../runtime-error';
