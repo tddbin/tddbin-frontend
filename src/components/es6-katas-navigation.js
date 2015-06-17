@@ -25,7 +25,7 @@ class KataLink extends React.Component {
   render() {
     const {kata, selected} = this.props;
     const {id, path} = kata;
-    const url = '/#?kata=es6/language/' + path;
+    const url = `${window.location.pathname}#?kata=es6/language/${path}`;
     const className = selected ? 'selected' : '';
     return (
       <a href={url} title={`Kata ${id}`} className={className}>{id}</a>
