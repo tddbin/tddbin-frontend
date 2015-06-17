@@ -2,7 +2,7 @@
 import React from 'react';
 import NavigationBar from '../components/navigation-bar.js';
 import KeyboardShortcutOverlay from '../components/keyboard-shortcut-overlay.js';
-import KatasNavigation from '../components/katas-navigation.js';
+import Es6KatasNavigation from '../components/es6-katas-navigation.js';
 
 export default class Main extends React.Component {
   render() {
@@ -20,7 +20,7 @@ export default class Main extends React.Component {
 
         <EditorAndRunner editorId={editorId} runnerId={runnerId} />
 
-        <KatasNavigation katas={es6Katas}/>
+        <Es6KatasNavigation katas={es6Katas}/>
 
         <KeyboardShortcutOverlay
           metaKeySymbol={metaKeySymbol}
