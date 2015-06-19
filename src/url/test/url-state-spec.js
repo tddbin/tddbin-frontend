@@ -1,5 +1,6 @@
 import assert from 'assert';
 import sinon from 'sinon';
+assert.called = sinon.assert.called;
 assert.calledWith = sinon.assert.calledWith;
 
 describe('application state, which is stored in the URL', function() {
@@ -13,16 +14,17 @@ describe('application state, which is stored in the URL', function() {
     beforeEach(function() {
       url = Url.fromLocation({hash});
       state = UrlState.useUrl(url);
-      sinon.spy(url, 'setQueryTo');
+      sinon.spy(url, 'copyHashIntoQuery');
+      sinon.spy(url, 'setValueInQuery');
       state.initialize();
     });
 
     it('a kata name in a hash, updates the query in the URL', function() {
-      assert.calledWith(url.setQueryTo, {kata: 'some/cool/kata'});
+      assert.called(url.copyHashIntoQuery);
     });
-    it('mark kata as stored locally updates the query', function() {
+    it('marking a kata as stored locally updates the query', function() {
       state.markKataAsStoredLocally();
-      assert.calledWith(url.setQueryTo, {kata: 'some/cool/kata', storedLocally: 1});
+      assert.calledWith(url.setValueInQuery, 'storedLocally', 1);
     });
     it('provide the proper kata name', function() {
       assert.equal(state.kataName, kataName);
@@ -37,25 +39,71 @@ describe('application state, which is stored in the URL', function() {
       });
     });
   });
-  describe('stored in the URL query', function() {
-    it('', function() {
 
+  describe('stored in the URL query', function() {
+
+    const kataName = 'some/cool/kata';
+    const queryString = '?kata=' + kataName;
+    let url;
+    let state;
+    beforeEach(function() {
+      url = Url.fromLocation({search: queryString});
+      state = UrlState.useUrl(url);
+      sinon.spy(url, 'setValueInQuery');
+      state.initialize();
+    });
+
+    it('marking a kata as stored locally updates the query', function() {
+      state.markKataAsStoredLocally();
+      assert.calledWith(url.setValueInQuery, 'storedLocally', 1);
+    });
+    it('provide the proper kata name', function() {
+      assert.equal(state.kataName, kataName);
+    });
+    describe('property `isKataStoredLocally`', function() {
+      it('is false right at start', function() {
+        assert.equal(state.isKataStoredLocally, false);
+      });
+      it('is true after marked so', function() {
+        state.markKataAsStoredLocally();
+        assert.equal(state.isKataStoredLocally, true);
+      });
     });
   });
 });
 
+function objectToMap(obj) {
+  let map = new Map();
+  for (let key of Object.keys(obj)) {
+    map.set(key, obj[key]);
+  }
+  return map;
+}
+
 class Url {
   static fromLocation(location) {
     const url = new Url();
-    let hash = location.hash;
+    url.initalizeHash(location.hash);
+    url.initalizeQuery(location.search);
+    return url;
+  }
+  initalizeHash(hash='') {
     if (hash.startsWith('#?')) {
       hash = hash.substr(2);
     }
-    url.hash = querystring.parse(hash);
-    return url;
+    this.hash = objectToMap(querystring.parse(hash));
   }
-  setQueryTo() {
-
+  initalizeQuery(query='') {
+    if (query.startsWith('?')) {
+      query = query.substr(1);
+    }
+    this.query = objectToMap(querystring.parse(query));
+  }
+  copyHashIntoQuery() {
+    this.query = this.hash;
+  }
+  setValueInQuery(key, value) {
+    this.query.set(key, value);
   }
 }
 
@@ -68,44 +116,22 @@ class UrlState {
     return urlState;
   }
   initialize() {
-    this.url.setQueryTo(this.url.hash);
+    if (this.url.hash.size > 0) {
+      this.url.copyHashIntoQuery();
+    }
   }
 
   markKataAsStoredLocally() {
-    const hash = this.url.hash;
-    hash.storedLocally = 1;
-    this.url.setQueryTo(hash);
+    this.url.setValueInQuery('storedLocally', 1);
   }
 
   get kataName() {
-    return this.url.hash.kata;
+    return this.url.query.get('kata');
   }
 
   get isKataStoredLocally() {
-    return !!this.url.hash.storedLocally;
+    return !!this.url.query.get('storedLocally');
   }
-
-
-
-  //static fromUrl(queryString, hashString) {
-  //  let urlInstance = new UrlState();
-  //  urlInstance.mayConvertHashUrl(hashString);
-  //  urlInstance.query = querystring.parse(queryString.replace(/^\?/, ''));
-  //  return urlInstance;
-  //}
-  //
-  //mayConvertHashUrl(hashString) {
-  //  const queryStringInHash = hashString.replace(/^#\?/, '');
-  //  if (queryStringInHash) {
-  //    this.setQueryInUrl(queryStringInHash);
-  //  }
-  //}
-
-  //setQueryInUrl(queryString) {
-  //  window.history.pushState(null, {}, `?${queryString}`);
-  //}
-  //
-
 
 }
 //let urlState = UrlState.fromUrl(window.location.search, window.location.hash);
