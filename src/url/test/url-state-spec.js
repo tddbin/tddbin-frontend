@@ -8,14 +8,14 @@ import Url from '../url.js';
 
 describe('application state, which is stored in the URL', function() {
 
+  const kataName = 'some/cool/kata';
   describe('backwards compat, using hash URLs', function() {
 
-    const kataName = 'some/cool/kata';
     const hash = '#?kata=' + kataName;
     let url;
     let state;
     beforeEach(function() {
-      url = Url.fromLocation({hash});
+      url = Url.initializeFromLocation({hash});
       state = UrlState.useUrl(url);
       sinon.spy(url, 'copyHashIntoQuery');
       sinon.spy(url, 'setValueInQuery');
@@ -45,12 +45,11 @@ describe('application state, which is stored in the URL', function() {
 
   describe('stored in the URL query', function() {
 
-    const kataName = 'some/cool/kata';
     const queryString = '?kata=' + kataName;
     let url;
     let state;
     beforeEach(function() {
-      url = Url.fromLocation({search: queryString});
+      url = Url.initializeFromLocation({search: queryString});
       state = UrlState.useUrl(url);
       sinon.spy(url, 'setValueInQuery');
       state.initialize();

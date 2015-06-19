@@ -9,7 +9,7 @@ function objectToMap(obj) {
 }
 
 export default class Url {
-  static fromLocation(location) {
+  static initializeFromLocation(location) {
     const url = new Url();
     url.initalizeHash(location.hash);
     url.initalizeQuery(location.search);
