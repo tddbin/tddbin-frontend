@@ -7,6 +7,11 @@ function objectToMap(obj) {
   }
   return map;
 }
+function mapToObject(map) {
+  let obj = {};
+  map.forEach((value, key) => { obj[key] = value; });
+  return obj;
+}
 
 export default class Url {
   static inject(updateUrl) {
@@ -32,9 +37,11 @@ export default class Url {
   }
   copyHashIntoQuery() {
     this.query = this.hash;
+    this._updateUrl('?' + querystring.stringify(mapToObject(this.query)));
   }
   setValueInQuery(key, value) {
     this.query.set(key, value);
+    this._updateUrl('?' + querystring.stringify(mapToObject(this.query)));
   }
 }
 
