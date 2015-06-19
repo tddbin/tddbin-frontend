@@ -9,6 +9,11 @@ function objectToMap(obj) {
 }
 
 export default class Url {
+  static inject(updateUrl) {
+    let url = new Url();
+    url._updateUrl = updateUrl;
+    return url;
+  }
   initializeFromLocation(location) {
     this.initalizeHash(location.hash);
     this.initalizeQuery(location.search);
