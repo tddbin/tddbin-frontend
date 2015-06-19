@@ -1,6 +1,6 @@
 /* global process */
 import MainController from './main-controller';
-import {getShortcutObject, metaKey} from './_util';
+import {createShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import StartUp from './startup';
 import {xhrGet} from './_external-deps/xhr.js';
@@ -26,9 +26,10 @@ function onReset() {
   window.location.reload();
 }
 
-const shortcuts = aceDefaultShortcuts.concat([
-  getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
-]);
+const shortcuts = [
+  ...aceDefaultShortcuts,
+  createShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
+];
 
 const appDomNode = document.getElementById('tddbin');
 var main = new MainController(appDomNode, onSave, onReset);
