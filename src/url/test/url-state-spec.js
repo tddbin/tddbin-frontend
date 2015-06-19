@@ -9,17 +9,21 @@ import Url from '../url.js';
 describe('application state, which is stored in the URL', function() {
 
   const kataName = 'some/cool/kata';
+  let url;
+  let state;
+
+  function init(location) {
+    url = Url.initializeFromLocation(location);
+    state = UrlState.useUrl(url);
+    sinon.spy(url, 'copyHashIntoQuery');
+    sinon.spy(url, 'setValueInQuery');
+    state.initialize();
+  }
+
   describe('backwards compat, using hash URLs', function() {
 
-    const hash = '#?kata=' + kataName;
-    let url;
-    let state;
     beforeEach(function() {
-      url = Url.initializeFromLocation({hash});
-      state = UrlState.useUrl(url);
-      sinon.spy(url, 'copyHashIntoQuery');
-      sinon.spy(url, 'setValueInQuery');
-      state.initialize();
+      init({hash: '#?kata=' + kataName});
     });
 
     it('a kata name in a hash, updates the query in the URL', function() {
@@ -45,14 +49,8 @@ describe('application state, which is stored in the URL', function() {
 
   describe('stored in the URL query', function() {
 
-    const queryString = '?kata=' + kataName;
-    let url;
-    let state;
     beforeEach(function() {
-      url = Url.initializeFromLocation({search: queryString});
-      state = UrlState.useUrl(url);
-      sinon.spy(url, 'setValueInQuery');
-      state.initialize();
+      init({search: '?kata=' + kataName});
     });
 
     it('marking a kata as stored locally updates the query', function() {
