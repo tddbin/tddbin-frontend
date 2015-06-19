@@ -9,11 +9,9 @@ function objectToMap(obj) {
 }
 
 export default class Url {
-  static initializeFromLocation(location) {
-    const url = new Url();
-    url.initalizeHash(location.hash);
-    url.initalizeQuery(location.search);
-    return url;
+  initializeFromLocation(location) {
+    this.initalizeHash(location.hash);
+    this.initalizeQuery(location.search);
   }
   initalizeHash(hash='') {
     if (hash.startsWith('#?')) {

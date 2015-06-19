@@ -13,7 +13,8 @@ describe('application state, which is stored in the URL', function() {
   let state;
 
   function init(location) {
-    url = Url.initializeFromLocation(location);
+    url = new Url();
+    url.initializeFromLocation(location);
     state = UrlState.useUrl(url);
     sinon.spy(url, 'copyHashIntoQuery');
     sinon.spy(url, 'setValueInQuery');
