@@ -20,16 +20,16 @@ export default class Url {
     return url;
   }
   initializeFromLocation(location) {
-    this.initalizeHash(location.hash);
-    this.initalizeQuery(location.search);
+    this.initializeHash(location.hash);
+    this.initializeQuery(location.search);
   }
-  initalizeHash(hash='') {
+  initializeHash(hash='') {
     if (hash.startsWith('#?')) {
       hash = hash.substr(2);
     }
     this.hash = objectToMap(querystring.parse(hash));
   }
-  initalizeQuery(query='') {
+  initializeQuery(query='') {
     if (query.startsWith('?')) {
       query = query.substr(1);
     }

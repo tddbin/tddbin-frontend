@@ -26,4 +26,18 @@ describe('url', function() {
       assert.calledWith(updateUrl, '?x=1&y=2');
     });
   });
+
+  it('`copyHashIntoQuery` must clone the data, not use a ref', function() {
+    let url = Url.inject(function() {});
+    url.initializeFromLocation({hash: '#?x=1'});
+
+    url.copyHashIntoQuery();
+    url.initializeHash('');
+
+    assertMapsEqual(url.query, new Map([['x', 1]]));
+  });
 });
+
+function assertMapsEqual(map1, map2) {
+  assert.deepEqual(Array.from(map1.entries()), Array.from(map2.entries()));
+}
