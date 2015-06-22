@@ -1,4 +1,3 @@
-/* global process */
 import React from 'react';
 import NavigationBar from '../components/navigation-bar.js';
 import KeyboardShortcutOverlay from '../components/keyboard-shortcut-overlay.js';
