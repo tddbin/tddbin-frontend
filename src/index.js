@@ -5,18 +5,18 @@ import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import StartUp from './startup';
 import {xhrGet} from './_external-deps/xhr.js';
 import KataUrl from './kata-url.js';
-import querystring from 'querystring';
+import UrlState from './url/url-state.js';
+import Url from './url/url.js';
+import {updateUrl} from './_external-deps/url.js';
 
-// get all globals
+const url = Url.inject(updateUrl);
+url.initializeFromLocation(window.location);
+let urlState = UrlState.useUrl(url);
+urlState.initialize();
 
-function setInUrlQuery(key, value) {
-  const query = querystring.parse(window.location.search.replace(/^\?/, ''));
-  query[key] = value;
-  window.history.pushState(null, {}, `?${querystring.stringify(query)}`);
-}
 
 function onSave() {
-  setInUrlQuery('storedLocally', 1);
+  urlState.markKataAsStoredLocally();
   window.localStorage.setItem('code', main._editor.getContent());
   main.runEditorContent();
 }
@@ -50,14 +50,9 @@ var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
 
-const queryStringInHash = window.location.hash.replace(/^#\?/, '');
-if (queryStringInHash) {
-  window.history.pushState(null, {}, `?${queryStringInHash}`);
-}
-const query = querystring.parse(window.location.search.replace(/^\?/, ''));
-var kataUrl = KataUrl.fromKataName(query.kata);
+var kataUrl = KataUrl.fromKataName(urlState.kataName);
 
-startUp.loadSourceCode(query.storedLocally, kataUrl.toString(), withSourceCode);
+startUp.loadSourceCode(urlState.isKataStoredLocally, kataUrl.toString(), withSourceCode);
 function onSuccess(es6KataData) {
   main.showEs6KatasNavigation(es6KataData);
 }
