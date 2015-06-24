@@ -58702,7 +58702,8 @@ function es6ToEs5Code(sourceCode) {
   try {
     return transform(sourceCode).code;
   } catch (e) {
-    document.getElementById("errorOutput").innerHTML = "Syntax or ES6 (babeljs) transpile error\n\n" + e;
+    var hint = "Syntax or ES6 (babeljs) transpile error\n(This transpile error doesn't mean that the web app is broken :))\n\n    ";
+    document.getElementById("errorOutput").innerHTML = hint + e;
   }
   return null;
 }
