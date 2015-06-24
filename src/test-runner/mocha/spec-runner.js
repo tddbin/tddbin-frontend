@@ -13,7 +13,11 @@ function es6ToEs5Code(sourceCode) {
   try {
     return transform(sourceCode).code;
   } catch (e) {
-    document.getElementById('errorOutput').innerHTML = 'Syntax or ES6 (babeljs) transpile error\n\n' + e;
+    const hint = `Syntax or ES6 (babeljs) transpile error
+(This transpile error doesn't mean that the web app is broken :))
+
+    `;
+    document.getElementById('errorOutput').innerHTML = hint + e;
   }
   return null;
 }
