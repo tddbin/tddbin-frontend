@@ -50,24 +50,24 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "browserify": "^9.0.3",
     "reactify": "^1.0.0",
     "referee": "^1.1.1",
-    "babelify": "^5.0.3",
     "react": "^0.13.0-rc2",
-    "mocha": "^2.1.0",
     "sinon": "^1.12.2",
     "atomic": "git+https://github.com/toddmotto/atomic.git",
     "envify": "^3.3.0",
-    "babel-core": "^4.7.8",
     "istanbul": "latest",
     "watch": "^0.16.0",
     "parallelshell": "^1.1.1",
-    "uglifyjs": "^2.4.10",
     "myth": "^1.4.0",
-    "eslint": "^0.20.0",
     "esprima-fb": "^15001.1.0-dev-harmony-fb",
     "eslint-plugin-react": "^2.2.0",
-    "should": "^6.0.3"
+    "should": "^6.0.3",
+    "babel-core": "^5.6.15",
+    "babelify": "^6.1.2",
+    "browserify": "^10.2.4",
+    "mocha": "^2.2.5",
+    "eslint": "^0.24.0",
+    "uglifyjs": "^2.4.10"
   }
 }
