@@ -1,8 +1,8 @@
-/* global Mocha */
+/* global Mocha require */
 /* eslint-disable no-unused-vars */
-import {expect} from 'referee';
+let expect = require('referee').expect; // use require, so babel won't change names!
+let assert = require('assert'); // use require, so babel won't change names!
 import should from 'should';
-import assert from 'assert';
 /* eslint-enable no-unused-vars */
 
 import {transform} from 'babel-core'; // the es6 transpiler
