@@ -5,14 +5,6 @@ export default class KataUrl {
     this.kataName = '';
   }
 
-  static fromQueryString(queryString) {
-    var kataName = queryString.match(/kata=([^&]+)/);
-    if (kataName && kataName.length === 2) {
-      return KataUrl.fromKataName(kataName[1]);
-    }
-    return new KataUrl();
-  }
-
   static fromKataName(kataName) {
     let kataUrl = new KataUrl();
     kataUrl.kataName = kataName;

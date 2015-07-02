@@ -1,19 +1,39 @@
 /* global process */
 import MainController from './main-controller';
-import {getShortcutObject, metaKey} from './_util';
+import {createShortcutObject, metaKey} from './_util';
 import {shortcuts as aceDefaultShortcuts} from './_aceDefaultShortcuts';
 import StartUp from './startup';
 import {xhrGet} from './_external-deps/xhr.js';
 import KataUrl from './kata-url.js';
+import UrlState from './url/url-state.js';
+import Url from './url/url.js';
+import {updateUrl} from './_external-deps/url.js';
 
-const onSave = () => main.onSave();
+const url = Url.inject(updateUrl);
+url.initializeFromLocation(window.location);
+let urlState = UrlState.useUrl(url);
+urlState.initialize();
 
-const shortcuts = aceDefaultShortcuts.concat([
-  getShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
-]);
+
+function onSave() {
+  urlState.markKataAsStoredLocally();
+  window.localStorage.setItem('code', main._editor.getContent());
+  main.runEditorContent();
+}
+
+function onReset() {
+  window.localStorage.removeItem('code');
+  window.location.reload();
+}
+
+const shortcuts = [
+  ...aceDefaultShortcuts,
+  createShortcutObject([metaKey, 'S'], onSave, 'Save+Run')
+];
 
 const appDomNode = document.getElementById('tddbin');
-var main = new MainController(appDomNode, {
+var main = new MainController(appDomNode, onSave, onReset);
+main.configure({
   iframeSrcUrl: `./mocha/spec-runner.html`,
   shortcuts: shortcuts
 });
@@ -30,10 +50,9 @@ var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
 
-const queryString = window.location.hash.replace(/^#\?/, '');
-var kataUrl = KataUrl.fromQueryString(queryString);
+var kataUrl = KataUrl.fromKataName(urlState.kataName);
 
-startUp.loadSourceCode(kataUrl.toString(), withSourceCode);
+startUp.loadSourceCode(urlState.isKataStoredLocally, kataUrl.toString(), withSourceCode);
 function onSuccess(es6KataData) {
   main.showEs6KatasNavigation(es6KataData);
 }

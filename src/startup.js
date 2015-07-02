@@ -4,16 +4,15 @@ export default class StartUp {
     this.xhrGetDefaultKata = xhrGetDefaultKata;
   }
 
-  loadSourceCode(kataUrl, withSourceCode) {
-    var sourceCode = localStorage.getItem('code');
-    if (kataUrl) {
-      this.loadKataFromUrl(kataUrl, withSourceCode);
-    } else if (sourceCode) {
+  loadSourceCode(fromLocalStorage, kataUrl, withSourceCode) {
+    if (fromLocalStorage) {
+      var sourceCode = localStorage.getItem('code');
       withSourceCode(sourceCode);
+    } else if (kataUrl) {
+      this.loadKataFromUrl(kataUrl, withSourceCode);
     } else {
       this.loadDefaultKata(withSourceCode);
     }
-    window.location.hash = window.location.hash.replace(/kata=([^&]+)/, '');
   }
 
   loadDefaultKata(onLoaded) {

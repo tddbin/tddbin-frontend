@@ -6,11 +6,15 @@ import Editor from './editor';
 
 export default class MainController {
 
-  constructor(domNode, config) {
+  constructor(domNode, onSave, onReset) {
     this._domNode = domNode;
-    this._config = config;
+    this._onSave = onSave;
+    this._onReset = onReset;
   }
 
+  configure(config) {
+    this._config = config;
+  }
 
   render() {
     this._editorDomNodeId = 'editorId';
@@ -28,8 +32,8 @@ export default class MainController {
       metaKeySymbol: '⌘',
       editorId: this._editorDomNodeId,
       runnerId: this._runnerDomNodeId,
-      onSave: this.onSave.bind(this),
-      onResetCode: this._onResetCode,
+      onSave: this._onSave,
+      onResetCode: this._onReset,
       shortcuts: shortcuts,
       es6Katas: this._es6Katas || null
     };
@@ -40,16 +44,6 @@ export default class MainController {
     this._es6Katas = es6KataData;
     this._render();
     this._editor.resize(); // adding the katas navigation changes the space ACE can use, we must inform it to resize :/
-  }
-
-  onSave() {
-    window.localStorage.setItem('code', this._editor.getContent());
-    this.runEditorContent();
-  }
-
-  _onResetCode() {
-    window.localStorage.removeItem('code');
-    window.location.reload();
   }
 
   setEditorContent(sourceCode) {
