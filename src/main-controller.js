@@ -43,7 +43,10 @@ export default class MainController {
   }
 
   onSave() {
-    window.localStorage.setItem('code', this._editor.getContent());
+    try {
+      window.localStorage.setItem('code', this._editor.getContent());
+    } catch (e) {
+    }
     this.runEditorContent();
   }
 
