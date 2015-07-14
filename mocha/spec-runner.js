@@ -101963,7 +101963,7 @@ function consumeMessage(messageData) {
   var sender = messageData.source;
   var specCode = messageData.data;
 
-  var mocha = resetMochaEnvironment();
+  var mocha = resetMochaEnvironment.call(this);
 
   runSpecs(specCode);
   runMochaAndReportStats(mocha, sender);
