@@ -11,7 +11,7 @@ import RuntimeError from '../runtime-error';
 
 function es6ToEs5Code(sourceCode) {
   try {
-    return transform(sourceCode).code;
+    return transform(sourceCode, {optional: ['es6.spec.symbols']}).code;
   } catch (e) {
     const hint = `Syntax or ES6 (babeljs) transpile error
 (This transpile error doesn't mean that the web app is broken :))
