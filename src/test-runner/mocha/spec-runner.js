@@ -36,7 +36,7 @@ function consumeMessage(messageData) {
   const sender = messageData.source;
   const specCode = messageData.data;
 
-  const mocha = resetMochaEnvironment();
+  const mocha = resetMochaEnvironment.call(this);
 
   runSpecs(specCode);
   runMochaAndReportStats(mocha, sender);
