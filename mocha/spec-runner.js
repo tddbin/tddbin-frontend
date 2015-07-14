@@ -101941,7 +101941,7 @@ var assert = require('assert');
 
 function es6ToEs5Code(sourceCode) {
   try {
-    return (0, _babelCore.transform)(sourceCode).code;
+    return (0, _babelCore.transform)(sourceCode, { optional: ['es6.spec.symbols'] }).code;
   } catch (e) {
     var hint = 'Syntax or ES6 (babeljs) transpile error\n(This transpile error doesn\'t mean that the web app is broken :))\n\n    ';
     document.getElementById('errorOutput').innerHTML = hint + e;
