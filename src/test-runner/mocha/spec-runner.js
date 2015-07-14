@@ -22,18 +22,21 @@ function es6ToEs5Code(sourceCode) {
   return null;
 }
 
+function resetMochaEnvironment() {
+  document.getElementById('mocha').innerHTML = '';
+  let mocha = new Mocha({reporter: 'html', ui: 'bdd'});
+  mocha.suite.emit('pre-require', this, null, this);
+  return mocha;
+}
 function consumeMessage(messageData) {
   if (messageData.source === messageData.target) {
     // ignore messages sent to itself
     return;
   }
-  var sender = messageData.source;
-  var specCode = messageData.data;
+  const sender = messageData.source;
+  const specCode = messageData.data;
 
-  // Reset mocha env
-  document.getElementById('mocha').innerHTML = '';
-  var mocha = new Mocha({reporter: 'html', ui: 'bdd'});
-  mocha.suite.emit('pre-require', this, null, this);
+  const mocha = resetMochaEnvironment();
 
   runSpecs(specCode);
   runMochaAndReportStats(mocha, sender);
