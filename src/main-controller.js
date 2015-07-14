@@ -46,6 +46,7 @@ export default class MainController {
     try {
       window.localStorage.setItem('code', this._editor.getContent());
     } catch (e) {
+      // ignore it
     }
     this.runEditorContent();
   }
