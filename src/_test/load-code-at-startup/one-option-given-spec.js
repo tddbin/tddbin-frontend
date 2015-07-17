@@ -1,7 +1,18 @@
 import assert from 'assert';
 import sinon from 'sinon';
+import {loadSourceCode} from '../../load-code-at-startup.js';
 
 assert.calledWith = sinon.assert.calledWith;
+
+function loadKata(remoteSourceCode, kataPath) {
+  loadSourceCode(remoteSourceCode, {kataPath});
+}
+function loadFromGist(remoteSourceCode, gistId) {
+  remoteSourceCode.loadFromGist(gistId);
+}
+function loadFromLocal(remoteSourceCode, localStoreId) {
+  remoteSourceCode.loadFromLocal(localStoreId);
+}
 
 describe('which code shall be loaded at startup (of tddbin)', function() {
 
@@ -42,24 +53,17 @@ describe('which code shall be loaded at startup (of tddbin)', function() {
         loadFromLocal(remoteSourceCode, localStoreId);
 
         assert.calledWith(remoteSourceCode.loadFromLocal, localStoreId);
-
       });
     });
     describe('the local reference is NOT valid', function() {
-      it('no code is loaded', function() {
-
-      });
+      //it('no code is loaded', function() {
+      //  const localStoreId = 'invalid-local-id';
+      //
+      //  loadFromLocal(remoteSourceCode, localStoreId);
+      //
+      //  assert.equal('???');
+      //});
     });
   });
 
 });
-
-function loadKata(remoteSourceCode, kataPath) {
-  remoteSourceCode.loadKata(kataPath);
-}
-function loadFromGist(remoteSourceCode, gistId) {
-  remoteSourceCode.loadFromGist(gistId);
-}
-function loadFromLocal(remoteSourceCode, localStoreId) {
-  remoteSourceCode.loadFromLocal(localStoreId);
-}
