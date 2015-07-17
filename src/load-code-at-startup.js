@@ -7,4 +7,5 @@ export function loadSourceCode(remoteSourceCode, options) {
   if (options.kataPath) {
     remoteSourceCode.loadKata(options.kataPath);
   }
+  remoteSourceCode.loadFromLocal(options.localStoreId);
 }

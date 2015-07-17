@@ -8,10 +8,10 @@ function loadKata(remoteSourceCode, kataPath) {
   loadSourceCode(remoteSourceCode, {kataPath});
 }
 function loadFromGist(remoteSourceCode, gistId) {
-  remoteSourceCode.loadFromGist(gistId);
+  loadSourceCode(remoteSourceCode, {gistId});
 }
 function loadFromLocal(remoteSourceCode, localStoreId) {
-  remoteSourceCode.loadFromLocal(localStoreId);
+  loadSourceCode(remoteSourceCode, {localStoreId});
 }
 
 describe('which code shall be loaded at startup (of tddbin)', function() {
@@ -28,9 +28,7 @@ describe('which code shall be loaded at startup (of tddbin)', function() {
   describe('only a kata is given (/?kata=bla)', function() {
     it('loads the code from the kata', function() {
       const kataPath = 'kata/path';
-
       loadKata(remoteSourceCode, kataPath);
-
       assert.calledWith(remoteSourceCode.loadKata, kataPath);
     });
   });
@@ -38,9 +36,7 @@ describe('which code shall be loaded at startup (of tddbin)', function() {
   describe('only a gist URL is given (?gist=xyz)', function() {
     it('loads the code from the gist', function() {
       const gistId = 'gist-id';
-
       loadFromGist(remoteSourceCode, gistId);
-
       assert.calledWith(remoteSourceCode.loadFromGist, gistId);
     });
   });
@@ -49,9 +45,7 @@ describe('which code shall be loaded at startup (of tddbin)', function() {
     describe('the local reference is valid', function() {
       it('loads the code from the local store', function() {
         const localStoreId = 'local-id';
-
         loadFromLocal(remoteSourceCode, localStoreId);
-
         assert.calledWith(remoteSourceCode.loadFromLocal, localStoreId);
       });
     });
