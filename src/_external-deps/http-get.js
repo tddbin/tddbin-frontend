@@ -1,11 +1,14 @@
 import http from 'http';
+import https from 'https';
 import url from 'url';
 
 export function loadRemoteFile(fileUrl, onLoaded) {
+  const isHttps = fileUrl.toLowerCase().startsWith('https');
+  const httpModule = (isHttps ? https : http);
   var data = '';
   var options = url.parse(fileUrl);
   options.withCredentials = false;
-  var request = http.request(options, function(res) {
+  var request = httpModule.request(options, function(res) {
     if (res.statusCode !== 200) {
       onLoaded(new Error(`HTTP request failed with status code ${res.statusCode}`));
     } else {
