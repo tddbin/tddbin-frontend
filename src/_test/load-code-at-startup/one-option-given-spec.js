@@ -2,6 +2,7 @@ import assert from 'assert';
 import sinon from 'sinon';
 import {loadSourceCode} from '../../load-code-at-startup.js';
 
+assert.called = sinon.assert.called;
 assert.calledWith = sinon.assert.calledWith;
 
 function loadKata(remoteSourceCode, kataPath) {
@@ -61,3 +62,36 @@ describe('which code shall be loaded at startup (of tddbin)', function() {
   });
 
 });
+
+const noop = () => {};
+describe('load kata', function() {
+  it('if given properly', function(done) {
+    const kataName = 'es6/language/destructuring/string';
+    const onError = noop;
+    _loadKata(kataName, onError, (data) => {
+      assert.equal(data.startsWith('// 11: destructuring'), true);
+      done();
+    });
+  });
+  it('invalid kata name', function(done) {
+    const kataName = 'nix';
+    const onSuccess = noop;
+    const onError = (e) => {
+      assert.equal(e.message.includes('404'), true);
+      done();
+    };
+    _loadKata(kataName, onError, onSuccess);
+  });
+});
+
+import {loadRemoteFile} from '../../_external-deps/http-get.js';
+function _loadKata(kataName, onError, onSuccess) {
+  const url = `http://katas.tddbin.com/katas/${kataName}.js`;
+  loadRemoteFile(url, (error, data) => {
+    if (error) {
+      onError(error);
+    } else {
+      onSuccess(data);
+    }
+  });
+}
