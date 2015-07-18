@@ -65,33 +65,36 @@ describe('which code shall be loaded at startup (of tddbin)', function() {
 
 const noop = () => {};
 describe('load kata', function() {
+
   it('if given properly', function(done) {
     const kataName = 'es6/language/destructuring/string';
-    const onError = noop;
-    _loadKata(kataName, onError, (data) => {
+    const setEditorContent = (data) => {
       assert.equal(data.startsWith('// 11: destructuring'), true);
       done();
-    });
-  });
-  it('invalid kata name', function(done) {
-    const kataName = 'nix';
-    const onSuccess = noop;
-    const onError = (e) => {
-      assert.equal(e.message.includes('404'), true);
-      done();
     };
-    _loadKata(kataName, onError, onSuccess);
+    _loadKata(kataName, setEditorContent, noop);
+  });
+  describe('invalid kata name', function() {
+    it('hints to the user about not being able to load', function(done) {
+      const kataName = 'invalid/kata/name';
+      const showUserHint = (data) => {
+        assert.equal(data, ERROR_LOADING_KATA);
+        done();
+      };
+      _loadKata(kataName, noop, showUserHint);
+    });
   });
 });
 
+const ERROR_LOADING_KATA = 'Error loading the kata from ...';
 import {loadRemoteFile} from '../../_external-deps/http-get.js';
-function _loadKata(kataName, onError, onSuccess) {
+function _loadKata(kataName, setEditorContent, showUserHint) {
   const url = `http://katas.tddbin.com/katas/${kataName}.js`;
   loadRemoteFile(url, (error, data) => {
     if (error) {
-      onError(error);
+      showUserHint(ERROR_LOADING_KATA);
     } else {
-      onSuccess(data);
+      setEditorContent(data);
     }
   });
 }
