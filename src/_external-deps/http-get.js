@@ -7,6 +7,9 @@ export function loadRemoteFile(fileUrl, onLoaded) {
   const httpModule = (isHttps ? https : http);
   var data = '';
   var options = url.parse(fileUrl);
+  options.headers = {
+    'User-Agent': '' // api.github.com wants a user-agent header
+  };
   options.withCredentials = false;
   var request = httpModule.request(options, function(res) {
     if (res.statusCode !== 200) {
