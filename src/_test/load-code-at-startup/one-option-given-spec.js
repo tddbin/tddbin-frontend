@@ -28,7 +28,7 @@ describe('load kata', function() {
 });
 
 describe('load gist', function() {
-  it.only('if request succeeds', function(done) {
+  it('if request succeeds', function(done) {
     const gistId = 'a046034f74679e2d4057';
     const setEditorContent = (data) => {
       assert.equal(data.startsWith('// just a test'), true);
@@ -36,4 +36,13 @@ describe('load gist', function() {
     };
     loadSourceCode({gistId}, setEditorContent, noop);
   });
+// todo
+  //it('if request fails', function(done) {
+  //  const gistId = 'invalid-gist-id';
+  //  const showUserHint = (data) => {
+  //    assert.equal(data.startsWith('// just a test'), true);
+  //    done();
+  //  };
+  //  loadSourceCode({gistId}, noop, showUserHint);
+  //});
 });
