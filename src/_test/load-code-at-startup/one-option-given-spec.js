@@ -7,13 +7,16 @@ import {
 const noop = () => {};
 describe('load kata', function() {
 
-  it('if given properly', function(done) {
+  it.only('if given properly', function(done) {
+    const loadRemoteFile = (url, fn) => {
+      fn(null, '// 11: destructuring');
+    };
     const kataName = 'es6/language/destructuring/string';
     const setEditorContent = (data) => {
       assert.equal(data.startsWith('// 11: destructuring'), true);
       done();
     };
-    loadSourceCode({kataName}, setEditorContent, noop);
+    loadSourceCode(loadRemoteFile, {kataName}, setEditorContent, noop);
   });
   describe('invalid kata name', function() {
     it('hints to the user about not being able to load', function(done) {
