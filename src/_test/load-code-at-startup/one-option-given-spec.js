@@ -7,7 +7,7 @@ import {
 const noop = () => {};
 describe('load kata', function() {
 
-  it.only('if given properly', function(done) {
+  it('if given properly', function(done) {
     const loadRemoteFile = (url, fn) => {
       fn(null, '// 11: destructuring');
     };
@@ -20,12 +20,15 @@ describe('load kata', function() {
   });
   describe('invalid kata name', function() {
     it('hints to the user about not being able to load', function(done) {
+      const loadRemoteFile = (url, fn) => {
+        fn(new Error());
+      };
       const kataName = 'invalid/kata/name';
       const showUserHint = (data) => {
         assert.equal(data, ERROR_LOADING_KATA);
         done();
       };
-      loadSourceCode({kataName}, noop, showUserHint);
+      loadSourceCode(loadRemoteFile, {kataName}, noop, showUserHint);
     });
   });
 });
