@@ -1,12 +1,11 @@
-import {loadRemoteFile} from './_external-deps/http-get.js';
-
 export const ERROR_LOADING_KATA = 'Error loading the kata from ...';
 
 export function loadSourceCode(loadRemoteFile, {kataName, gistId}, setEditorContent, showUserHint) {
   if (gistId) {
     loadGist(gistId, showUserHint, setEditorContent);
+  } else {
+    loadKata(kataName, showUserHint, setEditorContent);
   }
-  loadKata(kataName, showUserHint, setEditorContent);
 
   function loadKata(kataName, showUserHint, setEditorContent) {
     const url = `http://katas.tddbin.com/katas/${kataName}.js`;
