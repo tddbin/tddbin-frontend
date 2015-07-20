@@ -6,63 +6,67 @@ import {
 } from '../../load-code-at-startup.js';
 
 assert.calledOnce = sinon.assert.calledOnce;
+assert.calledWith = sinon.assert.calledWith;
 
 const noop = () => {};
-describe('load kata', function() {
 
-  it('if given properly', function(done) {
+describe('loading fails', function() {
+  it('hints to the user about not being able to load', function() {
     const loadRemoteFile = (url, fn) => {
-      fn(null, '// 11: destructuring');
+      fn(new Error());
     };
-    const kataName = 'es6/language/destructuring/string';
-    const setEditorContent = (data) => {
-      assert.equal(data.startsWith('// 11: destructuring'), true);
-      done();
+    const kataName = 'invalid/kata/name';
+    const showUserHint = (data) => {
+      assert.equal(data, ERROR_LOADING_KATA);
     };
-    loadSourceCode(loadRemoteFile, {kataName}, setEditorContent, noop);
+    loadSourceCode(loadRemoteFile, {kataName}, noop, showUserHint);
   });
-  describe('invalid kata name', function() {
-    it('hints to the user about not being able to load', function(done) {
-      const loadRemoteFile = (url, fn) => {
-        fn(new Error());
-      };
-      const kataName = 'invalid/kata/name';
-      const showUserHint = (data) => {
-        assert.equal(data, ERROR_LOADING_KATA);
-        done();
-      };
-      loadSourceCode(loadRemoteFile, {kataName}, noop, showUserHint);
+});
+
+describe('successful kata loading calls `setEditorContent()`', function() {
+
+  const sourceCode = '// valid source code';
+  let setEditorContent;
+  beforeEach(function() {
+    setEditorContent = sinon.stub();
+  });
+
+  it('for a kata', function() {
+    const loadRemoteFile = (url, fn) => {
+      fn(null, sourceCode);
+    };
+    loadSourceCode(loadRemoteFile, {kataName: 'valid kata name'}, setEditorContent, noop);
+    assert.calledWith(setEditorContent, sourceCode);
+  });
+
+  describe('for a gist', function() {
+
+    const loadRemoteFile = (url, fn) => {
+      fn(null, JSON.stringify({files: {'test.js': {content: sourceCode}}}));
+    };
+    beforeEach(function() {
+      loadSourceCode(loadRemoteFile, {gistId: 'irrelevant'}, setEditorContent, noop);
+    });
+
+    it('calls `setEditorContent`', function() {
+      assert.calledWith(setEditorContent, sourceCode);
+    });
+    it('does ONLY load the gist', function() {
+      assert.calledOnce(setEditorContent);
     });
   });
 });
 
-describe('load gist', function() {
-  it('if request succeeds', function() {
-    const loadRemoteFile = (url, fn) => {
-      fn(null, JSON.stringify({files: {'test.js': {content: '// just a test'}}}));
-    };
-    const gistId = 'a046034f74679e2d4057';
-    const setEditorContent = (data) => {
-      assert.equal(data.startsWith('// just a test'), true);
-    };
-    loadSourceCode(loadRemoteFile, {gistId}, setEditorContent, noop);
-  });
-  it('does ONLY load the gist', function() {
-    const loadRemoteFile = (url, fn) => {
-      fn(null, JSON.stringify({files: {'test.js': {content: 'valid content'}}}));
-    };
-    const setEditorContent = sinon.stub();
-
-    loadSourceCode(loadRemoteFile, {gistId: 'irrelevant'}, setEditorContent, noop);
-    assert.calledOnce(setEditorContent);
-  });
-// todo
-  //it('if request fails', function(done) {
-  //  const gistId = 'invalid-gist-id';
-  //  const showUserHint = (data) => {
-  //    assert.equal(data.startsWith('// just a test'), true);
-  //    done();
-  //  };
-  //  loadSourceCode({gistId}, noop, showUserHint);
-  //});
-});
+//describe('load local source', function() {
+//  it('for valid id', function() {
+//    const sourceCode = 'source code';
+//    const loadLocalFile = (id, fn) => {
+//      fn(null, sourceCode);
+//    };
+//    const localId = 'valid id';
+//    const setEditorContent = (data) => {
+//      assert.equal(data, sourceCode);
+//    };
+//    loadSourceCode(loadLocalFile, {localId}, setEditorContent, noop);
+//  });
+//});
