@@ -15,11 +15,9 @@ describe('loading fails', function() {
     const loadRemoteFile = (url, fn) => {
       fn(new Error());
     };
-    const kataName = 'invalid/kata/name';
-    const showUserHint = (data) => {
-      assert.equal(data, ERROR_LOADING_KATA);
-    };
-    loadSourceCode(loadRemoteFile, {kataName}, noop, showUserHint);
+    const showUserHint = sinon.stub();
+    loadSourceCode(loadRemoteFile, {kataName: 'invalid'}, noop, showUserHint);
+    assert.calledWith(showUserHint, ERROR_LOADING_KATA);
   });
 });
 
