@@ -2,7 +2,7 @@ import assert from 'assert';
 import sinon from 'sinon';
 import {
   ERROR_LOADING_KATA,
-  loadSourceCode
+  default as SourceCodeContent
 } from '../../load-code-at-startup.js';
 
 assert.calledOnce = sinon.assert.calledOnce;
@@ -10,13 +10,22 @@ assert.calledWith = sinon.assert.calledWith;
 
 const noop = () => {};
 
+function loadRemoteSource(loadRemoteFile, loadConfig, setEditorContent, showUserHint) {
+  new SourceCodeContent(loadRemoteFile, noop)
+    .load(loadConfig, setEditorContent, showUserHint);
+}
+function loadLocalSource(loadLocalFile, loadConfig, setEditorContent, showUserHint) {
+  new SourceCodeContent(noop, loadLocalFile)
+    .load(loadConfig, setEditorContent, showUserHint);
+}
+
 describe('loading fails', function() {
   it('hints to the user about not being able to load', function() {
     const loadRemoteFile = (url, fn) => {
       fn(new Error());
     };
     const showUserHint = sinon.stub();
-    loadSourceCode(loadRemoteFile, {kataName: 'invalid'}, noop, showUserHint);
+    loadRemoteSource(loadRemoteFile, {kataName: 'invalid'}, noop, showUserHint);
     assert.calledWith(showUserHint, ERROR_LOADING_KATA);
   });
 });
@@ -33,7 +42,7 @@ describe('successful kata loading calls `setEditorContent()`', function() {
     const loadRemoteFile = (url, fn) => {
       fn(null, sourceCode);
     };
-    loadSourceCode(loadRemoteFile, {kataName: 'valid kata name'}, setEditorContent, noop);
+    loadRemoteSource(loadRemoteFile, {kataName: 'valid kata name'}, setEditorContent, noop);
     assert.calledWith(setEditorContent, sourceCode);
   });
 
@@ -43,7 +52,7 @@ describe('successful kata loading calls `setEditorContent()`', function() {
       fn(null, JSON.stringify({files: {'test.js': {content: sourceCode}}}));
     };
     beforeEach(function() {
-      loadSourceCode(loadRemoteFile, {gistId: 'irrelevant'}, setEditorContent, noop);
+      loadRemoteSource(loadRemoteFile, {gistId: 'irrelevant'}, setEditorContent, noop);
     });
 
     it('calls `setEditorContent`', function() {
@@ -53,18 +62,16 @@ describe('successful kata loading calls `setEditorContent()`', function() {
       assert.calledOnce(setEditorContent);
     });
   });
+
+  describe('load local source', function() {
+    it('for valid id', function() {
+      const loadLocalFile = (id, fn) => {
+        fn(null, sourceCode);
+      };
+      loadLocalSource(loadLocalFile, {localId: 'irrelevant'}, setEditorContent, noop);
+      assert.calledWith(setEditorContent, sourceCode);
+    });
+  });
+
 });
 
-//describe('load local source', function() {
-//  it('for valid id', function() {
-//    const sourceCode = 'source code';
-//    const loadLocalFile = (id, fn) => {
-//      fn(null, sourceCode);
-//    };
-//    const localId = 'valid id';
-//    const setEditorContent = (data) => {
-//      assert.equal(data, sourceCode);
-//    };
-//    loadSourceCode(loadLocalFile, {localId}, setEditorContent, noop);
-//  });
-//});
