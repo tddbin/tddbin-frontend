@@ -16,8 +16,9 @@ export default class SourceCodeContent {
     this._loadLocalFile('', (err, sourceCode) => {
       if (err) {
         showUserHint(ERROR_LOADING_KATA);
+      } else {
+        setEditorContent(sourceCode);
       }
-      setEditorContent(sourceCode);
     });
   }
 

@@ -83,6 +83,9 @@ describe('successful kata loading calls `setEditorContent()`', function() {
       it('shows the error', function() {
         assert.calledWith(showUserHint, ERROR_LOADING_KATA);
       });
+      it('does not load any editor content', function() {
+        assert.notCalled(setEditorContent);
+      });
     });
   });
 
