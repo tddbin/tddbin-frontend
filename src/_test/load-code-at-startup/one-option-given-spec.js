@@ -71,6 +71,19 @@ describe('successful kata loading calls `setEditorContent()`', function() {
       loadLocalSource(loadLocalFile, {localId: 'irrelevant'}, setEditorContent, noop);
       assert.calledWith(setEditorContent, sourceCode);
     });
+    describe('for an invalid id', function() {
+      let showUserHint;
+      beforeEach(function() {
+        const loadLocalFile = (id, fn) => {
+          fn(new Error());
+        };
+        showUserHint = sinon.stub();
+        loadLocalSource(loadLocalFile, {localId: 'invalid'}, setEditorContent, showUserHint);
+      });
+      it('shows the error', function() {
+        assert.calledWith(showUserHint, ERROR_LOADING_KATA);
+      });
+    });
   });
 
 });

@@ -14,6 +14,9 @@ export default class SourceCodeContent {
       this.loadKata(kataName, showUserHint, setEditorContent);
     }
     this._loadLocalFile('', (err, sourceCode) => {
+      if (err) {
+        showUserHint(ERROR_LOADING_KATA);
+      }
       setEditorContent(sourceCode);
     });
   }
