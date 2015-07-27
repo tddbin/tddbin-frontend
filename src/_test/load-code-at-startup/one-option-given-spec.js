@@ -85,12 +85,14 @@ describe('successful kata loading calls `setEditorContent()`', function() {
 
   describe('load local source', function() {
 
-    it('for valid id', function() {
-      const loadLocalFile = (id, fn) => {
-        fn(null, sourceCode);
-      };
-      loadLocalSource(loadLocalFile, {localId: 'irrelevant'}, setEditorContent, noop);
-      assert.calledWith(setEditorContent, sourceCode);
+    describe('for valid id', function() {
+      it('it loads the content', function() {
+        const loadLocalFile = (id, fn) => {
+          fn(null, sourceCode);
+        };
+        loadLocalSource(loadLocalFile, {localId: 'irrelevant'}, setEditorContent, noop);
+        assert.calledWith(setEditorContent, sourceCode);
+      });
     });
     describe('for an invalid id', function() {
       let showUserHint;
