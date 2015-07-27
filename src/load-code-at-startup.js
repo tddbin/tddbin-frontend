@@ -2,9 +2,10 @@ export const ERROR_LOADING_KATA = 'Error loading the kata from ...';
 
 export default class SourceCodeContent {
 
-  constructor(loadRemoteFile, loadLocalFile) {
+  constructor(loadRemoteFile, loadLocalFile, KataUrl) {
     this._loadRemoteFile = loadRemoteFile;
     this._loadLocalFile = loadLocalFile;
+    this._KataUrl = KataUrl;
   }
 
   load({kataName, gistId}, setEditorContent, showUserHint) {
@@ -23,7 +24,7 @@ export default class SourceCodeContent {
   }
 
   loadKata(kataName, showUserHint, setEditorContent) {
-    const url = `http://katas.tddbin.com/katas/${kataName}.js`;
+    const url = this._KataUrl.fromKataName(kataName).toString();
     this.loadRemoteFile(url, showUserHint, setEditorContent);
   }
 
