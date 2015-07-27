@@ -1,3 +1,4 @@
+const configuredClass = Symbol.for('ConfiguredClass');
 export default class KataUrl {
 
   constructor() {
@@ -5,9 +6,9 @@ export default class KataUrl {
   }
 
   static configure(katasServiceDomain) {
-    KataUrl.ConfiguredClass = class extends KataUrl {};
-    KataUrl.ConfiguredClass.KATAS_SERVICE_DOMAIN = katasServiceDomain;
-    return KataUrl.ConfiguredClass;
+    KataUrl[configuredClass] = class extends KataUrl {};
+    KataUrl[configuredClass].KATAS_SERVICE_DOMAIN = katasServiceDomain;
+    return KataUrl[configuredClass];
   }
 
   static fromQueryString(queryString) {
@@ -26,7 +27,7 @@ export default class KataUrl {
 
   toString() {
     if (this.kataName) {
-      return `http://${KataUrl.ConfiguredClass.KATAS_SERVICE_DOMAIN}/katas/${this.kataName}.js`;
+      return `http://${KataUrl[configuredClass].KATAS_SERVICE_DOMAIN}/katas/${this.kataName}.js`;
     }
     return '';
   }
