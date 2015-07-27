@@ -38,12 +38,23 @@ describe('successful kata loading calls `setEditorContent()`', function() {
     setEditorContent = sinon.stub();
   });
 
-  it('for a kata', function() {
-    const loadRemoteFile = (url, fn) => {
-      fn(null, sourceCode);
-    };
-    loadRemoteSource(loadRemoteFile, {kataName: 'valid kata name'}, setEditorContent, noop);
-    assert.calledWith(setEditorContent, sourceCode);
+  describe('for a kata', function() {
+
+    it('returning valid data', function() {
+      const loadRemoteFile = (url, fn) => {
+        fn(null, sourceCode);
+      };
+      loadRemoteSource(loadRemoteFile, {kataName: 'valid kata name'}, setEditorContent, noop);
+      assert.calledWith(setEditorContent, sourceCode);
+    });
+    it('calls the `loadRemoteFile` function with the right URL', function() {
+      const loadRemoteFile = sinon.stub();
+      var kataName = 'kata/name';
+      loadRemoteSource(loadRemoteFile, {kataName: kataName}, noop, noop);
+
+      const expectedUrl = `http://katas.tddbin.com/katas/${kataName}.js`;
+      assert.calledWith(loadRemoteFile, expectedUrl);
+    });
   });
 
   describe('for a gist', function() {
@@ -61,9 +72,19 @@ describe('successful kata loading calls `setEditorContent()`', function() {
     it('does ONLY load the gist', function() {
       assert.calledOnce(setEditorContent);
     });
+    it('calls the `loadRemoteFile` function with the right URL', function() {
+      const _loadRemoteFile = sinon.stub();
+      var gistId = 'irrelevant';
+      loadRemoteSource(_loadRemoteFile, {gistId: gistId}, noop, noop);
+
+      const expectedUrl = `https://api.github.com/gists/${gistId}`;
+      assert.calledWith(_loadRemoteFile, expectedUrl);
+    });
+
   });
 
   describe('load local source', function() {
+
     it('for valid id', function() {
       const loadLocalFile = (id, fn) => {
         fn(null, sourceCode);
@@ -87,6 +108,7 @@ describe('successful kata loading calls `setEditorContent()`', function() {
         assert.notCalled(setEditorContent);
       });
     });
+
   });
 
 });
