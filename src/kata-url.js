@@ -1,8 +1,13 @@
-/* global process */
 export default class KataUrl {
 
   constructor() {
     this.kataName = '';
+  }
+
+  static configure(katasServiceDomain) {
+    KataUrl.ConfiguredClass = class extends KataUrl {};
+    KataUrl.ConfiguredClass.KATAS_SERVICE_DOMAIN = katasServiceDomain;
+    return KataUrl.ConfiguredClass;
   }
 
   static fromQueryString(queryString) {
@@ -21,7 +26,7 @@ export default class KataUrl {
 
   toString() {
     if (this.kataName) {
-      return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${this.kataName}.js`;
+      return `http://${KataUrl.ConfiguredClass.KATAS_SERVICE_DOMAIN}/katas/${this.kataName}.js`;
     }
     return '';
   }
