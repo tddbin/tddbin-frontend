@@ -30,14 +30,6 @@
     "precover": "rm -Rf coverage",
     "cover": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register src/**/**/*spec.js"
   },
-  "browserify": {
-    "extension": [],
-    "transform": [
-      [
-        "babelify"
-      ]
-    ]
-  },
   "keywords": [
     "tddbin",
     "tdd",
