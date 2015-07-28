@@ -4,18 +4,21 @@ import {
   ERROR_LOADING_KATA,
   default as SourceCodeContent
 } from '../../load-code-at-startup.js';
+import KataUrl from '../../kata-url.js';
 
 assert.calledOnce = sinon.assert.calledOnce;
 assert.calledWith = sinon.assert.calledWith;
 
 const noop = () => {};
 
+const ConfiguredKataUrl = KataUrl.configure('katas.domain');
+
 function loadRemoteSource(loadRemoteFile, loadConfig, setEditorContent, showUserHint) {
-  new SourceCodeContent(loadRemoteFile, noop)
+  new SourceCodeContent(loadRemoteFile, noop, ConfiguredKataUrl)
     .load(loadConfig, setEditorContent, showUserHint);
 }
 function loadLocalSource(loadLocalFile, loadConfig, setEditorContent, showUserHint) {
-  new SourceCodeContent(noop, loadLocalFile)
+  new SourceCodeContent(noop, loadLocalFile, ConfiguredKataUrl)
     .load(loadConfig, setEditorContent, showUserHint);
 }
 
@@ -52,7 +55,7 @@ describe('successful kata loading calls `setEditorContent()`', function() {
       var kataName = 'kata/name';
       loadRemoteSource(loadRemoteFile, {kataName: kataName}, noop, noop);
 
-      const expectedUrl = `http://katas.tddbin.com/katas/${kataName}.js`;
+      const expectedUrl = ConfiguredKataUrl.fromKataName(kataName).toString();
       assert.calledWith(loadRemoteFile, expectedUrl);
     });
   });
