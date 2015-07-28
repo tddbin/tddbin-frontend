@@ -2,10 +2,11 @@ export const ERROR_LOADING_KATA = 'Error loading the kata from ...';
 
 export default class SourceCodeContent {
 
-  constructor(loadRemoteFile, loadLocalFile, KataUrl) {
+  constructor(loadRemoteFile, loadLocalFile, KataUrl, gistUrlById) {
     this._loadRemoteFile = loadRemoteFile;
     this._loadLocalFile = loadLocalFile;
     this._KataUrl = KataUrl;
+    this._gistUrlById = gistUrlById;
   }
 
   load({kataName, gistId}, setEditorContent, showUserHint) {
@@ -29,7 +30,7 @@ export default class SourceCodeContent {
   }
 
   loadGist(gistId, showUserHint, setEditorContent) {
-    const url = `https://api.github.com/gists/${gistId}`;
+    const url = this._gistUrlById(gistId);
     this.loadRemoteFile(url, showUserHint, (data) => {
       setEditorContent(JSON.parse(data).files['test.js'].content);
     });

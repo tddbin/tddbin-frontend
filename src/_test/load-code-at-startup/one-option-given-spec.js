@@ -12,13 +12,15 @@ assert.calledWith = sinon.assert.calledWith;
 const noop = () => {};
 
 const ConfiguredKataUrl = KataUrl.configure('katas.domain');
+const gistUrlById = (gistId) => `https://api.github.com/gists/${gistId}`;
+
 
 function loadRemoteSource(loadRemoteFile, loadConfig, setEditorContent, showUserHint) {
-  new SourceCodeContent(loadRemoteFile, noop, ConfiguredKataUrl)
+  new SourceCodeContent(loadRemoteFile, noop, ConfiguredKataUrl, gistUrlById)
     .load(loadConfig, setEditorContent, showUserHint);
 }
 function loadLocalSource(loadLocalFile, loadConfig, setEditorContent, showUserHint) {
-  new SourceCodeContent(noop, loadLocalFile, ConfiguredKataUrl)
+  new SourceCodeContent(noop, loadLocalFile, ConfiguredKataUrl, gistUrlById)
     .load(loadConfig, setEditorContent, showUserHint);
 }
 
