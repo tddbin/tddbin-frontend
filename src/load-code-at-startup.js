@@ -2,10 +2,10 @@ export const ERROR_LOADING_KATA = 'Error loading the kata from ...';
 
 export default class SourceCodeContent {
 
-  constructor(loadRemoteFile, loadLocalFile, KataUrl, gistUrlById) {
+  constructor(loadRemoteFile, loadLocalFile, kataUrlFromName, gistUrlById) {
     this._loadRemoteFile = loadRemoteFile;
     this._loadLocalFile = loadLocalFile;
-    this._KataUrl = KataUrl;
+    this._kataUrlFromName = kataUrlFromName;
     this._gistUrlById = gistUrlById;
   }
 
@@ -25,7 +25,7 @@ export default class SourceCodeContent {
   }
 
   loadKata(kataName, showUserHint, setEditorContent) {
-    const url = this._KataUrl.fromKataName(kataName).toString();
+    const url = this._kataUrlFromName(kataName);
     this.loadRemoteFile(url, showUserHint, setEditorContent);
   }
 

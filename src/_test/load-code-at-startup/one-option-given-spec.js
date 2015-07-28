@@ -4,23 +4,23 @@ import {
   ERROR_LOADING_KATA,
   default as SourceCodeContent
 } from '../../load-code-at-startup.js';
-import KataUrl from '../../kata-url.js';
 
 assert.calledOnce = sinon.assert.calledOnce;
 assert.calledWith = sinon.assert.calledWith;
 
 const noop = () => {};
 
-const ConfiguredKataUrl = KataUrl.configure('katas.domain');
-const gistUrlById = (gistId) => `https://api.github.com/gists/${gistId}`;
-
+const gistUrl = 'https://api.github.com/gists/some-gist-id';
+const gistUrlById = () => gistUrl;
+const kataUrl = 'correct kata url';
+const kataUrlFromName = () => kataUrl;
 
 function loadRemoteSource(loadRemoteFile, loadConfig, setEditorContent, showUserHint) {
-  new SourceCodeContent(loadRemoteFile, noop, ConfiguredKataUrl, gistUrlById)
+  new SourceCodeContent(loadRemoteFile, noop, kataUrlFromName, gistUrlById)
     .load(loadConfig, setEditorContent, showUserHint);
 }
 function loadLocalSource(loadLocalFile, loadConfig, setEditorContent, showUserHint) {
-  new SourceCodeContent(noop, loadLocalFile, ConfiguredKataUrl, gistUrlById)
+  new SourceCodeContent(noop, loadLocalFile, kataUrlFromName, gistUrlById)
     .load(loadConfig, setEditorContent, showUserHint);
 }
 
@@ -57,8 +57,7 @@ describe('successful kata loading calls `setEditorContent()`', function() {
       var kataName = 'kata/name';
       loadRemoteSource(loadRemoteFile, {kataName: kataName}, noop, noop);
 
-      const expectedUrl = ConfiguredKataUrl.fromKataName(kataName).toString();
-      assert.calledWith(loadRemoteFile, expectedUrl);
+      assert.calledWith(loadRemoteFile, kataUrl);
     });
   });
 
@@ -82,8 +81,7 @@ describe('successful kata loading calls `setEditorContent()`', function() {
       var gistId = 'irrelevant';
       loadRemoteSource(_loadRemoteFile, {gistId: gistId}, noop, noop);
 
-      const expectedUrl = `https://api.github.com/gists/${gistId}`;
-      assert.calledWith(_loadRemoteFile, expectedUrl);
+      assert.calledWith(_loadRemoteFile, gistUrl);
     });
 
   });
