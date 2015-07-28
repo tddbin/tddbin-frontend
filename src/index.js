@@ -32,7 +32,11 @@ import KataUrl from './kata-url.js';
 
 const query = parseQuerystring(window.location.search.replace(/^\?/, ''));
 const gistUrlById = (gistId) => `https://api.github.com/gists/${gistId}`;
-const kataUrlFromName = (kataName) => KataUrl.fromKataName(kataName).toString();
+const kataUrlFromName = (kataName) => {
+  const kataUrl = new KataUrl(process.env.KATAS_SERVICE_DOMAIN);
+  kataUrl.initializeFromKataName(kataName);
+  return kataUrl.toString();
+};
 
 var noop = () => {};
 new SourceCodeContent(loadRemoteFile, noop, kataUrlFromName, gistUrlById)
