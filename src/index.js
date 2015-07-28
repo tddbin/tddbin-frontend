@@ -75,7 +75,7 @@ var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
 
 const queryString = window.location.hash.replace(/^#\?/, '');
-var kataUrl = KataUrl.fromQueryString(queryString);
+var kataUrl = KataUrl.initializeFromQueryString(queryString);
 
 startUp.loadSourceCode(kataUrl.toString(), withSourceCode);
 function onSuccess(es6KataData) {

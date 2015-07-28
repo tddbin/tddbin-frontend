@@ -5,14 +5,14 @@ export default class KataUrl {
     this.katasServiceDomain = katasServiceDomain;
   }
 
-  fromQueryString(queryString) {
+  initializeFromQueryString(queryString) {
     var kataName = queryString.match(/kata=([^&]+)/);
     if (kataName && kataName.length === 2) {
-      return this.fromKataName(kataName[1]);
+      return this.initializeFromKataName(kataName[1]);
     }
   }
 
-  fromKataName(kataName) {
+  initializeFromKataName(kataName) {
     this.kataName = kataName;
   }
 

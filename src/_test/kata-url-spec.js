@@ -4,7 +4,7 @@ import KataUrl from '../kata-url.js';
 const katasServiceDomain = 'katas.tddbin.test';
 const fromQueryString = (queryString) => {
   const kataUrl = new KataUrl(katasServiceDomain);
-  kataUrl.fromQueryString(queryString);
+  kataUrl.initializeFromQueryString(queryString);
   return kataUrl;
 };
 
