@@ -5,11 +5,9 @@
     "jsx": true,
     "modules": true,
     "classes": true,
-    "blockBindings": true,
     "destructuring": true,
     "arrowFunctions": true,
     "defaultParams": true,
-    "forOf": true,
     "generators": true
   },
   "rules": {
