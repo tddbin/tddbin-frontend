@@ -4,8 +4,13 @@ node_js:
 
 after_success:
   - chmod +x ./scripts/*.sh
-  - chmod +x ./scripts/for-travis/*.sh
-  - ./scripts/for-travis/build-and-deploy.sh
+  - npm run build
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  branch: master
+  script: ./scripts/deploy-to-ghpages.sh
 
 env:
  global:
