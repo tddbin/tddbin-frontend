@@ -61,12 +61,12 @@
     "parallelshell": "^2.0.0",
     "myth": "^1.4.0",
     "esprima-fb": "^15001.1.0-dev-harmony-fb",
-    "eslint-plugin-react": "^2.2.0",
+    "eslint-plugin-react": "^6.5.0",
     "should": "^6.0.3",
     "babelify": "^6.1.2",
     "browserify": "^10.2.4",
     "mocha": "^2.2.5",
-    "eslint": "^0.24.0",
+    "eslint": "^3.9.1",
     "uglifyjs": "^2.4.10",
     "babel": "^5.6.23"
   }
