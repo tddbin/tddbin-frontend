@@ -53,7 +53,7 @@
   "devDependencies": {
     "reactify": "^1.0.0",
     "referee": "^1.1.1",
-    "react": "^15.3.2",
+    "react": "^0.13.0-rc2",
     "sinon": "^1.12.2",
     "atomic": "git+https://github.com/toddmotto/atomic.git",
     "envify": "^3.3.0",
