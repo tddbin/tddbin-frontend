@@ -26,7 +26,7 @@ function consumeMessage(messageData) {
   // Reset mocha env
   document.getElementById('mocha').innerHTML = '';
   var mocha = new Mocha({reporter: HTML, ui: 'bdd'});
-  mocha.suite.emit('pre-require', this, null, this);
+  mocha.suite.emit('pre-require', this, null, mocha);
 
   runSpecs(specCode);
   runMochaAndReportStats(mocha, sender);

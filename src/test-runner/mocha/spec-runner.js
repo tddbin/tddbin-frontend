@@ -25,7 +25,7 @@ function es6ToEs5Code(sourceCode) {
 function resetMochaEnvironment() {
   document.getElementById('mocha').innerHTML = '';
   let mocha = new Mocha({reporter: 'html', ui: 'bdd'});
-  mocha.suite.emit('pre-require', this, null, this);
+  mocha.suite.emit('pre-require', this, null, mocha);
   return mocha;
 }
 function consumeMessage(messageData) {
