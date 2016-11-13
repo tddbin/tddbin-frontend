@@ -14,7 +14,7 @@
     "postbuild-app": "uglifyjs dist/index.js -m -c > dist/index.min.js && rm dist/index.js",
     "watch:app": "watch 'npm run dev-build-app' src --wait=1",
     "watch:css": "watch 'npm run build-css' src/components",
-    "start": "parallelshell 'npm run watch:app' 'npm run watch:css' 'npm run watch:spec-runners'",
+    "start": "npm run build && parallelshell 'npm run watch:app' 'npm run watch:css' 'npm run watch:spec-runners'",
     "build-jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify",
     "watch-jasmine-spec-runners": "watch 'npm run build-jasmine-spec-runners' src/test-runner/jasmine/",
     "build-mocha-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=babelify",
