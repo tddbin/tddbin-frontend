@@ -2,8 +2,6 @@ import React from 'react';
 
 const TWITTER_URL = 'http://twitter.com/tddbin';
 const GITHUB_URL = 'http://github.com/tddbin/tddbin-frontend';
-const TRELLO_URL = 'https://trello.com/b/FW1gUVxe/tddbin-com';
-const UXEBU_URL = 'http://uxebu.com';
 
 export default class NavigationBar extends React.Component {
 
