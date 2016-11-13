@@ -1,27 +1,15 @@
 {
-  "env": {
-    "browser": true,
-    "es6": true,
-    "mocha": true
+  "ecmaFeatures": {
+    "blockBindings": true,
+    "forOf": true,
+    "jsx": true,
+    "modules": true,
+    "classes": true,
+    "destructuring": true,
+    "arrowFunctions": true,
+    "defaultParams": true,
+    "generators": true
   },
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "arrowFunctions": true,
-      "blockBindings": true,
-      "classes": true,
-      "destructuring": true,
-      "defaultParams": true,
-      "forOf": true,
-      "generators": true,
-      "jsx": true,
-      "modules": true
-    }
-  },
-  "plugins": [
-    "react"
-  ],
   "rules": {
     "semi": 2,
     "quotes": [
@@ -37,5 +25,13 @@
     "max-depth": [2, 2], // indention level no more than 2 allowed
     "max-params": [2, 3],
     "max-statements": [2, 8]
-  }
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "mocha": true
+  },
+  "plugins": [
+    "react"
+  ]
 }
