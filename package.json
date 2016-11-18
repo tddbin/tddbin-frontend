@@ -53,6 +53,7 @@
     "reactify": "^1.0.0",
     "referee": "^1.1.1",
     "react": "15.4.0",
+    "react-dom": "15.4.0",
     "sinon": "^1.12.2",
     "atomic": "git+https://github.com/toddmotto/atomic.git",
     "envify": "^3.3.0",
