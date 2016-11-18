@@ -1,4 +1,4 @@
-import React from 'react';
+import ReactDOM from 'react-dom';
 import Main from './components/main.js';
 import TestRunner from './test-runner/runner';
 import ShortcutProcessor from './keyboard-shortcut/shortcut-processor';
@@ -33,7 +33,7 @@ export default class MainController {
       shortcuts: shortcuts,
       es6Katas: this._es6Katas || null
     };
-    React.render(<Main {...props}/>, document.querySelector('#tddbin'));
+    ReactDOM.render(<Main {...props}/>, document.querySelector('#tddbin'));
   }
 
   showEs6KatasNavigation(es6KataData) {
