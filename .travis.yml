@@ -1,11 +1,16 @@
 language: node_js
 node_js:
-  - "6"
+  - 6
 
 after_success:
   - chmod +x ./scripts/*.sh
-  - chmod +x ./scripts/for-travis/*.sh
-  - ./scripts/for-travis/build-and-deploy.sh
+  - npm run build
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  branch: master
+  script: ./scripts/deploy-to-ghpages.sh
 
 env:
  global:
@@ -13,4 +18,4 @@ env:
  - GA_TRACKING_ID: UA-47768219-1
  - GA_TRACKING_DOMAIN: tddbin.com
  - GH_REF: github.com/tddbin/tddbin-frontend.git
- - secure: xcpF8NUZw1hSaQnx7Px0NuPlGGSE0rvPC9e5L//MmlGNSxGgIMR8RYWBuBKcA7S1L9fdpbtSi0CLYGhixYPQ3Pe6WEtnDZZWYalkDg0BoxUVuI2HV0CQ3uxsUHSgXUvuoMqlaGHDsiKA4IyLBy7o4d3wI1vIknUKdmwWOf8VD+A=
+ - secure: BLJcyv8b2iiygh1j7xi76D5vzR3UguoVPYym/SDu46t5omJwlVe0ZL2X8221h01hD7kY31pnVP85qJ1stt7sEB/UuLR3dUAAj8cjYrG3+KlADbpJ+QB+xtetVIb1E+Uz2jTAAzeFm36nFqi3t9k3pK+GosWv5ZPntW8keYCuy4M=
