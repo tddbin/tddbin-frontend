@@ -94313,13 +94313,16 @@ function through (write, end, opts) {
 }).call(this,require('_process'))
 },{"_process":570,"stream":654}],672:[function(require,module,exports){
 'use strict';
-module.exports = function toFastProperties(obj) {
-	function f() {}
-	f.prototype = obj;
-	new f();
-	return;
-	eval(obj);
-};
+module.exports = function toFastproperties(o) {
+	function Sub() {}
+	Sub.prototype = o;
+	var receiver = new Sub(); // create an instance
+	function ic() { return typeof receiver.foo; } // perform access
+	ic(); 
+	ic();
+	return o;
+	eval("o" + o); // ensure no dead code elimination
+}
 
 },{}],673:[function(require,module,exports){
 'use strict';
