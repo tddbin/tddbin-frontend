@@ -5,13 +5,14 @@ let assert = require('assert'); // use require, so babel won't change names!
 import should from 'should';
 /* eslint-enable no-unused-vars */
 
-import {transform} from 'babel'; // the es6 transpiler
-import 'babel/polyfill';
+import {transform} from 'babel-core'; // the es6 transpiler
+import 'babel-polyfill';
 import RuntimeError from '../runtime-error';
 
 function es6ToEs5Code(sourceCode) {
   try {
-    return transform(sourceCode, {optional: ['es6.spec.symbols']}).code;
+    const options = {};
+    return transform(sourceCode, options).code;
   } catch (e) {
     const hint = `Syntax or ES6 (babeljs) transpile error
 (This transpile error doesn't mean that the web app is broken :))
