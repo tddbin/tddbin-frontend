@@ -3,12 +3,12 @@ import React from 'react';
 export default class Iframe extends React.Component {
 
   getIframeRef() {
-    return this.refs.iframe.getDOMNode();
+    return document.getElementById('iframe');
   }
 
   render() {
     return (
-      <iframe ref="iframe" src={this.props.iframeSrc} width="100%" height="100%"></iframe>
+      <iframe id="iframe" src={this.props.iframeSrc} width="100%" height="100%"></iframe>
     );
   }
 

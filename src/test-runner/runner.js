@@ -1,4 +1,4 @@
-import React from 'react';
+import ReactDOM from 'react-dom';
 import Iframe from './iframe';
 
 export default class TestRunner {
@@ -10,7 +10,7 @@ export default class TestRunner {
   }
 
   render(iframeSrc) {
-    var iframe = React.render(<Iframe iframeSrc={iframeSrc}/>, this._domNode);
+    var iframe = ReactDOM.render(<Iframe iframeSrc={iframeSrc}/>, this._domNode);
     this._iframeRef = iframe.getIframeRef();
   }
 
