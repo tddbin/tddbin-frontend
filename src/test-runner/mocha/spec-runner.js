@@ -5,8 +5,8 @@ let assert = require('assert'); // use require, so babel won't change names!
 import should from 'should';
 /* eslint-enable no-unused-vars */
 
-import {transform} from 'babel'; // the es6 transpiler
-import 'babel/polyfill';
+import {transform} from 'babel-core'; // the es6 transpiler
+import 'babel-polyfill';
 import RuntimeError from '../runtime-error';
 
 function es6ToEs5Code(sourceCode) {
