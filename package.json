@@ -4,7 +4,8 @@
   "description": "TDDbin.com UI components (and examples)",
   "main": "index.js",
   "browser": {
-    "react": "./src/shim/react.js"
+    "react": "./src/shim/react.js",
+    "babel-polyfill": "./src/shim/babel-polyfill.js"
   },
   "scripts": {
     "build": "./scripts/build/build.sh",
