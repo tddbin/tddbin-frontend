@@ -29,9 +29,9 @@
     "build:ace": "mkdir -p dist/vendor/ace; cp -r vendor/ace/* dist/vendor/ace",
     "build:css": "cp src/components/*.css dist && cp -r src/components/img dist",
     "lint": "eslint src",
-    "test": "npm run lint && mocha --compilers js:babel/register src/**/**/*spec.js src/**/*spec.js",
+    "test": "npm run lint && mocha --compilers js:babel-register src/**/**/*spec.js src/**/*spec.js",
     "precover": "rm -Rf coverage",
-    "cover": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel/register src/**/**/*spec.js"
+    "cover": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel-register src/**/**/*spec.js"
   },
   "browserify": {
     "extension": [],

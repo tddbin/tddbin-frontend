@@ -41,9 +41,9 @@ cp $ORIGIN_ROOT/src/test-runner/katas/spec-runner.html $DIST_KATAS_DIR;
 
 # run all build scripts, `&&` ensures to stop on any fail
 (
-  npm run build-app &&
-  npm run build-css &&
-  npm run build-ace &&
-  npm run build-spec-runners
+  npm run build:app &&
+  npm run build:css &&
+  npm run build:ace &&
+  npm run build:spec-runners
 )
 cp $ORIGIN_ROOT/CNAME $DIST_ROOT/CNAME;
