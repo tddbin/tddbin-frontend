@@ -18,4 +18,3 @@ env:
  - GA_TRACKING_ID: UA-47768219-1
  - GA_TRACKING_DOMAIN: tddbin.com
  - GH_REF: github.com/tddbin/tddbin-frontend.git
- - secure: BLJcyv8b2iiygh1j7xi76D5vzR3UguoVPYym/SDu46t5omJwlVe0ZL2X8221h01hD7kY31pnVP85qJ1stt7sEB/UuLR3dUAAj8cjYrG3+KlADbpJ+QB+xtetVIb1E+Uz2jTAAzeFm36nFqi3t9k3pK+GosWv5ZPntW8keYCuy4M=
