@@ -16,6 +16,11 @@ The highest ranked ideas will be the priority for us to implement.
 
 # Development
 
+## The short version using Nix (leight-weight docker)
+
+Run `nix-shell -p nodejs-7_x` and a nix-shell with Node.js installed will open.
+Now, continue in the next chapter.
+
 ## The short version
 
 In your shell: 
