@@ -3867,19 +3867,19 @@ module.exports={
     ]
   ],
   "_from": "babel-core@>=6.24.1 <7.0.0",
-  "_id": "babel-core@6.24.1",
+  "_id": "babel-core@6.25.0",
   "_inCache": true,
   "_location": "/babel-core",
   "_nodeVersion": "6.9.0",
   "_npmOperationalInternal": {
-    "host": "packages-12-west.internal.npmjs.com",
-    "tmp": "tmp/babel-core-6.24.1.tgz_1491578389054_0.9957534451968968"
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/babel-core-6.25.0.tgz_1496957349805_0.9169255252927542"
   },
   "_npmUser": {
     "name": "hzoo",
     "email": "hi@henryzoo.com"
   },
-  "_npmVersion": "3.10.10",
+  "_npmVersion": "4.6.1",
   "_phantomChildren": {},
   "_requested": {
     "raw": "babel-core@^6.24.1",
@@ -3895,8 +3895,8 @@ module.exports={
     "/babel-register",
     "/babelify"
   ],
-  "_resolved": "https://registry.npmjs.org/babel-core/-/babel-core-6.24.1.tgz",
-  "_shasum": "8c428564dce1e1f41fb337ec34f4c3b022b5ad83",
+  "_resolved": "https://registry.npmjs.org/babel-core/-/babel-core-6.25.0.tgz",
+  "_shasum": "7dd42b0463c742e9d5296deb3ec67a9322dad729",
   "_shrinkwrap": null,
   "_spec": "babel-core@^6.24.1",
   "_where": "/home/travis/build/tddbin/tddbin-frontend/node_modules/babel-cli",
@@ -3906,15 +3906,15 @@ module.exports={
   },
   "dependencies": {
     "babel-code-frame": "^6.22.0",
-    "babel-generator": "^6.24.1",
+    "babel-generator": "^6.25.0",
     "babel-helpers": "^6.24.1",
     "babel-messages": "^6.23.0",
     "babel-register": "^6.24.1",
     "babel-runtime": "^6.22.0",
-    "babel-template": "^6.24.1",
-    "babel-traverse": "^6.24.1",
-    "babel-types": "^6.24.1",
-    "babylon": "^6.11.0",
+    "babel-template": "^6.25.0",
+    "babel-traverse": "^6.25.0",
+    "babel-types": "^6.25.0",
+    "babylon": "^6.17.2",
     "convert-source-map": "^1.1.0",
     "debug": "^2.1.1",
     "json5": "^0.5.0",
@@ -3933,8 +3933,8 @@ module.exports={
   },
   "directories": {},
   "dist": {
-    "shasum": "8c428564dce1e1f41fb337ec34f4c3b022b5ad83",
-    "tarball": "https://registry.npmjs.org/babel-core/-/babel-core-6.24.1.tgz"
+    "shasum": "7dd42b0463c742e9d5296deb3ec67a9322dad729",
+    "tarball": "https://registry.npmjs.org/babel-core/-/babel-core-6.25.0.tgz"
   },
   "homepage": "https://babeljs.io/",
   "keywords": [
@@ -3955,28 +3955,20 @@ module.exports={
   "license": "MIT",
   "maintainers": [
     {
-      "name": "amasad",
-      "email": "amjad.masad@gmail.com"
+      "name": "sebmck",
+      "email": "sebmck@gmail.com"
+    },
+    {
+      "name": "danez",
+      "email": "daniel@tschinder.de"
     },
     {
       "name": "hzoo",
       "email": "hi@henryzoo.com"
     },
     {
-      "name": "jmm",
-      "email": "npm-public@jessemccarthy.net"
-    },
-    {
       "name": "loganfsmyth",
       "email": "loganfsmyth@gmail.com"
-    },
-    {
-      "name": "sebmck",
-      "email": "sebmck@gmail.com"
-    },
-    {
-      "name": "thejameskyle",
-      "email": "me@thejameskyle.com"
     }
   ],
   "name": "babel-core",
@@ -3990,7 +3982,7 @@ module.exports={
     "bench": "make bench",
     "test": "make test"
   },
-  "version": "6.24.1"
+  "version": "6.25.0"
 }
 
 },{}],33:[function(require,module,exports){
@@ -4653,6 +4645,7 @@ exports.ObjectTypeAnnotation = ObjectTypeAnnotation;
 exports.ObjectTypeCallProperty = ObjectTypeCallProperty;
 exports.ObjectTypeIndexer = ObjectTypeIndexer;
 exports.ObjectTypeProperty = ObjectTypeProperty;
+exports.ObjectTypeSpreadProperty = ObjectTypeSpreadProperty;
 exports.QualifiedTypeIdentifier = QualifiedTypeIdentifier;
 exports.UnionTypeAnnotation = UnionTypeAnnotation;
 exports.TypeCastExpression = TypeCastExpression;
@@ -4986,6 +4979,11 @@ function ObjectTypeProperty(node) {
   this.token(":");
   this.space();
   this.print(node.value, node);
+}
+
+function ObjectTypeSpreadProperty(node) {
+  this.token("...");
+  this.print(node.argument, node);
 }
 
 function QualifiedTypeIdentifier(node) {
@@ -10780,6 +10778,10 @@ var PathHoister = function () {
       }
     }
 
+    if (path.parentPath.isExportDeclaration()) {
+      path = path.parentPath;
+    }
+
     return path;
   };
 
@@ -12739,7 +12741,7 @@ var Scope = function () {
 
   Scope.prototype.warnOnFlowBinding = function warnOnFlowBinding(binding) {
     if (_crawlCallsCount === 0 && binding && binding.path.isFlow()) {
-      console.warn("\n        You or one of the Babel plugins you are using are using Flow declarations as bindings.\n        Support for this will be removed in version 6.8. To find out the caller, grep for this\n        message and change it to a `console.trace()`.\n      ");
+      console.warn("\n        You or one of the Babel plugins you are using are using Flow declarations as bindings.\n        Support for this will be removed in version 7. To find out the caller, grep for this\n        message and change it to a `console.trace()`.\n      ");
     }
     return binding;
   };
@@ -14194,7 +14196,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
       }
     },
     value: {
-      validate: (0, _index2.assertNodeType)("Expression")
+      validate: (0, _index2.assertNodeType)("Expression", "Pattern", "RestElement")
     },
     shorthand: {
       validate: (0, _index2.assertValueType)("boolean"),
@@ -14417,7 +14419,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
   aliases: ["Pattern", "LVal"],
   fields: {
     elements: {
-      validate: (0, _index.chain)((0, _index.assertValueType)("array"), (0, _index.assertEach)((0, _index.assertNodeType)("Expression")))
+      validate: (0, _index.chain)((0, _index.assertValueType)("array"), (0, _index.assertEach)((0, _index.assertNodeType)("Identifier", "Pattern", "RestElement")))
     },
     decorators: {
       validate: (0, _index.chain)((0, _index.assertValueType)("array"), (0, _index.assertEach)((0, _index.assertNodeType)("Decorator")))
@@ -15088,6 +15090,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 (0, _index2.default)("ObjectTypeProperty", {
   visitor: ["key", "value"],
+  aliases: ["Flow", "UserWhitespacable"],
+  fields: {}
+});
+
+(0, _index2.default)("ObjectTypeSpreadProperty", {
+  visitor: ["argument"],
   aliases: ["Flow", "UserWhitespacable"],
   fields: {}
 });
@@ -19623,7 +19631,7 @@ pp$1.parseExportDeclaration = function () {
 
 pp$1.isExportDefaultSpecifier = function () {
   if (this.match(types.name)) {
-    return this.state.value !== "type" && this.state.value !== "async" && this.state.value !== "interface";
+    return this.state.value !== "async";
   }
 
   if (!this.match(types._default)) {
@@ -19936,6 +19944,8 @@ pp$2.toAssignable = function (node, isBinding, contextDescription) {
 
       case "SpreadProperty":
         node.type = "RestProperty";
+        var arg = node.argument;
+        this.toAssignable(arg, isBinding, contextDescription);
         break;
 
       case "ArrayExpression":
@@ -21453,7 +21463,8 @@ pp$6.processComment = function (node) {
 
   var stack = this.state.commentStack;
 
-  var lastChild = void 0,
+  var firstChild = void 0,
+      lastChild = void 0,
       trailingComments = void 0,
       i = void 0,
       j = void 0;
@@ -21484,8 +21495,50 @@ pp$6.processComment = function (node) {
   }
 
   // Eating the stack.
+  if (stack.length > 0 && last(stack).start >= node.start) {
+    firstChild = stack.pop();
+  }
+
   while (stack.length > 0 && last(stack).start >= node.start) {
     lastChild = stack.pop();
+  }
+
+  if (!lastChild && firstChild) lastChild = firstChild;
+
+  // Attach comments that follow a trailing comma on the last
+  // property in an object literal or a trailing comma in function arguments
+  // as trailing comments
+  if (firstChild && this.state.leadingComments.length > 0) {
+    var lastComment = last(this.state.leadingComments);
+
+    if (firstChild.type === "ObjectProperty") {
+      if (lastComment.start >= node.start) {
+        if (this.state.commentPreviousNode) {
+          for (j = 0; j < this.state.leadingComments.length; j++) {
+            if (this.state.leadingComments[j].end < this.state.commentPreviousNode.end) {
+              this.state.leadingComments.splice(j, 1);
+              j--;
+            }
+          }
+
+          if (this.state.leadingComments.length > 0) {
+            firstChild.trailingComments = this.state.leadingComments;
+            this.state.leadingComments = [];
+          }
+        }
+      }
+    } else if (node.type === "CallExpression" && node.arguments && node.arguments.length) {
+      var lastArg = last(node.arguments);
+
+      if (lastArg && lastComment.start >= lastArg.start && lastComment.end <= node.end) {
+        if (this.state.commentPreviousNode) {
+          if (this.state.leadingComments.length > 0) {
+            lastArg.trailingComments = this.state.leadingComments;
+            this.state.leadingComments = [];
+          }
+        }
+      }
+    }
   }
 
   if (lastChild) {
@@ -21706,6 +21759,19 @@ var estreePlugin = function (instance) {
     };
   });
 
+  instance.extend("stmtToDirective", function (inner) {
+    return function (stmt) {
+      var directive = inner.call(this, stmt);
+      var value = stmt.expression.value;
+
+      // Reset value to the actual value as in estree mode we want
+      // the stmt to have the real value and not the raw value
+      directive.value.value = value;
+
+      return directive;
+    };
+  });
+
   instance.extend("parseBlockBody", function (inner) {
     return function (node) {
       var _this2 = this;
@@ -21723,16 +21789,14 @@ var estreePlugin = function (instance) {
     };
   });
 
-  instance.extend("parseClassMethod", function (inner) {
-    return function (classBody) {
-      for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-        args[_key3 - 1] = arguments[_key3];
+  instance.extend("parseClassMethod", function () {
+    return function (classBody, method, isGenerator, isAsync) {
+      this.parseMethod(method, isGenerator, isAsync);
+      if (method.typeParameters) {
+        method.value.typeParameters = method.typeParameters;
+        delete method.typeParameters;
       }
-
-      inner.call.apply(inner, [this, classBody].concat(args));
-
-      var body = classBody.body;
-      body[body.length - 1].type = "MethodDefinition";
+      classBody.body.push(this.finishNode(method, "MethodDefinition"));
     };
   });
 
@@ -21756,8 +21820,8 @@ var estreePlugin = function (instance) {
           return this.estreeParseLiteral(false);
 
         default:
-          for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-            args[_key4] = arguments[_key4];
+          for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+            args[_key3] = arguments[_key3];
           }
 
           return inner.call.apply(inner, [this].concat(args));
@@ -21767,8 +21831,8 @@ var estreePlugin = function (instance) {
 
   instance.extend("parseLiteral", function (inner) {
     return function () {
-      for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        args[_key5] = arguments[_key5];
+      for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
       }
 
       var node = inner.call.apply(inner, [this].concat(args));
@@ -21784,8 +21848,8 @@ var estreePlugin = function (instance) {
       var funcNode = this.startNode();
       funcNode.kind = node.kind; // provide kind, so inner method correctly sets state
 
-      for (var _len6 = arguments.length, args = Array(_len6 > 1 ? _len6 - 1 : 0), _key6 = 1; _key6 < _len6; _key6++) {
-        args[_key6 - 1] = arguments[_key6];
+      for (var _len5 = arguments.length, args = Array(_len5 > 1 ? _len5 - 1 : 0), _key5 = 1; _key5 < _len5; _key5++) {
+        args[_key5 - 1] = arguments[_key5];
       }
 
       funcNode = inner.call.apply(inner, [this, funcNode].concat(args));
@@ -21798,8 +21862,8 @@ var estreePlugin = function (instance) {
 
   instance.extend("parseObjectMethod", function (inner) {
     return function () {
-      for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-        args[_key7] = arguments[_key7];
+      for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
       }
 
       var node = inner.call.apply(inner, [this].concat(args));
@@ -21815,8 +21879,8 @@ var estreePlugin = function (instance) {
 
   instance.extend("parseObjectProperty", function (inner) {
     return function () {
-      for (var _len8 = arguments.length, args = Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
-        args[_key8] = arguments[_key8];
+      for (var _len7 = arguments.length, args = Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
       }
 
       var node = inner.call.apply(inner, [this].concat(args));
@@ -21832,8 +21896,8 @@ var estreePlugin = function (instance) {
 
   instance.extend("toAssignable", function (inner) {
     return function (node, isBinding) {
-      for (var _len9 = arguments.length, args = Array(_len9 > 2 ? _len9 - 2 : 0), _key9 = 2; _key9 < _len9; _key9++) {
-        args[_key9 - 2] = arguments[_key9];
+      for (var _len8 = arguments.length, args = Array(_len8 > 2 ? _len8 - 2 : 0), _key8 = 2; _key8 < _len8; _key8++) {
+        args[_key8 - 2] = arguments[_key8];
       }
 
       if (isSimpleProperty(node)) {
@@ -22232,7 +22296,7 @@ pp$8.flowParseObjectTypeMethodish = function (node) {
   }
 
   this.expect(types.parenL);
-  while (this.match(types.name)) {
+  while (!this.match(types.parenR) && !this.match(types.ellipsis)) {
     node.params.push(this.flowParseFunctionTypeParam());
     if (!this.match(types.parenR)) {
       this.expect(types.comma);
@@ -22437,7 +22501,7 @@ pp$8.flowParseFunctionTypeParam = function () {
 };
 
 pp$8.reinterpretTypeAsFunctionTypeParam = function (type) {
-  var node = this.startNodeAt(type.start, type.loc);
+  var node = this.startNodeAt(type.start, type.loc.start);
   node.name = null;
   node.optional = false;
   node.typeAnnotation = type;
@@ -22648,7 +22712,7 @@ pp$8.flowParsePrefixType = function () {
 pp$8.flowParseAnonFunctionWithoutParens = function () {
   var param = this.flowParsePrefixType();
   if (!this.state.noAnonFunctionType && this.eat(types.arrow)) {
-    var node = this.startNodeAt(param.start, param.loc);
+    var node = this.startNodeAt(param.start, param.loc.start);
     node.params = [this.reinterpretTypeAsFunctionTypeParam(param)];
     node.rest = null;
     node.returnType = this.flowParseType();
@@ -22786,6 +22850,16 @@ var flowPlugin = function (instance) {
   instance.extend("shouldParseExportDeclaration", function (inner) {
     return function () {
       return this.isContextual("type") || this.isContextual("interface") || inner.call(this);
+    };
+  });
+
+  instance.extend("isExportDefaultSpecifier", function (inner) {
+    return function () {
+      if (this.match(types.name) && (this.state.value === "type" || this.state.value === "interface")) {
+        return false;
+      }
+
+      return inner.call(this);
     };
   });
 
@@ -24148,6 +24222,7 @@ exports.parseExpression = parseExpression;
 exports.tokTypes = types;
 
 },{}],115:[function(require,module,exports){
+'use strict';
 module.exports = balanced;
 function balanced(a, b, str) {
   if (a instanceof RegExp) a = maybeMatch(a, str);
@@ -29873,6 +29948,7 @@ module.exports={
 		"caches": false,
 		"CacheStorage": false,
 		"cancelAnimationFrame": false,
+		"cancelIdleCallback": false,
 		"CanvasGradient": false,
 		"CanvasPattern": false,
 		"CanvasRenderingContext2D": false,
@@ -29894,6 +29970,7 @@ module.exports={
 		"confirm": false,
 		"console": false,
 		"ConvolverNode": false,
+		"createImageBitmap": false,
 		"Credential": false,
 		"CredentialsContainer": false,
 		"crypto": false,
@@ -30591,6 +30668,7 @@ module.exports={
 		"pending": false,
 		"runs": false,
 		"spyOn": false,
+		"spyOnProperty": false,
 		"waits": false,
 		"waitsFor": false,
 		"xdescribe": false,
