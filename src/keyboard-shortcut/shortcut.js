@@ -8,7 +8,7 @@ export default class Shortcut {
   }
 
   isStartOfKeyCombo(pressedKeys) {
-    var shortcut = this._keys;
+    const shortcut = this._keys;
     return pressedKeys.every((key, idx) => shortcut[idx] === key);
   }
 
@@ -25,8 +25,8 @@ export default class Shortcut {
   }
 
   get printableKeys() {
-    var format = this._printableKeysFormatter;
-    var keys = this._keys;
+    const format = this._printableKeysFormatter;
+    let keys = this._keys;
     if (format) {
       keys = format(this._keys);
     }

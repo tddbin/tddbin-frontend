@@ -27,7 +27,7 @@ export class KeyPressEmulation {
   pressByKeyNames(keyNames) {
     // The first key is (normally) the Meta key, don't fire keyUp yet,
     // fire it only at the end of it all.
-    var firstKeyName = keyNames[0];
+    const firstKeyName = keyNames[0];
     this._keyDownListeners[0](firstKeyName);
 
     // Fire all keyDowns and keyUps.

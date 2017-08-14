@@ -7,16 +7,16 @@ export default class RuntimeError {
   static prettyPrint(dump, sourceCode) {
     const {line, column} = getLineAndColumnOfOriginFromDump(dump);
 
-    var sourceLines = sourceCode.split('\n');
-    var maxDigits = sourceLines.length.toString().length;
-    var markedLines = sourceLines.map((sourceLine, idx) => {
+    const sourceLines = sourceCode.split('\n');
+    const maxDigits = sourceLines.length.toString().length;
+    const markedLines = sourceLines.map((sourceLine, idx) => {
       let lineNumber = idx + 1;
       if (lineNumber === line) {
         return MarkedLinePrefix.getPrefix(lineNumber, maxDigits) + sourceLine;
       }
       return LinePrefix.getPrefix(lineNumber, maxDigits) + sourceLine;
     });
-    var neew = markedLines.splice(0, line);
+    let neew = markedLines.splice(0, line);
     neew = neew.concat(getSpaces(7 + column - 1) + COLUMN_HIGHLIGHT_CHARACTER).concat(markedLines);
     return neew.join('\n');
   }

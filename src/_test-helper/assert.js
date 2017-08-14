@@ -7,7 +7,7 @@ const assignFunctionsTo = (fromObj, toObj) => {
     .forEach((key) => toObj[key] = fromObj[key]);
 };
 
-var assert = {};
+const assert = {};
 assignFunctionsTo(nodeAssert, assert);
 assignFunctionsTo(sinon.assert, assert);
 

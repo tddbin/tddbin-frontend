@@ -10,12 +10,12 @@ export default class TestRunner {
   }
 
   render(iframeSrc) {
-    var iframe = ReactDOM.render(<Iframe iframeSrc={iframeSrc}/>, this._domNode);
+    const iframe = ReactDOM.render(<Iframe iframeSrc={iframeSrc}/>, this._domNode);
     this._iframeRef = iframe.getIframeRef();
   }
 
   send(sourceCode) {
-    var iframe = this._iframeRef.contentWindow;
+    const iframe = this._iframeRef.contentWindow;
     iframe.postMessage(sourceCode, '*');
   }
 
@@ -25,7 +25,7 @@ export default class TestRunner {
 
   handleDataReceived(data) {
     if (this._onStats) {
-      var stats = data.data;
+      const stats = data.data;
       this._onStats(stats);
     }
   }

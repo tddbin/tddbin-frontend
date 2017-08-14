@@ -6,16 +6,16 @@ import {KeyPressEmulation} from './util';
 
 describe('IE specifics', function() {
 
-  var keyPressEmulation;
+  let keyPressEmulation;
   beforeEach(function() {
     this.sinon.stub(browserEventUtil, 'onWindowBlur');
     keyPressEmulation = new KeyPressEmulation(this.sinon);
   });
 
   it('ignore multiple consecutive keydown-events for Control, Alt, etc.', function() {
-    var callback = this.sinon.spy();
+    const callback = this.sinon.spy();
 
-    var processor = new ShortcutProcessor();
+    const processor = new ShortcutProcessor();
     processor.registerShortcut(new Shortcut(['Control', 'S'], callback));
 
     // Fire `Control` key as Windows does, multiple times when being held down.

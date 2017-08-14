@@ -3,11 +3,11 @@ export class StackTrace {
     this.dump = dump;
   }
   lineOfOrigin() {
-    var lineNumber = this.firstLineOfDump().split(':');
+    const lineNumber = this.firstLineOfDump().split(':');
     return parseInt(lineNumber[lineNumber.length - 2]);
   }
   columnOfOrigin() {
-    var lineNumber = this.firstLineOfDump().split(':');
+    const lineNumber = this.firstLineOfDump().split(':');
     return parseInt(lineNumber[lineNumber.length - 1]);
   }
   firstLineOfDump() {

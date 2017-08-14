@@ -1,8 +1,8 @@
-var jasmine = window.jasmine;
-var env = jasmine.getEnv();
+const jasmine = window.jasmine;
+const env = jasmine.getEnv();
 
 function consumeMessage(messageData) {
-  var specCode = messageData.data;
+  const specCode = messageData.data;
 
   eval(specCode); // eslint-disable-line no-eval
   env.execute();

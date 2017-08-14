@@ -25,14 +25,14 @@ export default class MainController {
   }
 
   _render(shortcuts=[]) {
-    var props = {
+    const props = {
       metaKeySymbol: '⌘',
       editorId: this._editorDomNodeId,
       runnerId: this._runnerDomNodeId,
       onSave: this.onSave.bind(this),
       onResetCode: this._onResetCode,
-      shortcuts: shortcuts,
-      es6Katas: this._es6Katas || null
+      shortcuts,
+      es6Katas: this._es6Katas || null,
     };
     ReactDOM.render(<Main {...props}/>, document.querySelector('#tddbin'));
   }
@@ -66,7 +66,7 @@ export default class MainController {
   }
 
   _registerShortcuts(shortcuts) {
-    var processor = new ShortcutProcessor();
+    const processor = new ShortcutProcessor();
     processor.registerShortcuts(shortcuts);
     processor.onKeyDown(this._updateOverlayView.bind(this));
     processor.onShortcutEnd(this._hideOverlayView.bind(this));
@@ -77,10 +77,8 @@ export default class MainController {
   }
 
   _updateOverlayView(pressedKeys) {
-    var allShortcuts = this._config.shortcuts;
-    var applicableShortcuts = allShortcuts.filter(function(shortcut) {
-      return shortcut.isStartOfKeyCombo(pressedKeys);
-    });
+    const allShortcuts = this._config.shortcuts;
+    const applicableShortcuts = allShortcuts.filter(shortcut => shortcut.isStartOfKeyCombo(pressedKeys));
     this._render(applicableShortcuts);
   }
 

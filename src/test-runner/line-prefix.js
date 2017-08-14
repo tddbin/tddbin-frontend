@@ -8,7 +8,7 @@ export class LinePrefix {
 const DEFAULT_LEADING_SPACE = 2;
 
 const getLeadingSpaces = (number, maxDigits) => {
-  var numberLength = number.toString().length;
+  const numberLength = number.toString().length;
   return DEFAULT_LEADING_SPACE + maxDigits - numberLength;
 };
 
@@ -18,7 +18,7 @@ const getSpaces = (howMany) => {
 
 export class MarkedLinePrefix extends LinePrefix {
   static getPrefix() {
-    var defaultPrefix = LinePrefix.getPrefix(...arguments).substr(1);
+    const defaultPrefix = LinePrefix.getPrefix(...arguments).substr(1);
     return `>${defaultPrefix}`;
   }
 }

@@ -12,12 +12,12 @@ describe('registering multiple shortcuts', function() {
     //spyOn(browserEventUtil, 'onWindowBlur');
     this.sinon.stub(browserEventUtil, 'onWindowBlur');
     new KeyPressEmulation(this.sinon); //eslint-disable-line no-new
-    var processor = new ShortcutProcessor();
+    const processor = new ShortcutProcessor();
     this.sinon.stub(processor, 'registerShortcut');
 
-    var shortcutMap = [
+    const shortcutMap = [
       new Shortcut(['Meta', 'S'], noop),
-      new Shortcut(['Ctrl', 'S'], noop)
+      new Shortcut(['Ctrl', 'S'], noop),
     ];
     processor.registerShortcuts(shortcutMap);
 

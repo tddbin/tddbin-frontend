@@ -10,8 +10,8 @@ const noop = function() {};
 // fails for those tests ... not fixing it now, skipping tests :(
 describe('keyboard shortcut', function() {
 
-  var callback;
-  var keyPressEmulation;
+  let callback;
+  let keyPressEmulation;
   beforeEach(function() {
     this.sinon.stub(browserEventUtil, 'onWindowBlur');
     keyPressEmulation = new KeyPressEmulation(this.sinon);
@@ -21,74 +21,74 @@ describe('keyboard shortcut', function() {
     keyPressEmulation.pressByKeyNames(keyNames);
   }
 
-  describe('should fire', function() {
-    it('for a two key combo', function() {
-      var shortcut = ['Meta', 'S'];
+  describe('should fire', () => {
+    it('for a two key combo', () => {
+      const shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp(shortcut);
       assert.called(callback);
     });
-    it('for a three key combo', function() {
-      var shortcut = ['Meta', 'I', 'I'];
+    it('for a three key combo', () => {
+      const shortcut = ['Meta', 'I', 'I'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp(shortcut);
       assert.called(callback);
     });
-    it('also when many are registered', function() {
-      var shortcut = ['Meta', 'I', 'I'];
-      var unusedShortcut = ['Meta', 'S'];
+    it('also when many are registered', () => {
+      const shortcut = ['Meta', 'I', 'I'];
+      const unusedShortcut = ['Meta', 'S'];
       mapShortcuts([
         [unusedShortcut, noop],
-        [shortcut, callback]
+        [shortcut, callback],
       ]);
       pressKeysAndFinalKeyUp(shortcut);
       assert.called(callback);
     });
-    it('twice when shortcut is pressed twice', function() {
-      var shortcut = ['Meta', 'S'];
+    it('twice when shortcut is pressed twice', () => {
+      const shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp(shortcut);
       pressKeysAndFinalKeyUp(shortcut);
       assert.callCount(callback, 2);
     });
-    it('when part of a shortcut is pressed and full shortcut afterwards', function() {
-      var shortcut = ['Meta', 'S'];
+    it('when part of a shortcut is pressed and full shortcut afterwards', () => {
+      const shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp([shortcut[0]]);
       pressKeysAndFinalKeyUp(shortcut);
       assert.called(callback);
     });
-    it('when shortcut starts not with `Meta`', function() {
-      var shortcut = ['Ctrl', 'S'];
+    it('when shortcut starts not with `Meta`', () => {
+      const shortcut = ['Ctrl', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp(shortcut);
       assert.called(callback);
     });
-    it('when invalid shortcut pressed followed by valid shortcut', function() {
-      var shortcut = ['Meta', 'I', 'I'];
+    it('when invalid shortcut pressed followed by valid shortcut', () => {
+      const shortcut = ['Meta', 'I', 'I'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp(['A']);
       pressKeysAndFinalKeyUp(shortcut);
       assert.called(callback);
     });
 
-    describe('when overlapping shortcuts', function() {
-      it('are registered', function() {
-        var shortcut = ['Meta', 'Ctrl', 'S'];
-        var shortcut1 = ['Ctrl', 'S'];
+    describe('when overlapping shortcuts', () => {
+      it('are registered', () => {
+        const shortcut = ['Meta', 'Ctrl', 'S'];
+        const shortcut1 = ['Ctrl', 'S'];
         mapShortcuts([
           [shortcut, callback],
-          [shortcut1, noop]
+          [shortcut1, noop],
         ]);
         pressKeysAndFinalKeyUp(shortcut);
         assert.called(callback);
       });
-      it('and invalid keys had been pressed before', function() {
-        var shortcut = ['Meta', 'Ctrl', 'S'];
-        var shortcut1 = ['Ctrl', 'S'];
+      it('and invalid keys had been pressed before', () => {
+        const shortcut = ['Meta', 'Ctrl', 'S'];
+        const shortcut1 = ['Ctrl', 'S'];
         mapShortcuts([
           [shortcut, callback],
-          [shortcut1, noop]
+          [shortcut1, noop],
         ]);
         pressKeysAndFinalKeyUp(['A', 'B']);
         pressKeysAndFinalKeyUp(shortcut);
@@ -97,15 +97,15 @@ describe('keyboard shortcut', function() {
     });
   });
 
-  describe('shoud NOT fire', function() {
-    it('before Meta-keyUp', function() {
-      var shortcut = ['Meta', 'S'];
+  describe('shoud NOT fire', () => {
+    it('before Meta-keyUp', () => {
+      const shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       keyPressEmulation.keyDownByKeyNames(shortcut);
       assert.notCalled(callback);
     });
-    it('for shortcut+extra key was pressed', function() {
-      var shortcut = ['Meta', 'S'];
+    it('for shortcut+extra key was pressed', () => {
+      const shortcut = ['Meta', 'S'];
       mapShortcuts([[shortcut, callback]]);
       pressKeysAndFinalKeyUp(shortcut.concat(shortcut[1]));
       assert.notCalled(callback);
@@ -115,9 +115,9 @@ describe('keyboard shortcut', function() {
 });
 
 function mapShortcuts(shortcuts) {
-  var processor = new ShortcutProcessor();
-  shortcuts.forEach(function(shortcut) {
-    var keys = shortcut[0];
+  const processor = new ShortcutProcessor();
+  shortcuts.forEach(shortcut => {
+    const keys = shortcut[0];
     const callback = shortcut[1];
     processor.registerShortcut(new Shortcut(keys, callback));
   });

@@ -6,34 +6,34 @@ import {browserEventUtil} from '../browser-event-util';
 
 describe('DOM event handling', function() {
 
-  var keyDownListeners;
-  var keyUpListeners;
+  let keyDownListeners;
+  let keyUpListeners;
   beforeEach(function() {
     keyDownListeners = [];
     keyUpListeners = [];
-    this.sinon.stub(keyboardEventUtil, 'addKeyDownListener', function(fn) {
+    this.sinon.stub(keyboardEventUtil, 'addKeyDownListener', fn => {
       keyDownListeners.push(fn);
     });
-    this.sinon.stub(keyboardEventUtil, 'addKeyUpListener', function(fn) {
+    this.sinon.stub(keyboardEventUtil, 'addKeyUpListener', fn => {
       keyUpListeners.push(fn);
     });
     this.sinon.stub(browserEventUtil, 'onWindowBlur');
   });
 
-  it('should prevent default when shortcut is `overridden`', function() {
-    var shortcut = ['Meta', 'S'];
+  it('should prevent default when shortcut is `overridden`', () => {
+    const shortcut = ['Meta', 'S'];
 
-    var processor = new ShortcutProcessor();
-    processor.registerShortcut(new Shortcut(shortcut, function() {}));
+    const processor = new ShortcutProcessor();
+    processor.registerShortcut(new Shortcut(shortcut, () => {}));
 
-    var lastKeyDownReturnValue = pressKeys(shortcut);
+    const lastKeyDownReturnValue = pressKeys(shortcut);
 
     assert.equal(lastKeyDownReturnValue, keyboardEventUtil.PREVENT_DEFAULT_ACTION);
   });
 
   function pressKeys(shortcut) {
     keyDownListeners[0](shortcut[0]);
-    var lastKeyDownReturnValue = keyDownListeners[0](shortcut[1]);
+    const lastKeyDownReturnValue = keyDownListeners[0](shortcut[1]);
 
     keyUpListeners[0](shortcut[1]);
     keyUpListeners[0](shortcut[0]);

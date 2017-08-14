@@ -1,11 +1,11 @@
 import assert from '../../_test-helper/assert';
 import RuntimeError from '../runtime-error';
 
-describe('runtime error', function() {
+describe('runtime error', () => {
   let sourceCode;
   let expected;
   let result;
-  beforeEach('format it readably', function() {
+  beforeEach('format it readably', () => {
     let stackTraceDump =
 `ReferenceError: y is not defined
     at eval (eval at consumeMessage (http://u/tddbin-frontend/dist/mocha/spec-runner.js:53280:10), <anonymous>:3:1)
@@ -25,8 +25,8 @@ describe('runtime error', function() {
   });
 
   it('column marker should match', () => {
-    var lastLine = expected[expected.length - 1];
-    var resultLines = result.split('\n');
+    const lastLine = expected[expected.length - 1];
+    const resultLines = result.split('\n');
     assert.equal(resultLines[resultLines.length - 1], lastLine);
   });
 });

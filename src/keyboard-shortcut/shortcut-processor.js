@@ -45,7 +45,7 @@ export default class ShortcutProcessor {
   }
 
   _keyDown(keyName) {
-    var isStartOfShortcut = this._pressedKeys.length === 0;
+    const isStartOfShortcut = this._pressedKeys.length === 0;
     if (isStartOfShortcut) {
       return this._handlePossibleShortcutStart(keyName);
     }
@@ -53,9 +53,8 @@ export default class ShortcutProcessor {
   }
 
   _handlePossibleShortcutStart(keyName) {
-    var isFirstKeyOfRegisteredShortcut = this._registeredShortcuts.some(function(shortcut) {
-      return shortcut.isStartOfKeyCombo([keyName]);
-    });
+    const isFirstKeyOfRegisteredShortcut = this._registeredShortcuts.some(
+        shortcut => shortcut.isStartOfKeyCombo([keyName]));
     if (isFirstKeyOfRegisteredShortcut) {
       this._pressedKeys = [keyName];
       this._firstKeyOfCurrentShortcut = keyName;
@@ -64,7 +63,7 @@ export default class ShortcutProcessor {
   }
 
   _handleConsecutiveKey(keyName) {
-    var isFirstKeyRepition = this._pressedKeys.length === 1 && this._pressedKeys[0] === keyName;
+    const isFirstKeyRepition = this._pressedKeys.length === 1 && this._pressedKeys[0] === keyName;
     if (isFirstKeyRepition) {
       return null;
     }
@@ -91,7 +90,7 @@ export default class ShortcutProcessor {
   }
 
   _processFirstMatchingShortcut(pressedKeys) {
-    this._registeredShortcuts.some(function(shortcut) {
+    this._registeredShortcuts.some(shortcut => {
       if (shortcut.isKeyCombo(pressedKeys)) {
         shortcut.fireAssignedCallback();
         return true;
@@ -101,8 +100,6 @@ export default class ShortcutProcessor {
   }
 
   _isRegisteredShortcut(pressedKeys) {
-    return this._registeredShortcuts.some(function(shortcut) {
-      return shortcut.isKeyCombo(pressedKeys);
-    });
+    return this._registeredShortcuts.some(shortcut => shortcut.isKeyCombo(pressedKeys));
   }
 }
