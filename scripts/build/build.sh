@@ -25,9 +25,9 @@ mkdir -p $DIST_KATAS_DIR;
 cp $ORIGIN_ROOT/src/_html/index.html $DIST_ROOT;
 # replace place holder KATAS_SERVICE_DOMAIN with env var, so it can be different in dev/prod mode
 if [[ $OSTYPE == darwin* ]]; then
-  sed -i '' "s/\${KATAS_SERVICE_DOMAIN}/$KATAS_SERVICE_DOMAIN/g" $DIST_ROOT/index.html
-  sed -i '' "s/\${GA_TRACKING_ID}/$GA_TRACKING_ID/g" $DIST_ROOT/index.html
-  sed -i '' "s/\${GA_TRACKING_DOMAIN}/$GA_TRACKING_DOMAIN/g" $DIST_ROOT/index.html
+  sed -i'' "s/\${KATAS_SERVICE_DOMAIN}/$KATAS_SERVICE_DOMAIN/g" $DIST_ROOT/index.html
+  sed -i'' "s/\${GA_TRACKING_ID}/$GA_TRACKING_ID/g" $DIST_ROOT/index.html
+  sed -i'' "s/\${GA_TRACKING_DOMAIN}/$GA_TRACKING_DOMAIN/g" $DIST_ROOT/index.html
 else
   sed -i "s/\${KATAS_SERVICE_DOMAIN}/$KATAS_SERVICE_DOMAIN/g" $DIST_ROOT/index.html
   sed -i "s/\${GA_TRACKING_ID}/$GA_TRACKING_ID/g" $DIST_ROOT/index.html
