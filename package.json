@@ -52,7 +52,6 @@
   "author": "uxebu",
   "license": "MIT",
   "devDependencies": {
-    "atomicjs": "cferdinandi/atomic#14657070410df8eb1677c11894a99cf638e9a9b9",
     "babel-cli": "^6.24.1",
     "babel-preset-env": "^1.5.1",
     "babel-preset-react": "^6.24.1",
