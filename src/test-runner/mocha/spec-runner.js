@@ -23,6 +23,7 @@ function es6ToEs5Code(sourceCode) {
   }
   return null;
 }
+module.exports = {es6ToEs5Code};
 
 function resetMochaEnvironment() {
   document.getElementById('mocha').innerHTML = '';
