@@ -3,6 +3,7 @@ import Shortcut from '../shortcut';
 import ShortcutProcessor from '../shortcut-processor';
 import {browserEventUtil} from '../browser-event-util';
 import {KeyPressEmulation} from './util';
+import sinon from 'sinon';
 
 const noop = function() {};
 
@@ -10,10 +11,10 @@ describe('registering multiple shortcuts', function() {
   it('shall work', function() {
     // TODO simplify the necessary mocking for every shortcut test
     //spyOn(browserEventUtil, 'onWindowBlur');
-    this.sinon.stub(browserEventUtil, 'onWindowBlur');
-    new KeyPressEmulation(this.sinon); //eslint-disable-line no-new
+    sinon.stub(browserEventUtil, 'onWindowBlur').callsFake(() => {});
+    new KeyPressEmulation(); //eslint-disable-line no-new
     var processor = new ShortcutProcessor();
-    this.sinon.stub(processor, 'registerShortcut');
+    sinon.spy(processor, 'registerShortcut');
 
     var shortcutMap = [
       new Shortcut(['Meta', 'S'], noop),

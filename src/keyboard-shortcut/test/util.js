@@ -1,11 +1,12 @@
+import sinon from 'sinon';
 import {keyboardEventUtil} from '../keyboard-event-util';
 
 export class KeyPressEmulation {
-  constructor(sinon) {
+  constructor() {
     this._keyDownListeners = [];
     this._keyUpListeners = [];
-    sinon.stub(keyboardEventUtil, 'addKeyDownListener', (fn) => this._keyDownListeners.push(fn));
-    sinon.stub(keyboardEventUtil, 'addKeyUpListener', (fn) => this._keyUpListeners.push(fn));
+    sinon.stub(keyboardEventUtil, 'addKeyDownListener').callsFake((fn) => this._keyDownListeners.push(fn));
+    sinon.stub(keyboardEventUtil, 'addKeyUpListener').callsFake((fn) => this._keyUpListeners.push(fn));
   }
 
   keyDownByKeyName(keyName) {
