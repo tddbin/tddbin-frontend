@@ -23,7 +23,6 @@ function es6ToEs5Code(sourceCode) {
   }
   return null;
 }
-module.exports = {es6ToEs5Code};
 
 function resetMochaEnvironment() {
   document.getElementById('mocha').innerHTML = '';
@@ -71,4 +70,7 @@ function runMochaAndReportStats(mocha, sender) {
   runner.on('end', onRan);
 }
 
-window.addEventListener('message', consumeMessage, false);
+module.exports = {es6ToEs5Code};
+
+const global = new Function('return this;')();
+if (global.addEventListener) global.addEventListener('message', consumeMessage, false);
