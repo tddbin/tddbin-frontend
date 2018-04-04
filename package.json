@@ -18,7 +18,7 @@
     "test": "npm run _lint && npm run _test:fast",
     "precoverage": "rm -Rf coverage",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel-register src/**/**/*spec.js",
-    "_test:fast": "mocha --compilers js:@babel/register src/**/**/*spec.js src/**/*spec.js",
+    "_test:fast": "mocha --require @babel/register src/**/**/*spec.js src/**/*spec.js",
     "_dev-build-app": "browserify src/index.js --outfile=dist/index.min.js --transform=babelify --transform=envify",
     "_watch:app": "watch 'npm run _dev-build-app' src --wait=1",
     "_watch:css": "watch 'npm run _build:css' src/components",
