@@ -53,10 +53,10 @@
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.24.1",
-    "babel-preset-env": "^1.5.1",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
-    "babelify": "^7.3.0",
-    "browserify": "^14.4.0",
+    "babelify": "^8.0.0",
+    "browserify": "^16.1.1",
     "envify": "^3.3.0",
     "eslint": "^3.10.0",
     "eslint-plugin-react": "^7.0.1",
