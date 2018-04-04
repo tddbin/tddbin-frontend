@@ -1,7 +1,7 @@
 /* global Mocha require */
 /* eslint-disable no-unused-vars */
-let expect = require('referee').expect; // use require, so babel won't change names!
-let assert = require('assert'); // use require, so babel won't change names!
+const expect = require('referee').expect; // use require, so babel won't change names!
+const assert = require('assert'); // use require, so babel won't change names!
 import should from 'should';
 /* eslint-enable no-unused-vars */
 
@@ -10,7 +10,9 @@ import babelPresetEnv from '@babel/preset-env';
 import 'babel-polyfill';
 import RuntimeError from '../runtime-error';
 
-function es6ToEs5Code(sourceCode) {
+const global = () => new Function('return this;')();
+
+const es6ToEs5Code = (sourceCode) => {
   try {
     const options = {presets: [babelPresetEnv], babelrc: false};
     return transform(sourceCode, options).code;
@@ -22,15 +24,16 @@ function es6ToEs5Code(sourceCode) {
     document.getElementById('errorOutput').innerHTML = hint + e;
   }
   return null;
-}
+};
 
-function resetMochaEnvironment() {
+const resetMochaEnvironment = () => {
   document.getElementById('mocha').innerHTML = '';
-  let mocha = new Mocha({reporter: 'html', ui: 'bdd'});
-  mocha.suite.emit('pre-require', this, null, mocha);
+  const mocha = new Mocha({reporter: 'html', ui: 'bdd'});
+  mocha.suite.emit('pre-require', global(), null, mocha);
   return mocha;
-}
-function consumeMessage(messageData) {
+};
+
+const consumeMessage = (messageData) => {
   if (messageData.source === messageData.target) {
     // ignore messages sent to itself
     return;
@@ -42,9 +45,9 @@ function consumeMessage(messageData) {
 
   runSpecs(specCode);
   runMochaAndReportStats(mocha, sender);
-}
+};
 
-function runSpecs(specCode) {
+const runSpecs = (specCode) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   document.getElementById('errorOutput').innerHTML = '';
@@ -57,9 +60,9 @@ function runSpecs(specCode) {
       document.getElementById('errorOutput').innerHTML = errorMessage;
     }
   }
-}
+};
 
-function runMochaAndReportStats(mocha, sender) {
+const runMochaAndReportStats = (mocha, sender) => {
   // Let mocha run and report the stats back to the actual sender.
   mocha.checkLeaks();
   var runner = mocha.run(function() {}); // if there is no callback given mocha will fail and not work again :(
@@ -68,9 +71,8 @@ function runMochaAndReportStats(mocha, sender) {
     sender.postMessage(stats, '*');
   }
   runner.on('end', onRan);
-}
+};
 
 module.exports = {es6ToEs5Code};
 
-const global = new Function('return this;')();
-if (global.addEventListener) global.addEventListener('message', consumeMessage, false);
+if (global().addEventListener) global().addEventListener('message', consumeMessage, false);
