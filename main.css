@@ -1,0 +1,44 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+#tddbin, #tddbin > div {
+  height: 100%;
+}
+#tddbin > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-rows-full-height {
+  display: flex;
+  flex-direction: column;
+}
+.flex-columns-full-width {
+  display: flex;
+  flex-direction: row;
+}
+
+.editor-and-runner {
+  flex: 1;
+}
+  .editor-and-runner .editor,
+  .editor-and-runner .runner {
+    flex: 1;
+  }
+  .editor-and-runner .editor,
+  .editor-and-runner .runner iframe {
+    border: none;
+  }
+
+  .editor-and-runner .runner {
+    background-color: var(--runner-background-color);
+  }
+    .editor-and-runner .runner iframe {
+      flex: 1;
+    }

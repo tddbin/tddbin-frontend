@@ -1,0 +1,29 @@
+#katas-navigation {
+  width: 100%;
+  color: var(--navigation-foreground-color);
+  background-color: var(--navigation-background-color);
+}
+#katas-navigation .headline,
+#katas-navigation a {
+  padding: 0.5em;
+  white-space: nowrap;
+}
+
+#katas-navigation a {
+  background-color: var(--navigation-hover-color);
+  color: var(--navigation-foreground-color);
+  margin-right: 1px;
+  text-decoration: none;
+}
+#katas-navigation a.selected:hover,
+#katas-navigation a:hover {
+  color: var(--navigation-hover-color);
+  background-color: var(--navigation-hover-background-color);
+}
+#katas-navigation a.selected {
+  background-color: color(var(--navigation-hover-background-color) blackness(50%));
+}
+#katas-navigation .scrollable {
+  overflow: auto;
+  display: flex;
+}
