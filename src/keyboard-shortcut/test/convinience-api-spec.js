@@ -1,7 +1,6 @@
 import assert from '../../_test-helper/assert';
 import Shortcut from '../shortcut';
 import ShortcutProcessor from '../shortcut-processor';
-import {browserEventUtil} from '../browser-event-util';
 import {KeyPressEmulation} from './util';
 import sinon from 'sinon';
 
@@ -10,8 +9,6 @@ const noop = function() {};
 describe('registering multiple shortcuts', function() {
   it('shall work', function() {
     // TODO simplify the necessary mocking for every shortcut test
-    //spyOn(browserEventUtil, 'onWindowBlur');
-    sinon.stub(browserEventUtil, 'onWindowBlur').callsFake(() => {});
     new KeyPressEmulation(); //eslint-disable-line no-new
     var processor = new ShortcutProcessor();
     sinon.spy(processor, 'registerShortcut');

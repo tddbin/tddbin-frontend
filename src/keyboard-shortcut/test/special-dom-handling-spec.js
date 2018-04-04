@@ -2,7 +2,7 @@ import assert from '../../_test-helper/assert';
 import Shortcut from '../shortcut';
 import ShortcutProcessor from '../shortcut-processor';
 import {keyboardEventUtil} from '../keyboard-event-util';
-import {browserEventUtil} from '../browser-event-util';
+import {keyDownStub, keyUpStub} from './util';
 
 describe('DOM event handling', function() {
 
@@ -11,13 +11,12 @@ describe('DOM event handling', function() {
   beforeEach(function() {
     keyDownListeners = [];
     keyUpListeners = [];
-    this.sinon.stub(keyboardEventUtil, 'addKeyDownListener', function(fn) {
+    keyDownStub.callsFake(function(fn) {
       keyDownListeners.push(fn);
     });
-    this.sinon.stub(keyboardEventUtil, 'addKeyUpListener', function(fn) {
+    keyUpStub.callsFake(function(fn) {
       keyUpListeners.push(fn);
     });
-    this.sinon.stub(browserEventUtil, 'onWindowBlur');
   });
 
   it('should prevent default when shortcut is `overridden`', function() {
