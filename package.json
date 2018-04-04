@@ -58,7 +58,7 @@
     "@babel/preset-react": "^7.0.0-beta.44",
     "@babel/register": "^7.0.0-beta.44",
     "@babel/standalone": "^7.0.0-beta.44",
-    "babelify": "^8.0.0",
+    "babelify": "github:ylemkimon/babelify#ac3ed1a7ef7188922095f2a11953c39dddd23790",
     "browserify": "^16.1.1",
     "envify": "^4.1.0",
     "eslint": "^3.10.0",
