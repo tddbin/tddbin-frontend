@@ -1,7 +1,6 @@
 import assert from '../../_test-helper/assert';
 import Shortcut from '../shortcut';
 import ShortcutProcessor from '../shortcut-processor';
-import {browserEventUtil} from '../browser-event-util';
 import {KeyPressEmulation} from './util';
 
 const noop = function() {};
@@ -13,7 +12,6 @@ describe('keyboard shortcut', function() {
   var callback;
   var keyPressEmulation;
   beforeEach(function() {
-    this.sinon.stub(browserEventUtil, 'onWindowBlur');
     keyPressEmulation = new KeyPressEmulation(this.sinon);
     callback = this.sinon.spy();
   });

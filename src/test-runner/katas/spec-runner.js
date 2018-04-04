@@ -4,7 +4,7 @@
 //import should from 'should';
 import assert from 'assert';
 /* eslint-enable no-unused-vars */
-import {transform} from 'babel-core'; // the es6 transpiler
+import {transform} from '@babel/core'; // the es6 transpiler
 import 'babel-polyfill';
 import RuntimeError from '../runtime-error';
 

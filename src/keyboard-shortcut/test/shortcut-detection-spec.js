@@ -1,8 +1,7 @@
 import assert from '../../_test-helper/assert';
 import Shortcut from '../shortcut';
 import ShortcutProcessor from '../shortcut-processor';
-import {browserEventUtil} from '../browser-event-util';
-import {KeyPressEmulation} from './util';
+import {KeyPressEmulation, windowBlurStub} from './util';
 
 const noop = function() {};
 
@@ -18,7 +17,7 @@ describe('a shortcut', function() {
   beforeEach(function() {
     // move this out into util.js
     blurCallbacks = [];
-    this.sinon.stub(browserEventUtil, 'onWindowBlur', function(fn) {
+    windowBlurStub.callsFake(function(fn) {
       blurCallbacks.push(fn);
     });
 
