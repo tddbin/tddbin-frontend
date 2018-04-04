@@ -6,12 +6,13 @@ import should from 'should';
 /* eslint-enable no-unused-vars */
 
 import {transform} from '@babel/core'; // the es6 transpiler
+import babelPresetEnv from '@babel/preset-env';
 import 'babel-polyfill';
 import RuntimeError from '../runtime-error';
 
 function es6ToEs5Code(sourceCode) {
   try {
-    const options = {};
+    const options = {presets: [babelPresetEnv], babelrc: false};
     return transform(sourceCode, options).code;
   } catch (e) {
     const hint = `Syntax or ES6 (babeljs) transpile error
