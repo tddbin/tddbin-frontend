@@ -131,7 +131,8 @@
   }
   .navigation-bar .transpileHint p {
     padding: 0.5rem;
-    border: 1px solid transparent;
+    border: 0 solid transparent;
+    border-left-width: 2px;
   }
 
 @keyframes unrollHint {
