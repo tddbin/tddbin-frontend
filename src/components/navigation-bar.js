@@ -30,16 +30,16 @@ export default class NavigationBar extends React.Component {
           <label className="transpileSwitch">
             Transpile to ES5 <input type="checkbox" onChange={(evt) => transpileOnOff(evt.target.checked)} />
             <div className="transpileHint">
-              <h2>What is this for?</h2>
-              <p>
-                Many modern browsers support a lot of ES6, ES7, ES8 and beyond, here you can control if you want
-                your browser to execute the code as is, or if it should be tranpiled first to ES5, which every browser
-                is able to execute.<br/>
-                <span className={this.state.transpileOn ? 'highlight' : ''}>Why turn it off? To see if the browser does implement this specific feature
-                of the JavaScript language.</span><br/>
-                <span className={this.state.transpileOn ? '' : 'highlight'}>Why turn it on? Things like <code>import assert from 'assert'</code> would not work
+              <p className={this.state.transpileOn ? 'highlight' : ''}>
+                <strong>on</strong> - transpiles ES6 (and beyond) into ES5<br />
+                Why turn it off? To see if the browser does implement this specific feature
+                of the JavaScript language.
+              </p>
+              <p className={this.state.transpileOn ? '' : 'highlight'}>
+                <strong>off</strong> - leaves code as is and runs tests (does NOT transpile code to ES5)<br />
+                Why turn it on? Things like <code>import assert from 'assert'</code> would not work
                 if they don't get transpiled to ES5 code, since the <code>import</code> statement is only allowed on
-                  the top level of a JS file.</span>
+                  the top level of a JS file.
               </p>
             </div>
           </label>

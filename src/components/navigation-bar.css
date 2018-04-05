@@ -116,20 +116,23 @@
 .navigation-bar .transpileHint {
   display: none;
   position: absolute;
-  padding: 0 2rem;
-  width: 100%;
+  padding: 0 1rem;
+  width: calc(100% - 2rem);
   left: 0;
   top: 50px;
   background-color: var(--navigation-hover-background-color);
   color: var(--navigation-hover-color);
 
-  animation: unrollHint 1s;
+  animation: unrollHint 0.3s;
   overflow: hidden;
 }
-.navigation-bar .transpileHint .highlight {
-  color: red;
-  text-decoration: underline;
-}
+  .navigation-bar .transpileHint .highlight {
+    border-color: red;
+  }
+  .navigation-bar .transpileHint p {
+    padding: 0.5rem;
+    border: 1px solid transparent;
+  }
 
 @keyframes unrollHint {
     0% { height: 0; }
