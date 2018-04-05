@@ -15,12 +15,18 @@ export default class TestRunner {
   }
 
   send(sourceCode) {
-    iframe.postMessage(sourceCode, '*');
     const iframe = this._iframeRef.contentWindow;
+    iframe.postMessage({sourceCode}, '*');
   }
 
-  setTranspileToEs5() {console.log('set');}
-  unsetTranspileToEs5() {console.log('unset');}
+  setTranspileToEs5() {
+    const iframe = this._iframeRef.contentWindow;
+    iframe.postMessage({transpileToEs5: true}, '*');
+  }
+  unsetTranspileToEs5() {
+    const iframe = this._iframeRef.contentWindow;
+    iframe.postMessage({transpileToEs5: false}, '*');
+  }
 
   onStats(fn) {
     this._onStats = fn;

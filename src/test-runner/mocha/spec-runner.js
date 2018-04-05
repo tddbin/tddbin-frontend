@@ -12,10 +12,16 @@ import RuntimeError from '../runtime-error';
 
 const global = () => new Function('return this;')();
 
-const es6ToEs5Code = (sourceCode) => {
+const babelOptions = (transpileToEs5) => {
+  if (transpileToEs5) {
+    return {presets: [babelPresetEnv], babelrc: false};
+  }
+  return {};
+};
+
+const es6ToEs5Code = (state) => {
   try {
-    const options = {presets: [babelPresetEnv], babelrc: false};
-    return transform(sourceCode, options).code;
+    return transform(state.sourceCode, babelOptions(state.transpileToEs5)).code;
   } catch (e) {
     const hint = `Syntax or ES6 (babeljs) transpile error
 (This transpile error doesn't mean that the web app is broken :))
@@ -33,25 +39,32 @@ const resetMochaEnvironment = () => {
   return mocha;
 };
 
+const state = {
+  sourceCode: '',
+  transpileToEs5: true,
+};
 const consumeMessage = (messageData) => {
   if (messageData.source === messageData.target) {
     // ignore messages sent to itself
     return;
   }
   const sender = messageData.source;
-  const specCode = messageData.data;
-
+  const receivedData = messageData.data;
+  if (receivedData.sourceCode) {
+    state.sourceCode = receivedData.sourceCode
+  } else if ('transpileToEs5' in receivedData) {
+    state.transpileToEs5 = receivedData.transpileToEs5;
+  }
   const mocha = resetMochaEnvironment.call(this);
-
-  runSpecs(specCode);
+  runSpecs(state);
   runMochaAndReportStats(mocha, sender);
 };
 
-const runSpecs = (specCode) => {
+const runSpecs = (state) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   document.getElementById('errorOutput').innerHTML = '';
-  const es5Code = es6ToEs5Code(specCode);
+  const es5Code = es6ToEs5Code(state);
   if (es5Code) {
     try {
       eval(es5Code); // eslint-disable-line no-eval
