@@ -75,23 +75,10 @@
 /*}*/
 
 .navigation-bar .icon.twitter,
-.navigation-bar .icon.trello,
-.navigation-bar .icon.github,
-.navigation-bar .icon.uxebu {
+.navigation-bar .icon.github {
   background-size: 50%;
   background-position: center center;
   float: right;
-}
-
-.navigation-bar .icon.uxebu {
-  background-image: url(./img/uxebu_icon.svg);
-  background-size: 70%;
-  padding: 0;
-  width: 120px;
-}
-
-.navigation-bar .icon.trello {
-  background-image: url(./img/trello_icon.svg);
 }
 
 .navigation-bar .icon.github {
