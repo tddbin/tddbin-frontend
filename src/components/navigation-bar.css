@@ -36,9 +36,11 @@
   margin-left: 1px;
   height: 50px;
   outline: none;
+  padding: 0 1rem;
 }
 
-.navigation-bar button:hover {
+.navigation-bar button:hover,
+.navigation-bar .transpileSwitch:hover {
   background-color: var(--navigation-hover-background-color);
   color: var(--navigation-hover-color);
 }
@@ -98,4 +100,35 @@
 
 .navigation-bar .icon.twitter {
   background-image: url(./img/twitter_icon.svg);
+}
+
+.navigation-bar .transpileSwitch {
+  display: inline-flex;
+  align-items: center;
+}
+  .navigation-bar .transpileSwitch input {
+    margin-left: 1rem;
+  }
+  .navigation-bar .transpileSwitch:hover .transpileHint {
+    display: block;
+  }
+
+.navigation-bar .transpileHint {
+  display: none;
+  position: absolute;
+  padding: 0 2rem;
+  width: 100%;
+  left: 0;
+  top: 50px;
+  background-color: var(--navigation-hover-background-color);
+  color: var(--navigation-hover-color);
+
+  animation: unrollHint 1s;
+  overflow: hidden;
+}
+
+@keyframes unrollHint {
+    0% { height: 0; }
+    99% { height: 5rem; }
+    100% { height: auto; }
 }

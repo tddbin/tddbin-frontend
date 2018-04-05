@@ -17,9 +17,15 @@ export default class NavigationBar extends React.Component {
           <span className="tddbin">TDD bin</span>
           <button className="save" title={`Run tests (${metaKeySymbol}S)`} onClick={onSave}>Run tests</button>
           <button title="Reset code" onClick={onResetCode}>Reset code</button>
-          <span className="transpileSwitch">
+          <label className="transpileSwitch">
             Transpile to ES5 <input type="checkbox" onChange={(evt) => onTranspileToEs5Changed(evt.target.checked)} />
-          </span>
+            <div className="transpileHint">
+              <h2>Transpile to ES5 - What does that mean?</h2>
+              <p>
+                skdfhaks jdhalsdjhsjfghsjfhgdjd jghsdfjgsdfg jsdhfg ksjh
+              </p>
+            </div>
+          </label>
         </span>
 
         <span>
