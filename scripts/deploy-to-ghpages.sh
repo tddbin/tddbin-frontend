@@ -11,7 +11,7 @@ TMP_CHECKOUT_DIR=tmp/origin-gh-pages
 
   echo "deploy: configuring git user+email"
   git config user.name "Travis-CI"
-  git config user.email "contact+travis-for-tddbin@uxebu.com"
+  git config user.email "w+travis-for-tddbin@kriesing.de"
 
   echo "deploy: adding files"
   # `--all` ensures that only the files from the last build end in the repo
