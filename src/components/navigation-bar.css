@@ -122,6 +122,7 @@
   top: 50px;
   background-color: var(--navigation-hover-background-color);
   color: var(--navigation-hover-color);
+  opacity: .8;
 
   animation: unrollHint 0.3s;
   overflow: hidden;
