@@ -24,7 +24,7 @@
     "_test:fast": "mocha --require @babel/register src/**/**/*spec.js src/**/*spec.js",
     "_dev-build-app": "browserify src/index.js --outfile=dist/index.min.js --transform=babelify --transform=envify",
     "_watch:app": "watch 'npm run _dev-build-app' src --wait=1",
-    "_watch:css": "watch 'npm run _build:css' src/components",
+    "_watch:css": "watch 'npm run build:css' src/components",
     "_build:jasmine-spec-runners": "browserify src/test-runner/jasmine/spec-runner.js --outfile=dist/jasmine/spec-runner.js --transform=babelify",
     "_watch:jasmine-spec-runners": "watch 'npm run _build:jasmine-spec-runners' src/test-runner/jasmine/",
     "_build:mocha-spec-runners": "browserify src/test-runner/mocha/spec-runner.js --outfile=dist/mocha/spec-runner.js --transform=babelify",
