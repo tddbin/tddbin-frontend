@@ -126,6 +126,10 @@
   animation: unrollHint 1s;
   overflow: hidden;
 }
+.navigation-bar .transpileHint .highlight {
+  color: red;
+  text-decoration: underline;
+}
 
 @keyframes unrollHint {
     0% { height: 0; }
