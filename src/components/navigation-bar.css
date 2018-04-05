@@ -13,6 +13,8 @@
   border-bottom: 1px solid #000;
   overflow: hidden;
   z-index: 1000; /* we have to make sure that it is above ace, this is not the best way :( */
+  display: flex;
+  align-items: center;
 }
 
 .navigation-bar .tddbin {
@@ -25,6 +27,7 @@
 }
 
 .navigation-bar a,
+.navigation-bar .transpileSwitch,
 .navigation-bar button {
   background-color: var(--navigation-hover-color);
   border: none;
@@ -96,5 +99,3 @@
 .navigation-bar .icon.twitter {
   background-image: url(./img/twitter_icon.svg);
 }
-
-
