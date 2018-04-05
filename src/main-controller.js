@@ -31,6 +31,7 @@ export default class MainController {
       runnerId: this._runnerDomNodeId,
       onSave: this.onSave.bind(this),
       onResetCode: this._onResetCode,
+      onTranspileToEs5Changed: this._onTranspileToEs5Changed.bind(this),
       shortcuts: shortcuts,
       es6Katas: this._es6Katas || null
     };
@@ -55,6 +56,14 @@ export default class MainController {
   _onResetCode() {
     window.localStorage.removeItem('code');
     window.location.reload();
+  }
+
+  _onTranspileToEs5Changed(transpileOn) {
+    if (transpileOn) {
+      this._runner.setTranspileToEs5();
+    } else {
+      this._runner.unsetTranspileToEs5();
+    }
   }
 
   setEditorContent(sourceCode) {

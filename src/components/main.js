@@ -6,7 +6,7 @@ import Es6KatasNavigation from '../components/es6-katas-navigation.js';
 export default class Main extends React.Component {
   render() {
     const {
-      metaKeySymbol, onSave, onResetCode,
+      metaKeySymbol, onSave, onResetCode, onTranspileToEs5Changed,
       editorId, runnerId, shortcuts, es6Katas
     } = this.props;
     return (
@@ -15,6 +15,7 @@ export default class Main extends React.Component {
           metaKeySymbol={metaKeySymbol}
           onSave={onSave}
           onResetCode={onResetCode}
+          onTranspileToEs5Changed={onTranspileToEs5Changed}
         />
 
         <EditorAndRunner editorId={editorId} runnerId={runnerId} />

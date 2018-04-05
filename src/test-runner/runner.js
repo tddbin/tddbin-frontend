@@ -19,6 +19,9 @@ export default class TestRunner {
     iframe.postMessage(sourceCode, '*');
   }
 
+  setTranspileToEs5() {console.log('set');}
+  unsetTranspileToEs5() {console.log('unset');}
+
   onStats(fn) {
     this._onStats = fn;
   }
