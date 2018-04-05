@@ -116,17 +116,18 @@
 .navigation-bar .transpileHint {
   display: none;
   position: absolute;
-  padding: 0 1rem;
-  width: calc(100% - 2rem);
   left: 0;
   top: 50px;
-  background-color: var(--navigation-hover-background-color);
-  color: var(--navigation-hover-color);
-  opacity: .8;
+  opacity: 1;
 
   animation: unrollHint 0.3s;
   overflow: hidden;
 }
+  .navigation-bar .transpileHint .content {
+    padding: 1rem;
+    background-color: var(--navigation-hover-background-color);
+    color: var(--navigation-hover-color);
+  }
   .navigation-bar .transpileHint .highlight {
     border-color: red;
   }
@@ -134,6 +135,14 @@
     padding: 0.5rem;
     border: 0 solid transparent;
     border-left-width: 2px;
+  }
+  .navigation-bar .transpileHint .arrow {
+    border-left: 2rem solid transparent;
+    border-right: 2rem solid transparent;
+    border-bottom: 2rem solid var(--navigation-hover-background-color);
+    width: 0;
+    left: 27rem;
+    position: relative;
   }
 
 @keyframes unrollHint {
