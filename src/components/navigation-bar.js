@@ -5,9 +5,9 @@ const GITHUB_URL = 'http://github.com/tddbin/tddbin-frontend';
 
 export default class NavigationBar extends React.Component {
 
-  constructor() {
+  constructor({transpileToEs5}) {
     super();
-    this.state = {transpileOn: false};
+    this.state = {transpileToEs5};
   }
 
   render() {
@@ -15,10 +15,16 @@ export default class NavigationBar extends React.Component {
       metaKeySymbol,
       onSave, onResetCode, onTranspileToEs5Changed
     } = this.props;
-    const transpileOnOff = (on) => {
-      onTranspileToEs5Changed(on);
-      this.setState({transpileOn: on});
+    const transpileOnOff = (transpileToEs5) => {
+      onTranspileToEs5Changed(transpileToEs5);
+      this.setState({transpileToEs5});
     };
+    const transpileCheckbox = <input
+      type="checkbox"
+      checked={this.state.transpileToEs5 ? 'checked' : ''}
+      value={this.state.transpileToEs5}
+      onChange={(evt) => transpileOnOff(evt.target.checked)}
+    />;
 
     return (
       <header className="navigation-bar">
@@ -28,14 +34,14 @@ export default class NavigationBar extends React.Component {
           <button className="save" title={`Run tests (${metaKeySymbol}S)`} onClick={onSave}>Run tests</button>
           <button title="Reset code" onClick={onResetCode}>Reset code</button>
           <label className="transpileSwitch">
-            Transpile to ES5 <input type="checkbox" onChange={(evt) => transpileOnOff(evt.target.checked)} />
+            Transpile to ES5 {transpileCheckbox}
             <div className="transpileHint">
-              <p className={this.state.transpileOn ? 'highlight' : ''}>
+              <p className={this.state.transpileToEs5 ? 'highlight' : ''}>
                 <strong>on</strong> - transpiles ES6 (and beyond) into ES5<br />
                 Why turn it off? To see if the browser does implement this specific feature
                 of the JavaScript language.
               </p>
-              <p className={this.state.transpileOn ? '' : 'highlight'}>
+              <p className={this.state.transpileToEs5 ? '' : 'highlight'}>
                 <strong>off</strong> - leaves code as is and runs tests (does NOT transpile code to ES5)<br />
                 Why turn it on? Things like <code>import assert from 'assert'</code> would not work
                 if they don't get transpiled to ES5 code, since the <code>import</code> statement is only allowed on

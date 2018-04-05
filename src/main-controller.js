@@ -31,6 +31,7 @@ export default class MainController {
       runnerId: this._runnerDomNodeId,
       onSave: this.onSave.bind(this),
       onResetCode: this._onResetCode,
+      transpileToEs5: true,
       onTranspileToEs5Changed: this._onTranspileToEs5Changed.bind(this),
       shortcuts: shortcuts,
       es6Katas: this._es6Katas || null

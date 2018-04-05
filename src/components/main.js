@@ -7,6 +7,7 @@ export default class Main extends React.Component {
   render() {
     const {
       metaKeySymbol, onSave, onResetCode, onTranspileToEs5Changed,
+      transpileToEs5,
       editorId, runnerId, shortcuts, es6Katas
     } = this.props;
     return (
@@ -15,6 +16,7 @@ export default class Main extends React.Component {
           metaKeySymbol={metaKeySymbol}
           onSave={onSave}
           onResetCode={onResetCode}
+          transpileToEs5={transpileToEs5}
           onTranspileToEs5Changed={onTranspileToEs5Changed}
         />
 
