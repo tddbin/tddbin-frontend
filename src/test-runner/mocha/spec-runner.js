@@ -3,6 +3,7 @@
 const expect = require('referee').expect; // use require, so babel won't change names!
 const assert = require('assert'); // use require, so babel won't change names!
 import should from 'should';
+import * as hamjest from 'hamjest';
 /* eslint-enable no-unused-vars */
 
 import {transform} from '@babel/core'; // the es6 transpiler
