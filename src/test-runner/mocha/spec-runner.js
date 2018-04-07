@@ -52,7 +52,7 @@ const consumeMessage = (messageData) => {
   const sender = messageData.source;
   const receivedData = messageData.data;
   if (receivedData.sourceCode) {
-    state.sourceCode = receivedData.sourceCode
+    state.sourceCode = receivedData.sourceCode;
   } else if ('transpileToEs5' in receivedData) {
     state.transpileToEs5 = receivedData.transpileToEs5;
   }
