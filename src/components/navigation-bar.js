@@ -3,7 +3,7 @@ import React from 'react';
 const TWITTER_URL = 'http://twitter.com/tddbin';
 const GITHUB_URL = 'http://github.com/tddbin/tddbin-frontend';
 
-const transpileCheckbox = (transpileToEs5) => {
+const  transpileCheckbox = (transpileToEs5, transpileOnOff) => {
   const checkbox = <input
     type="checkbox"
     checked={transpileToEs5 ? 'checked' : ''}
@@ -56,7 +56,7 @@ export default class NavigationBar extends React.Component {
           <span className="tddbin">TDD bin</span>
           <button className="save" title={`Run tests (${metaKeySymbol}S)`} onClick={onSave}>Run tests</button>
           <button title="Reset code" onClick={onResetCode}>Reset code</button>
-          {transpileCheckbox(transpileToEs5)}
+          {transpileCheckbox(transpileToEs5, transpileOnOff)}
         </span>
 
         <span>
