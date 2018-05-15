@@ -62209,20 +62209,22 @@ arguments[4][188][0].apply(exports,arguments)
 //import {mocha} from 'mocha';
 //var mocha = require('mocha');
 
-var Base = require('../../../node_modules/mocha/lib/reporters/base.js'),
-    utils = require('../../../node_modules/mocha/lib/utils'),
-    Progress = require('../../../node_modules/mocha/lib/browser/progress'),
-    escape = utils.escape;
+var Base = require('../../../node_modules/mocha/lib/reporters/base.js');
+
+var utils = require('../../../node_modules/mocha/lib/utils');
+
+var Progress = require('../../../node_modules/mocha/lib/browser/progress');
+
+var escape = utils.escape;
 /**
  * Save timer references to avoid Sinon interfering (see GH-237).
  */
 
-
-var Date = global.Date,
-    setTimeout = global.setTimeout,
-    setInterval = global.setInterval,
-    clearTimeout = global.clearTimeout,
-    clearInterval = global.clearInterval;
+var Date = global.Date;
+var setTimeout = global.setTimeout;
+var setInterval = global.setInterval;
+var clearTimeout = global.clearTimeout;
+var clearInterval = global.clearInterval;
 /**
  * Expose `HTML`.
  */
@@ -62232,7 +62234,7 @@ exports = module.exports = HTML;
  * Stats template.
  */
 
-var statsTemplate = '<ul id="mocha-stats">' + '<li class="progress"><canvas width="40" height="40"></canvas></li>' + '<li class="passes"><a href="#">passes:</a> <em>0</em></li>' + '<li class="failures"><a href="#">failures:</a> <em>0</em></li>' + '<li class="duration">duration: <em>0</em>s</li>' + '</ul>';
+var statsTemplate = "<ul id=\"mocha-stats\">\n    <li class=\"progress\"><canvas width=\"40\" height=\"40\" /></li>\n    <li class=\"passes\"><a href=\"#\">passes:</a> <em>0</em></li>\n    <li class=\"failures\"><a href=\"#\">failures:</a> <em>0</em></li>\n    <li class=\"duration\">duration: <em>0</em>s</li>\n  </ul>";
 /**
  * Initialize a new `HTML` reporter.
  *
@@ -62242,22 +62244,22 @@ var statsTemplate = '<ul id="mocha-stats">' + '<li class="progress"><canvas widt
 
 function HTML(runner) {
   Base.call(this, runner);
-  var self = this,
-      stats = this.stats,
-      total = runner.total,
-      stat = fragment(statsTemplate),
-      items = stat.getElementsByTagName('li'),
-      passes = items[1].getElementsByTagName('em')[0],
-      passesLink = items[1].getElementsByTagName('a')[0],
-      failures = items[2].getElementsByTagName('em')[0],
-      failuresLink = items[2].getElementsByTagName('a')[0],
-      duration = items[3].getElementsByTagName('em')[0],
-      canvas = stat.getElementsByTagName('canvas')[0],
-      report = fragment('<ul id="mocha-report"></ul>'),
-      stack = [report],
-      progress,
-      ctx,
-      root = document.getElementById('mocha');
+  var self = this;
+  var stats = this.stats;
+  var total = runner.total;
+  var stat = fragment(statsTemplate);
+  var items = stat.getElementsByTagName('li');
+  var passes = items[1].getElementsByTagName('em')[0];
+  var passesLink = items[1].getElementsByTagName('a')[0];
+  var failures = items[2].getElementsByTagName('em')[0];
+  var failuresLink = items[2].getElementsByTagName('a')[0];
+  var duration = items[3].getElementsByTagName('em')[0];
+  var canvas = stat.getElementsByTagName('canvas')[0];
+  var report = fragment('<ul id="mocha-report"></ul>');
+  var stack = [report];
+  var progress;
+  var ctx;
+  var root = document.getElementById('mocha');
 
   if (canvas.getContext) {
     var ratio = window.devicePixelRatio || 1;
@@ -62325,7 +62327,7 @@ function HTML(runner) {
       var str = test.err.stack || test.err.toString(); // FF / Opera do not add the message
 
       if (!~str.indexOf(test.err.message)) {
-        str = test.err.message + '\n' + str;
+        str = "".concat(test.err.message, "\n").concat(str);
       } // <=IE7 stringifies to [Object Error]. Since it can be overloaded, we
       // check for the result of the stringifying.
 
@@ -62333,7 +62335,7 @@ function HTML(runner) {
       if ('[object Error]' == str) str = test.err.message; // Safari doesn't give you a stack. Let's at least provide a source line.
 
       if (!test.err.stack && test.err.sourceURL && test.err.line !== undefined) {
-        str += "\n(" + test.err.sourceURL + ":" + test.err.line + ")";
+        str += "\n(".concat(test.err.sourceURL, ":").concat(test.err.line, ")");
       }
 
       el.appendChild(fragment('<pre class="error">%e</pre>', str));
@@ -62369,7 +62371,7 @@ var makeUrl = function makeUrl(s) {
     search = search.replace(/[?&]grep=[^&\s]*/g, '').replace(/^&/, '?');
   }
 
-  return window.location.pathname + (search ? search + '&' : '?') + 'grep=' + encodeURIComponent(s);
+  return "".concat(window.location.pathname + (search ? "".concat(search, "&") : '?'), "grep=").concat(encodeURIComponent(s));
 };
 /**
  * Provide suite URL
@@ -62405,9 +62407,9 @@ function error(msg) {
 
 
 function fragment(html) {
-  var args = arguments,
-      div = document.createElement('div'),
-      i = 1;
+  var args = arguments;
+  var div = document.createElement('div');
+  var i = 1;
   div.innerHTML = html.replace(/%([se])/g, function (_, type) {
     switch (type) {
       case 's':
@@ -62466,7 +62468,7 @@ function on(el, event, fn) {
   if (el.addEventListener) {
     el.addEventListener(event, fn, false);
   } else {
-    el.attachEvent('on' + event, fn);
+    el.attachEvent("on".concat(event), fn);
   }
 }
 
@@ -62503,7 +62505,7 @@ function es6ToEs5Code(sourceCode) {
   try {
     return (0, _core.transform)(sourceCode).code;
   } catch (e) {
-    document.getElementById('errorOutput').innerHTML = 'Syntax or ES6 (babeljs) transpile error\n\n' + e;
+    document.getElementById('errorOutput').innerHTML = "Syntax or ES6 (babeljs) transpile error\n\n".concat(e);
   }
 
   return null;
@@ -62533,8 +62535,7 @@ function runSpecs(specCode) {
     try {
       eval(es5Code); // eslint-disable-line no-eval
     } catch (e) {
-      var errorMessage = 'Runtime error\n\n' + e + '\n\n' + _runtimeError.default.prettyPrint(e.stack, es5Code);
-
+      var errorMessage = "Runtime error\n\n".concat(e, "\n\n").concat(_runtimeError.default.prettyPrint(e.stack, es5Code));
       document.getElementById('errorOutput').innerText = errorMessage;
     }
   }

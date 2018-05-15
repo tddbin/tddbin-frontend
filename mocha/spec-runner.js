@@ -105072,8 +105072,7 @@ var runSpecs = function runSpecs(state) {
     try {
       eval(es5Code); // eslint-disable-line no-eval
     } catch (e) {
-      var errorMessage = 'Runtime error\n\n' + e + '\n\n' + _runtimeError.default.prettyPrint(e.stack, es5Code);
-
+      var errorMessage = "Runtime error\n\n".concat(e, "\n\n").concat(_runtimeError.default.prettyPrint(e.stack, es5Code));
       document.getElementById('errorOutput').innerHTML = errorMessage;
     }
   }
