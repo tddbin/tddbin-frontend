@@ -1,10 +1,10 @@
 /* global global */
 
 global.window = {
-  location: {hash: ''}
+  location: {hash: ''},
 };
 global.localStorage = {
-  getItem: function() {}
+  getItem() {},
 };
 
 import assert from '../_test-helper/assert';
@@ -35,14 +35,14 @@ describe('start up', function() {
       withSourceCode = this.sinon.spy();
     });
 
-    it('if kata param is given but empty', function() {
+    it('if kata param is given but empty', () => {
       const kataUrl = '';
       loadSourceCode(kataUrl, withSourceCode, noop);
 
       assert.calledWith(withSourceCode, 'kata code');
     });
 
-    it('if there is no kata in the URL', function() {
+    it('if there is no kata in the URL', () => {
       const kataUrl = '';
       loadSourceCode(kataUrl, withSourceCode, noop);
 
@@ -68,8 +68,8 @@ describe('start up', function() {
     it('loads source code with error message', function() {
       const withSourceCode = this.sinon.spy();
       const status = 404;
-      var kataUrl = 'some';
-      loadSourceCode(kataUrl, withSourceCode, (_, onError) => onError(null, {status: status}));
+      const kataUrl = 'some';
+      loadSourceCode(kataUrl, withSourceCode, (_, onError) => onError(null, {status}));
 
       const errorString =
         `// Kata at "${kataUrl}" not found (status ${status})\n// Maybe try a different kata (see URL).`;

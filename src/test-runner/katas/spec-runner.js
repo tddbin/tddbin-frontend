@@ -14,18 +14,18 @@ function es6ToEs5Code(sourceCode) {
   try {
     return transform(sourceCode).code;
   } catch (e) {
-    document.getElementById('errorOutput').innerHTML = 'Syntax or ES6 (babeljs) transpile error\n\n' + e;
+    document.getElementById('errorOutput').innerHTML = `Syntax or ES6 (babeljs) transpile error\n\n${e}`;
   }
   return null;
 }
 
 function consumeMessage(messageData) {
-  var sender = messageData.source;
-  var specCode = messageData.data;
+  const sender = messageData.source;
+  const specCode = messageData.data;
 
   // Reset mocha env
   document.getElementById('mocha').innerHTML = '';
-  var mocha = new Mocha({reporter: HTML, ui: 'bdd'});
+  const mocha = new Mocha({reporter: HTML, ui: 'bdd'});
   mocha.suite.emit('pre-require', this, null, mocha);
 
   runSpecs(specCode);
@@ -36,12 +36,12 @@ function runSpecs(specCode) {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   document.getElementById('errorOutput').innerText = '';
-  var es5Code = es6ToEs5Code(specCode);
+  const es5Code = es6ToEs5Code(specCode);
   if (es5Code) {
     try {
       eval(es5Code); // eslint-disable-line no-eval
     } catch (e) {
-      const errorMessage = 'Runtime error\n\n' + e + '\n\n' + RuntimeError.prettyPrint(e.stack, es5Code);
+      const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, es5Code)}`;
       document.getElementById('errorOutput').innerText = errorMessage;
     }
   }
@@ -50,9 +50,9 @@ function runSpecs(specCode) {
 function runMochaAndReportStats(mocha, sender) {
   // Let mocha run and report the stats back to the actual sender.
   mocha.checkLeaks();
-  var runner = mocha.run(function() {}); // if there is no callback given mocha will fail and not work again :(
+  const runner = mocha.run(() => {}); // if there is no callback given mocha will fail and not work again :(
   function onRan() {
-    var stats = runner.stats;
+    const stats = runner.stats;
     sender.postMessage(stats, '*');
   }
   runner.on('end', onRan);

@@ -1,6 +1,5 @@
 export const browserEventUtil = {
-
-  onWindowBlur: function(fn) {
+  onWindowBlur(fn) {
     window.addEventListener('blur', fn);
-  }
+  },
 };

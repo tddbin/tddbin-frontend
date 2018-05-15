@@ -10,12 +10,12 @@ describe('registering multiple shortcuts', function() {
   it('shall work', function() {
     // TODO simplify the necessary mocking for every shortcut test
     new KeyPressEmulation(); //eslint-disable-line no-new
-    var processor = new ShortcutProcessor();
+    const processor = new ShortcutProcessor();
     sinon.spy(processor, 'registerShortcut');
 
-    var shortcutMap = [
+    const shortcutMap = [
       new Shortcut(['Meta', 'S'], noop),
-      new Shortcut(['Ctrl', 'S'], noop)
+      new Shortcut(['Ctrl', 'S'], noop),
     ];
     processor.registerShortcuts(shortcutMap);
 

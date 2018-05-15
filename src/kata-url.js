@@ -6,7 +6,7 @@ export default class KataUrl {
   }
 
   static fromQueryString(queryString) {
-    var kataName = queryString.match(/kata=([^&]+)/);
+    const kataName = queryString.match(/kata=([^&]+)/);
     if (kataName && kataName.length === 2) {
       return KataUrl.fromKataName(kataName[1]);
     }

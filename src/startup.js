@@ -5,7 +5,7 @@ export default class StartUp {
   }
 
   loadSourceCode(kataUrl, withSourceCode) {
-    var sourceCode = localStorage.getItem('code');
+    const sourceCode = localStorage.getItem('code');
     if (kataUrl) {
       this.loadKataFromUrl(kataUrl, withSourceCode);
     } else if (sourceCode) {

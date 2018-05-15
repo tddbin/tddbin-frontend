@@ -5,7 +5,7 @@ const isMac = navigator.platform.indexOf('Mac') === 0;
 
 const map = {
   Meta: '⌘Command',
-  Shift: '⇧Shift'
+  Shift: '⇧Shift',
 };
 
 const format = function(keys) {
@@ -13,7 +13,7 @@ const format = function(keys) {
 };
 
 export const getShortcutObject = function(keys, fn, helpText) {
-  var shortcut = new Shortcut(keys, fn, helpText);
+  const shortcut = new Shortcut(keys, fn, helpText);
   shortcut.printableKeysFormatter = format;
   return shortcut;
 };

@@ -1,21 +1,20 @@
 export const keyboardEventUtil = {
-
   PREVENT_DEFAULT_ACTION: 'preventDefault',
 
-  addKeyDownListener: function(fn) {
-    document.addEventListener('keydown', function(evt) {
-      var whatToDo = fn(getKeyNameFromEvent(evt));
+  addKeyDownListener(fn) {
+    document.addEventListener('keydown', evt => {
+      const whatToDo = fn(getKeyNameFromEvent(evt));
       if (whatToDo === keyboardEventUtil.PREVENT_DEFAULT_ACTION) {
         evt.preventDefault();
       }
     });
   },
 
-  addKeyUpListener: function(fn) {
-    document.addEventListener('keyup', function(evt) {
+  addKeyUpListener(fn) {
+    document.addEventListener('keyup', evt => {
       fn(getKeyNameFromEvent(evt));
     });
-  }
+  },
 };
 
 const keyCodeToReadableKeyMap = {
@@ -23,11 +22,11 @@ const keyCodeToReadableKeyMap = {
   17: 'Control',
   18: 'Alt',
   91: 'Meta', // Seems not to be correct in FF, but FF supports evt.key
-  117: 'F6'
+  117: 'F6',
 };
 
 const mapKeyCodeToReadable = function(keyCode) {
-  var keyCodeMap = keyCodeToReadableKeyMap;
+  const keyCodeMap = keyCodeToReadableKeyMap;
   if (keyCode in keyCodeMap) {
     return keyCodeMap[keyCode];
   }

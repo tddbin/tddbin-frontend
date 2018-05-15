@@ -5,8 +5,8 @@ export default class KeyboardShortcutOverlay extends React.Component {
 
   render() {
     const {shortcuts, metaKeySymbol} = this.props;
-    var isVisible = shortcuts.length > 0;
-    var styleProps = {display: isVisible ? 'block' : 'none'};
+    const isVisible = shortcuts.length > 0;
+    const styleProps = {display: isVisible ? 'block' : 'none'};
     return (
       <div className="keyboard-shortcut-overlay" style={styleProps}>
         {shortcuts.map((shortcut, idx) => <KeyboardShortcut shortcut={shortcut} key={idx}/>)}

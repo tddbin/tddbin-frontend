@@ -6,7 +6,6 @@ import {KeyPressEmulation} from './util';
 describe('IE specifics', function() {
   it('ignore multiple consecutive keydown-events for Control, Alt, etc.', function() {
     const keyPressEmulation = new KeyPressEmulation();
-
     const callback = this.sinon.spy();
 
     const processor = new ShortcutProcessor();

@@ -70,7 +70,7 @@ const runSpecs = (state) => {
     try {
       eval(es5Code); // eslint-disable-line no-eval
     } catch (e) {
-      const errorMessage = 'Runtime error\n\n' + e + '\n\n' + RuntimeError.prettyPrint(e.stack, es5Code);
+      const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, es5Code)}`;
       document.getElementById('errorOutput').innerHTML = errorMessage;
     }
   }
@@ -79,7 +79,7 @@ const runSpecs = (state) => {
 const runMochaAndReportStats = (mocha, sender) => {
   // Let mocha run and report the stats back to the actual sender.
   mocha.checkLeaks();
-  const runner = mocha.run(function() {}); // if there is no callback given mocha will fail and not work again :(
+  const runner = mocha.run(() => {}); // if there is no callback given mocha will fail and not work again :(
   function onRan() {
     const stats = runner.stats;
     sender.postMessage(stats, '*');
