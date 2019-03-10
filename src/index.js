@@ -25,7 +25,7 @@ const withSourceCode = (sourceCode) => {
   setTimeout(onSave, 1000);
 };
 
-const kataName = 'es5/mocha+assert/assert-api';
+const kataName = 'libraries/mocha+assert/assert-api';
 export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
 var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
