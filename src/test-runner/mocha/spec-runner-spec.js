@@ -47,12 +47,14 @@ describe('Running a spec', () => {
     assert.notCalled(fillErrorPaneWith);
     assert.equal(globalObject.x, 42);
   });
-  it('fills the error pane, when the source can not be executed', () => {
-    const fillErrorPaneWith = sinon.spy();
-    const invalidCode = 'invalid code';
-    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => invalidCode, fillErrorPaneWith};
-    runSpecs({sourceCode: ''}, deps);
-    assert.called(fillErrorPaneWith);
-    assert(fillErrorPaneWith.firstCall.args[0].includes(invalidCode));
+  describe('WHEN the source can not be executed', () => {
+    it('fills the error pane', () => {
+      const fillErrorPaneWith = sinon.spy();
+      const invalidCode = 'invalid code';
+      const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => invalidCode, fillErrorPaneWith};
+      runSpecs({sourceCode: ''}, deps);
+      assert.called(fillErrorPaneWith);
+      assert(fillErrorPaneWith.firstCall.args[0].includes(invalidCode));
+    });
   });
 });
