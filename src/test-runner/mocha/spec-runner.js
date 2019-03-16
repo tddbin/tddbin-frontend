@@ -65,7 +65,8 @@ const emptyErrorPane = () => {
   document.getElementById('errorOutput').innerHTML = '';
 };
 
-const runSpecs = (state, deps = {emptyErrorPane: emptyErrorPane}) => {
+const runSpecDefaultDeps = {emptyErrorPane: emptyErrorPane};
+const runSpecs = (state, deps = runSpecDefaultDeps) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   deps.emptyErrorPane();
