@@ -27,18 +27,18 @@ describe('Transpile', () => {
 });
 
 describe('Running a spec', () => {
-  const runSpecWithCode = (code) => {
-    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => code, fillErrorPaneWith: () => {}};
-    runSpecs({sourceCode: code}, deps)
+  const noop = () => () => {};
+  const buildDeps = ({emptyErrorPane = noop(), es6ToEs5Code = noop(), fillErrorPaneWith = noop()} = {}) => {
+    return {emptyErrorPane, es6ToEs5Code, fillErrorPaneWith};
   };
   it('an empty files runs through silently', () => {
     const emptyFile = '';
-    assert.doesNotThrow(() => runSpecWithCode(emptyFile));
+    assert.doesNotThrow(() => runSpecs({sourceCode: emptyFile}, buildDeps({es6ToEs5Code: () => emptyFile})));
   });
   it('the error pane is emptied', () => {
     const emptyErrorPane = sinon.spy();
-    const deps = {emptyErrorPane, es6ToEs5Code: () => {}, fillErrorPaneWith: () => {}};
-    runSpecs({sourceCode: ''}, deps);
+    const deps = {emptyErrorPane};
+    runSpecs({sourceCode: ''}, buildDeps(deps));
     assert.called(emptyErrorPane);
   });
   it('executes the passed source', () => {
@@ -46,7 +46,7 @@ describe('Running a spec', () => {
     const globalObject = (new Function("return this"))();
     const sourceCode = '((new Function("return this"))()).x = 42;';
     const fillErrorPaneWith = sinon.spy();
-    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => sourceCode, fillErrorPaneWith};
+    const deps = buildDeps({es6ToEs5Code: () => sourceCode, fillErrorPaneWith});
     runSpecs({sourceCode: ''}, deps);
     assert.notCalled(fillErrorPaneWith);
     assert.equal(globalObject.x, 42);
@@ -55,14 +55,14 @@ describe('Running a spec', () => {
     it('fills the error pane', () => {
       const fillErrorPaneWith = sinon.spy();
       const invalidCode = 'invalid code';
-      const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => invalidCode, fillErrorPaneWith};
+      const deps = buildDeps({es6ToEs5Code: () => invalidCode, fillErrorPaneWith});
       runSpecs({sourceCode: ''}, deps);
       assert.called(fillErrorPaneWith);
     });
     it('fills the error pane AND the message includes the invalid code', () => {
       const fillErrorPaneWith = sinon.spy();
       const invalidCode = 'invalid code';
-      const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => invalidCode, fillErrorPaneWith};
+      const deps = buildDeps({es6ToEs5Code: () => invalidCode, fillErrorPaneWith});
       runSpecs({sourceCode: ''}, deps);
       assert(fillErrorPaneWith.firstCall.args[0].includes(invalidCode));
     });
