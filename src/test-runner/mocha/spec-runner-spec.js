@@ -1,5 +1,5 @@
 import assert from '../../_test-helper/assert';
-import {es6ToEs5Code} from './spec-runner';
+import {es6ToEs5CodeForTestingOnly as es6ToEs5Code} from './spec-runner';
 
 describe('Spec runner', () => {
   describe('WHEN transpileToEs5=true', () => {

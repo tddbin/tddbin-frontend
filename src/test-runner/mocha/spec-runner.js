@@ -87,6 +87,6 @@ const runMochaAndReportStats = (mocha, sender) => {
   runner.on('end', onRan);
 };
 
-module.exports = {es6ToEs5Code};
+module.exports = {es6ToEs5CodeForTestingOnly: es6ToEs5Code};
 
 if (global().addEventListener) global().addEventListener('message', consumeMessage, false);
