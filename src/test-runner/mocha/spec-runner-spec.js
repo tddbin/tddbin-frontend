@@ -67,4 +67,10 @@ describe('Running a spec', () => {
       assert(fillErrorPaneWith.firstCall.args[0].includes(invalidCode));
     });
   });
+  it('if `transpileToEs5=false`, dont call `es6ToEs5Code()`', () => {
+    const es6ToEs5Code = sinon.spy();
+    const deps = buildDeps({es6ToEs5Code});
+    runSpecs({sourceCode: '', transpileToEs5: false}, deps);
+    assert.notCalled(es6ToEs5Code);
+  });
 });

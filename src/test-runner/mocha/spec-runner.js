@@ -77,7 +77,7 @@ const runSpecs = (state, deps = runSpecDefaultDeps) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   deps.emptyErrorPane();
-  const codeToRun = deps.es6ToEs5Code(state);
+  const codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.es6ToEs5Code(state);
   if (codeToRun) {
     try {
       eval(codeToRun); // eslint-disable-line no-eval
