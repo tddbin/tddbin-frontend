@@ -61,11 +61,14 @@ const consumeMessage = (messageData) => {
   runMochaAndReportStats(mocha, sender);
 };
 
-const runSpecs = (state, deps) => {
+const emptyErrorPane = () => {
+  document.getElementById('errorOutput').innerHTML = '';
+};
+
+const runSpecs = (state, deps = {emptyErrorPane: emptyErrorPane}) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
-  const doc = deps.document || document;
-  doc.getElementById('errorOutput').innerHTML = '';
+  deps.emptyErrorPane();
   const es5Code = es6ToEs5Code(state);
   if (es5Code) {
     try {
