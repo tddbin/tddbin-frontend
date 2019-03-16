@@ -27,7 +27,7 @@ describe('Transpile', () => {
 
 describe('Running a spec', () => {
   it('an empty spec runs through silently', () => {
-    const deps = {emptyErrorPane: () => {}};
+    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => {}};
     assert.doesNotThrow(() => runSpecs({sourceCode: ''}, deps));
   });
 });

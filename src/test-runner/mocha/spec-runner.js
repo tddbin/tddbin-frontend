@@ -65,12 +65,15 @@ const emptyErrorPane = () => {
   document.getElementById('errorOutput').innerHTML = '';
 };
 
-const runSpecDefaultDeps = {emptyErrorPane: emptyErrorPane};
+const runSpecDefaultDeps = {
+  emptyErrorPane: emptyErrorPane,
+  es6ToEs5Code: es6ToEs5Code,
+};
 const runSpecs = (state, deps = runSpecDefaultDeps) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   deps.emptyErrorPane();
-  const es5Code = es6ToEs5Code(state);
+  const es5Code = deps.es6ToEs5Code(state);
   if (es5Code) {
     try {
       eval(es5Code); // eslint-disable-line no-eval
