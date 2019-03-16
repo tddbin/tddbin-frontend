@@ -1,4 +1,5 @@
 import assert from '../../_test-helper/assert';
+import sinon from 'sinon';
 import {
   es6ToEs5CodeForTestingOnly as es6ToEs5Code,
   runSpecsForTestingOnly as runSpecs
@@ -29,6 +30,12 @@ describe('Running a spec', () => {
   it('an empty files runs through silently', () => {
     const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => {}, fillErrorPaneWith: () => {}};
     assert.doesNotThrow(() => runSpecs({sourceCode: ''}, deps));
+  });
+  it('the error pane is emptied', () => {
+    const emptyErrorPane = sinon.spy();
+    const deps = {emptyErrorPane, es6ToEs5Code: () => {}, fillErrorPaneWith: () => {}};
+    runSpecs({}, deps);
+    assert.called(emptyErrorPane);
   });
   it('executes the passed source', () => {
     // Make the eval'ed code assign `x=42` to the global object.
