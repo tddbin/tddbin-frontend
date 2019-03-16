@@ -1,9 +1,8 @@
 import assert from '../../_test-helper/assert';
 import sinon from 'sinon';
-import {
-  transpileToEs5CodeForTestingOnly as transpileToEs5Code,
-  runSpecsForTestingOnly as runSpecs
-} from './spec-runner';
+import {forTesting} from './spec-runner';
+
+const {transpileToEs5Code, runSpecs} = forTesting;
 
 describe('Transpile', () => {
   it('transpiles code (the `import` statement)', () => {

@@ -93,8 +93,7 @@ const runMochaAndReportStats = (mocha, sender) => {
 };
 
 module.exports = {
-  transpileToEs5CodeForTestingOnly: transpileToEs5Code,
-  runSpecsForTestingOnly: runSpecs,
+  forTesting: {transpileToEs5Code, runSpecs},
 };
 
 if (global().addEventListener) global().addEventListener('message', consumeMessage, false);
