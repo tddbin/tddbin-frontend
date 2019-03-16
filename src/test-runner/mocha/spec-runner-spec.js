@@ -54,6 +54,12 @@ describe('Running a spec', () => {
       const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => invalidCode, fillErrorPaneWith};
       runSpecs({sourceCode: ''}, deps);
       assert.called(fillErrorPaneWith);
+    });
+    it('fills the error pane AND the message includes the invalid code', () => {
+      const fillErrorPaneWith = sinon.spy();
+      const invalidCode = 'invalid code';
+      const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => invalidCode, fillErrorPaneWith};
+      runSpecs({sourceCode: ''}, deps);
       assert(fillErrorPaneWith.firstCall.args[0].includes(invalidCode));
     });
   });
