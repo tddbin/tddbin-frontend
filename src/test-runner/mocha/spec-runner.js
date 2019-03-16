@@ -13,16 +13,9 @@ import RuntimeError from '../runtime-error';
 
 const global = () => new Function('return this;')();
 
-const babelOptions = (transpileToEs5) => {
-  if (transpileToEs5) {
-    return {presets: [babelPresetEnv], babelrc: false};
-  }
-  return {};
-};
-
-const es6ToEs5Code = (state) => {
+const es6ToEs5Code = (sourceCode) => {
   try {
-    return transform(state.sourceCode, babelOptions(state.transpileToEs5)).code;
+    return transform(sourceCode, {presets: [babelPresetEnv], babelrc: false}).code;
   } catch (e) {
     const hint = `Syntax or ES6 (babeljs) transpile error
 (This transpile error doesn't mean that the web app is broken :))
