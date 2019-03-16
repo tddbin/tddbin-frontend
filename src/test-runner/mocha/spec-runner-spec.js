@@ -1,7 +1,10 @@
 import assert from '../../_test-helper/assert';
-import {es6ToEs5CodeForTestingOnly as es6ToEs5Code} from './spec-runner';
+import {
+  es6ToEs5CodeForTestingOnly as es6ToEs5Code,
+  runSpecsForTestingOnly as runSpecs
+} from './spec-runner';
 
-describe('Spec runner', () => {
+describe('Transpile', () => {
   describe('WHEN transpileToEs5=true', () => {
     const transpileToEs5 = (sourceCode) =>
       es6ToEs5Code({sourceCode, transpileToEs5: true});
@@ -19,5 +22,11 @@ describe('Spec runner', () => {
       const es5Code = noopTranspile(es6Code);
       assert.equal(es5Code, es6Code);
     });
+  });
+});
+
+describe('Running a spec', () => {
+  it('???', () => {
+    // runSpecs
   });
 });
