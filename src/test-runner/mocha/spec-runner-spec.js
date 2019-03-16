@@ -27,9 +27,13 @@ describe('Transpile', () => {
 });
 
 describe('Running a spec', () => {
+  const runSpecWithCode = (code) => {
+    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => code, fillErrorPaneWith: () => {}};
+    runSpecs({sourceCode: code}, deps)
+  };
   it('an empty files runs through silently', () => {
-    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => {}, fillErrorPaneWith: () => {}};
-    assert.doesNotThrow(() => runSpecs({sourceCode: ''}, deps));
+    const emptyFile = '';
+    assert.doesNotThrow(() => runSpecWithCode(emptyFile));
   });
   it('the error pane is emptied', () => {
     const emptyErrorPane = sinon.spy();
