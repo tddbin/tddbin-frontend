@@ -13,16 +13,9 @@ import RuntimeError from '../runtime-error';
 
 const global = () => new Function('return this;')();
 
-const babelOptions = (transpileToEs5) => {
-  if (transpileToEs5) {
-    return {presets: [babelPresetEnv], babelrc: false};
-  }
-  return {};
-};
-
-const es6ToEs5Code = (state) => {
+const transpileToEs5Code = (sourceCode) => {
   try {
-    return transform(state.sourceCode, babelOptions(state.transpileToEs5)).code;
+    return transform(sourceCode, {presets: [babelPresetEnv], babelrc: false}).code;
   } catch (e) {
     const hint = `Syntax or ES6 (babeljs) transpile error
 (This transpile error doesn't mean that the web app is broken :))
@@ -61,17 +54,29 @@ const consumeMessage = (messageData) => {
   runMochaAndReportStats(mocha, sender);
 };
 
-const runSpecs = (state) => {
+const emptyErrorPane = () => {
+  document.getElementById('errorOutput').innerHTML = '';
+};
+const fillErrorPaneWith = (text) => {
+  document.getElementById('errorOutput').innerHTML = text;
+};
+
+const runSpecDefaultDeps = {
+  emptyErrorPane,
+  transpileToEs5Code,
+  fillErrorPaneWith,
+};
+const runSpecs = (state, deps = runSpecDefaultDeps) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
-  document.getElementById('errorOutput').innerHTML = '';
-  const es5Code = es6ToEs5Code(state);
-  if (es5Code) {
+  deps.emptyErrorPane();
+  const codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.transpileToEs5Code(state);
+  if (codeToRun) {
     try {
-      eval(es5Code); // eslint-disable-line no-eval
+      eval(codeToRun); // eslint-disable-line no-eval
     } catch (e) {
-      const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, es5Code)}`;
-      document.getElementById('errorOutput').innerHTML = errorMessage;
+      const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, codeToRun)}`;
+      deps.fillErrorPaneWith(errorMessage);
     }
   }
 };
@@ -87,6 +92,8 @@ const runMochaAndReportStats = (mocha, sender) => {
   runner.on('end', onRan);
 };
 
-module.exports = {es6ToEs5Code};
+module.exports = {
+  forTesting: {transpileToEs5Code, runSpecs},
+};
 
 if (global().addEventListener) global().addEventListener('message', consumeMessage, false);
