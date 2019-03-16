@@ -64,10 +64,14 @@ const consumeMessage = (messageData) => {
 const emptyErrorPane = () => {
   document.getElementById('errorOutput').innerHTML = '';
 };
+const fillErrorPaneWith = (text) => {
+  document.getElementById('errorOutput').innerHTML = text;
+};
 
 const runSpecDefaultDeps = {
-  emptyErrorPane: emptyErrorPane,
-  es6ToEs5Code: es6ToEs5Code,
+  emptyErrorPane,
+  es6ToEs5Code,
+  fillErrorPaneWith,
 };
 const runSpecs = (state, deps = runSpecDefaultDeps) => {
   // This calls describe, it, etc. and "fills"
@@ -79,7 +83,7 @@ const runSpecs = (state, deps = runSpecDefaultDeps) => {
       eval(es5Code); // eslint-disable-line no-eval
     } catch (e) {
       const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, es5Code)}`;
-      doc.getElementById('errorOutput').innerHTML = errorMessage;
+      deps.fillErrorPaneWith(errorMessage);
     }
   }
 };

@@ -26,8 +26,18 @@ describe('Transpile', () => {
 });
 
 describe('Running a spec', () => {
-  it('an empty spec runs through silently', () => {
-    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => {}};
+  it('an empty files runs through silently', () => {
+    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => {}, fillErrorPaneWith: () => {}};
     assert.doesNotThrow(() => runSpecs({sourceCode: ''}, deps));
+  });
+  it('executes the passed source', () => {
+    // Make the eval'ed code assign `x=42` to the global object.
+    const globalObject = (new Function("return this"))();
+    const sourceCode = '((new Function("return this"))()).x = 42;';
+    let fillErrorPaneWithWasCalled = false;
+    const deps = {emptyErrorPane: () => {}, es6ToEs5Code: () => sourceCode, fillErrorPaneWith: (...args) => { fillErrorPaneWithWasCalled = args; }};
+    runSpecs({sourceCode: ''}, deps);
+    assert.equal(fillErrorPaneWithWasCalled, false, '`fillErrorPaneWith()` should not have been called, but was called with: ' + fillErrorPaneWithWasCalled);
+    assert.equal(globalObject.x, 42);
   });
 });
