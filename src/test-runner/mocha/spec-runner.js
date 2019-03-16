@@ -13,7 +13,7 @@ import RuntimeError from '../runtime-error';
 
 const global = () => new Function('return this;')();
 
-const es6ToEs5Code = (sourceCode) => {
+const transpileToEs5Code = (sourceCode) => {
   try {
     return transform(sourceCode, {presets: [babelPresetEnv], babelrc: false}).code;
   } catch (e) {
@@ -63,14 +63,14 @@ const fillErrorPaneWith = (text) => {
 
 const runSpecDefaultDeps = {
   emptyErrorPane,
-  es6ToEs5Code,
+  transpileToEs5Code,
   fillErrorPaneWith,
 };
 const runSpecs = (state, deps = runSpecDefaultDeps) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   deps.emptyErrorPane();
-  const codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.es6ToEs5Code(state);
+  const codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.transpileToEs5Code(state);
   if (codeToRun) {
     try {
       eval(codeToRun); // eslint-disable-line no-eval
@@ -93,7 +93,7 @@ const runMochaAndReportStats = (mocha, sender) => {
 };
 
 module.exports = {
-  es6ToEs5CodeForTestingOnly: es6ToEs5Code,
+  transpileToEs5CodeForTestingOnly: transpileToEs5Code,
   runSpecsForTestingOnly: runSpecs,
 };
 
