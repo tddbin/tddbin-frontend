@@ -38,7 +38,7 @@ describe('Running a spec', () => {
   it('the error pane is emptied', () => {
     const emptyErrorPane = sinon.spy();
     const deps = {emptyErrorPane, es6ToEs5Code: () => {}, fillErrorPaneWith: () => {}};
-    runSpecs({}, deps);
+    runSpecs({sourceCode: ''}, deps);
     assert.called(emptyErrorPane);
   });
   it('executes the passed source', () => {
