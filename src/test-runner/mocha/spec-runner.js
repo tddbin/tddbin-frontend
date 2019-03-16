@@ -77,12 +77,12 @@ const runSpecs = (state, deps = runSpecDefaultDeps) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
   deps.emptyErrorPane();
-  const es5Code = deps.es6ToEs5Code(state);
-  if (es5Code) {
+  const codeToRun = deps.es6ToEs5Code(state);
+  if (codeToRun) {
     try {
-      eval(es5Code); // eslint-disable-line no-eval
+      eval(codeToRun); // eslint-disable-line no-eval
     } catch (e) {
-      const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, es5Code)}`;
+      const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, codeToRun)}`;
       deps.fillErrorPaneWith(errorMessage);
     }
   }
