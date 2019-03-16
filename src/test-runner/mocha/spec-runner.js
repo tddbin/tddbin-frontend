@@ -61,17 +61,18 @@ const consumeMessage = (messageData) => {
   runMochaAndReportStats(mocha, sender);
 };
 
-const runSpecs = (state) => {
+const runSpecs = (state, deps) => {
   // This calls describe, it, etc. and "fills"
   // the test runner suites which are executed later in `mocha.run()`.
-  document.getElementById('errorOutput').innerHTML = '';
+  const doc = deps.document || document;
+  doc.getElementById('errorOutput').innerHTML = '';
   const es5Code = es6ToEs5Code(state);
   if (es5Code) {
     try {
       eval(es5Code); // eslint-disable-line no-eval
     } catch (e) {
       const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, es5Code)}`;
-      document.getElementById('errorOutput').innerHTML = errorMessage;
+      doc.getElementById('errorOutput').innerHTML = errorMessage;
     }
   }
 };

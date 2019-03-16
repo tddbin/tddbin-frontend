@@ -26,7 +26,9 @@ describe('Transpile', () => {
 });
 
 describe('Running a spec', () => {
-  it('???', () => {
-    // runSpecs
+  it('an empty spec runs through silently', () => {
+    const document = {getElementById: () => ({innerHTML: ''})};
+    const deps = {document};
+    assert.doesNotThrow(() => runSpecs({sourceCode: ''}, deps));
   });
 });
