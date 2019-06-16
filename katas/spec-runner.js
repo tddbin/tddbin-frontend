@@ -14526,42 +14526,29 @@ function coerce(val) {
 
 },{"ms":431}],38:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      "@babel/core@7.0.0-beta.44",
-      "/home/travis/build/tddbin/tddbin-frontend"
-    ]
+  "name": "@babel/core",
+  "version": "7.0.0-beta.44",
+  "description": "Babel compiler core.",
+  "main": "./lib/index.js",
+  "author": "Sebastian McKenzie <sebmck@gmail.com>",
+  "homepage": "https://babeljs.io/",
+  "license": "MIT",
+  "repository": "https://github.com/babel/babel/tree/master/packages/babel-core",
+  "keywords": [
+    "6to5",
+    "babel",
+    "classes",
+    "const",
+    "es6",
+    "harmony",
+    "let",
+    "modules",
+    "transpile",
+    "transpiler",
+    "var",
+    "babel-core",
+    "compiler"
   ],
-  "_development": true,
-  "_from": "@babel/core@7.0.0-beta.44",
-  "_id": "@babel/core@7.0.0-beta.44",
-  "_inBundle": false,
-  "_integrity": "sha512-E16ps55Av+GAO6qVTZeVR5FMVppraUPjiJEHuH0sANsbmkEjqQ70XQiv0KXPYbPzHBd+gijx6uLakSacjvtwIA==",
-  "_location": "/@babel/core",
-  "_phantomChildren": {
-    "ms": "2.0.0"
-  },
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "@babel/core@7.0.0-beta.44",
-    "name": "@babel/core",
-    "escapedName": "@babel%2fcore",
-    "scope": "@babel",
-    "rawSpec": "7.0.0-beta.44",
-    "saveSpec": null,
-    "fetchSpec": "7.0.0-beta.44"
-  },
-  "_requiredBy": [
-    "#DEV:/"
-  ],
-  "_resolved": "https://registry.npmjs.org/@babel/core/-/core-7.0.0-beta.44.tgz",
-  "_spec": "7.0.0-beta.44",
-  "_where": "/home/travis/build/tddbin/tddbin-frontend",
-  "author": {
-    "name": "Sebastian McKenzie",
-    "email": "sebmck@gmail.com"
-  },
   "browser": {
     "./lib/config/files/index.js": "./lib/config/files/index-browser.js",
     "./lib/transform-file.js": "./lib/transform-file-browser.js",
@@ -14584,37 +14571,15 @@ module.exports={
     "semver": "^5.4.1",
     "source-map": "^0.5.0"
   },
-  "description": "Babel compiler core.",
   "devDependencies": {
     "@babel/helper-transform-fixture-test-runner": "7.0.0-beta.44",
     "@babel/register": "7.0.0-beta.44"
-  },
-  "homepage": "https://babeljs.io/",
-  "keywords": [
-    "6to5",
-    "babel",
-    "classes",
-    "const",
-    "es6",
-    "harmony",
-    "let",
-    "modules",
-    "transpile",
-    "transpiler",
-    "var",
-    "babel-core",
-    "compiler"
-  ],
-  "license": "MIT",
-  "main": "./lib/index.js",
-  "name": "@babel/core",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/babel/babel/tree/master/packages/babel-core"
-  },
-  "version": "7.0.0-beta.44"
-}
+  }
 
+,"_resolved": "https://registry.npmjs.org/@babel/core/-/core-7.0.0-beta.44.tgz"
+,"_integrity": "sha512-E16ps55Av+GAO6qVTZeVR5FMVppraUPjiJEHuH0sANsbmkEjqQ70XQiv0KXPYbPzHBd+gijx6uLakSacjvtwIA=="
+,"_from": "@babel/core@7.0.0-beta.44"
+}
 },{}],39:[function(require,module,exports){
 "use strict";
 

@@ -14526,42 +14526,29 @@ function coerce(val) {
 
 },{"ms":608}],38:[function(require,module,exports){
 module.exports={
-  "_args": [
-    [
-      "@babel/core@7.0.0-beta.44",
-      "/home/travis/build/tddbin/tddbin-frontend"
-    ]
+  "name": "@babel/core",
+  "version": "7.0.0-beta.44",
+  "description": "Babel compiler core.",
+  "main": "./lib/index.js",
+  "author": "Sebastian McKenzie <sebmck@gmail.com>",
+  "homepage": "https://babeljs.io/",
+  "license": "MIT",
+  "repository": "https://github.com/babel/babel/tree/master/packages/babel-core",
+  "keywords": [
+    "6to5",
+    "babel",
+    "classes",
+    "const",
+    "es6",
+    "harmony",
+    "let",
+    "modules",
+    "transpile",
+    "transpiler",
+    "var",
+    "babel-core",
+    "compiler"
   ],
-  "_development": true,
-  "_from": "@babel/core@7.0.0-beta.44",
-  "_id": "@babel/core@7.0.0-beta.44",
-  "_inBundle": false,
-  "_integrity": "sha512-E16ps55Av+GAO6qVTZeVR5FMVppraUPjiJEHuH0sANsbmkEjqQ70XQiv0KXPYbPzHBd+gijx6uLakSacjvtwIA==",
-  "_location": "/@babel/core",
-  "_phantomChildren": {
-    "ms": "2.0.0"
-  },
-  "_requested": {
-    "type": "version",
-    "registry": true,
-    "raw": "@babel/core@7.0.0-beta.44",
-    "name": "@babel/core",
-    "escapedName": "@babel%2fcore",
-    "scope": "@babel",
-    "rawSpec": "7.0.0-beta.44",
-    "saveSpec": null,
-    "fetchSpec": "7.0.0-beta.44"
-  },
-  "_requiredBy": [
-    "#DEV:/"
-  ],
-  "_resolved": "https://registry.npmjs.org/@babel/core/-/core-7.0.0-beta.44.tgz",
-  "_spec": "7.0.0-beta.44",
-  "_where": "/home/travis/build/tddbin/tddbin-frontend",
-  "author": {
-    "name": "Sebastian McKenzie",
-    "email": "sebmck@gmail.com"
-  },
   "browser": {
     "./lib/config/files/index.js": "./lib/config/files/index-browser.js",
     "./lib/transform-file.js": "./lib/transform-file-browser.js",
@@ -14584,37 +14571,15 @@ module.exports={
     "semver": "^5.4.1",
     "source-map": "^0.5.0"
   },
-  "description": "Babel compiler core.",
   "devDependencies": {
     "@babel/helper-transform-fixture-test-runner": "7.0.0-beta.44",
     "@babel/register": "7.0.0-beta.44"
-  },
-  "homepage": "https://babeljs.io/",
-  "keywords": [
-    "6to5",
-    "babel",
-    "classes",
-    "const",
-    "es6",
-    "harmony",
-    "let",
-    "modules",
-    "transpile",
-    "transpiler",
-    "var",
-    "babel-core",
-    "compiler"
-  ],
-  "license": "MIT",
-  "main": "./lib/index.js",
-  "name": "@babel/core",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/babel/babel/tree/master/packages/babel-core"
-  },
-  "version": "7.0.0-beta.44"
-}
+  }
 
+,"_resolved": "https://registry.npmjs.org/@babel/core/-/core-7.0.0-beta.44.tgz"
+,"_integrity": "sha512-E16ps55Av+GAO6qVTZeVR5FMVppraUPjiJEHuH0sANsbmkEjqQ70XQiv0KXPYbPzHBd+gijx6uLakSacjvtwIA=="
+,"_from": "@babel/core@7.0.0-beta.44"
+}
 },{}],39:[function(require,module,exports){
 "use strict";
 
@@ -105005,20 +104970,12 @@ var global = function global() {
   return new Function('return this;')();
 };
 
-var babelOptions = function babelOptions(transpileToEs5) {
-  if (transpileToEs5) {
-    return {
+var transpileToEs5Code = function transpileToEs5Code(sourceCode) {
+  try {
+    return (0, _core.transform)(sourceCode, {
       presets: [_presetEnv.default],
       babelrc: false
-    };
-  }
-
-  return {};
-};
-
-var es6ToEs5Code = function es6ToEs5Code(state) {
-  try {
-    return (0, _core.transform)(state.sourceCode, babelOptions(state.transpileToEs5)).code;
+    }).code;
   } catch (e) {
     var hint = "Syntax or ES6 (babeljs) transpile error\n(This transpile error doesn't mean that the web app is broken :))\n\n    ";
     document.getElementById('errorOutput').innerHTML = hint + e;
@@ -105062,18 +105019,33 @@ var consumeMessage = function consumeMessage(messageData) {
   runMochaAndReportStats(mocha, sender);
 };
 
-var runSpecs = function runSpecs(state) {
-  // This calls describe, it, etc. and "fills"
-  // the test runner suites which are executed later in `mocha.run()`.
+var emptyErrorPane = function emptyErrorPane() {
   document.getElementById('errorOutput').innerHTML = '';
-  var es5Code = es6ToEs5Code(state);
+};
 
-  if (es5Code) {
+var fillErrorPaneWith = function fillErrorPaneWith(text) {
+  document.getElementById('errorOutput').innerHTML = text;
+};
+
+var runSpecDefaultDeps = {
+  emptyErrorPane: emptyErrorPane,
+  transpileToEs5Code: transpileToEs5Code,
+  fillErrorPaneWith: fillErrorPaneWith
+};
+
+var runSpecs = function runSpecs(state) {
+  var deps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : runSpecDefaultDeps; // This calls describe, it, etc. and "fills"
+  // the test runner suites which are executed later in `mocha.run()`.
+
+  deps.emptyErrorPane();
+  var codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.transpileToEs5Code(state);
+
+  if (codeToRun) {
     try {
-      eval(es5Code); // eslint-disable-line no-eval
+      eval(codeToRun); // eslint-disable-line no-eval
     } catch (e) {
-      var errorMessage = "Runtime error\n\n".concat(e, "\n\n").concat(_runtimeError.default.prettyPrint(e.stack, es5Code));
-      document.getElementById('errorOutput').innerHTML = errorMessage;
+      var errorMessage = "Runtime error\n\n".concat(e, "\n\n").concat(_runtimeError.default.prettyPrint(e.stack, codeToRun));
+      deps.fillErrorPaneWith(errorMessage);
     }
   }
 };
@@ -105092,7 +105064,10 @@ var runMochaAndReportStats = function runMochaAndReportStats(mocha, sender) {
 };
 
 module.exports = {
-  es6ToEs5Code: es6ToEs5Code
+  forTesting: {
+    transpileToEs5Code: transpileToEs5Code,
+    runSpecs: runSpecs
+  }
 };
 if (global().addEventListener) global().addEventListener('message', consumeMessage, false);
 
