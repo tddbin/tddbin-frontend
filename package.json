@@ -8,6 +8,7 @@
     "babel-polyfill": "./src/shim/babel-polyfill.js"
   },
   "scripts": {
+    "prebuild": "npm test",
     "build": "./scripts/build/build.sh",
     "build:for-offline": "./scripts/build/build.sh && ./scripts/build/build-offline-dev.sh",
     "build:app": "browserify src/index.js --outfile=dist/index.js --transform=babelify --transform=envify",
@@ -77,6 +78,7 @@
     "referee": "^1.1.1",
     "should": "^13.2.1",
     "sinon": "^4.5.0",
+    "to-do-list-checker": "^4.0.0",
     "uglifyjs": "^2.4.10",
     "watch": "^1.0.1"
   },

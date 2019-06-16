@@ -1,20 +1,20 @@
 language: node_js
 node_js:
-  - 9
+  - "11"
 
-after_success:
-  - chmod +x ./scripts/*.sh
-  - npm run build
+before_deploy:
+- npm run build
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  branch: master
-  script: ./scripts/deploy-to-ghpages.sh
+  provider: pages
+  skip-cleanup: true
+  local-dir: dist
+  name: Auto Deploy through Travis
+  target-branch: gh-pages
+  github-token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  keep-history: true
+  on:
+    branch: master
 
 env:
- global:
- - KATAS_SERVICE_DOMAIN: katas.tddbin.com
- - GA_TRACKING_ID: UA-47768219-1
- - GA_TRACKING_DOMAIN: tddbin.com
- - GH_REF: github.com/tddbin/tddbin-frontend.git
+- KATAS_SERVICE_DOMAIN=katas.tddbin.com

@@ -8,7 +8,7 @@ describe('Transpile', () => {
   it('transpiles code (the `import` statement)', () => {
     const es6Code = 'import assert from "assert"';
     const es5Code = transpileToEs5Code(es6Code);
-    assert(es5Code.includes('require("assert")'), `Expected transpiled code to contain "require(assert)", was NOT found.`);
+    assert(es5Code.includes('require("assert")'), 'Expected transpiled code to contain "require(assert)", was NOT found.');
   });
 });
 
@@ -29,7 +29,7 @@ describe('Running a spec', () => {
   });
   it('executes the passed source', () => {
     // Make the eval'ed code assign `x=42` to the global object.
-    const globalObject = (new Function("return this"))();
+    const globalObject = (new Function('return this'))();
     const sourceCode = '((new Function("return this"))()).x = 42;';
     const fillErrorPaneWith = sinon.spy();
     const deps = buildDeps({transpileToEs5Code: () => sourceCode, fillErrorPaneWith});
