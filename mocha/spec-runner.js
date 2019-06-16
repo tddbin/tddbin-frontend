@@ -105038,7 +105038,7 @@ var runSpecs = function runSpecs(state) {
   // the test runner suites which are executed later in `mocha.run()`.
 
   deps.emptyErrorPane();
-  var codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.transpileToEs5Code(state);
+  var codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.transpileToEs5Code(state.sourceCode);
 
   if (codeToRun) {
     try {
