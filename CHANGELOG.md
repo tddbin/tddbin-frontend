@@ -5,7 +5,8 @@
 
 - [x] upgrade to node 11
 - [x] add analytics using plausible.io
-
+- [x] simplify deploy using travis' builtin gh-pages deploy
+ 
 # Before 2019 :)
 
 - [code] improve structure (poorly) basically around index.js
