@@ -1,7 +1,13 @@
+# Ideas
+- [ ] ...
+
 # version 2
 
 - [x] upgrade to node 11
 - [x] add analytics using plausible.io
+
+# Before 2019 :)
+
 - [code] improve structure (poorly) basically around index.js
 - [ui] upgrade ACE to show less warnings for ES6 features
 - [ui] apply the new design (partly)
