@@ -21,7 +21,7 @@ export default class KataUrl {
 
   toString() {
     if (this.kataName) {
-      return `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${this.kataName}.js`;
+      return `https://${process.env.KATAS_SERVICE_DOMAIN}/katas/${this.kataName}.js`;
     }
     return '';
   }
