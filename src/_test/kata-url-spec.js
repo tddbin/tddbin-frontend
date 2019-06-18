@@ -8,7 +8,7 @@ describe('KataUrl', () => {
 
   it('create it out of the query string', () => {
     const kataUrlParam = 'kata=my/kata';
-    const expectedUrl = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
+    const expectedUrl = `https://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
     assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
   });
 
