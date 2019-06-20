@@ -73,7 +73,7 @@
     "should": "^13.2.1",
     "sinon": "^7.3.2",
     "to-do-list-checker": "^4.0.0",
-    "uglifyjs": "^2.4.10",
+    "uglify-js": "^3.6.0",
     "watch": "^1.0.1"
   },
   "dependencies": {
