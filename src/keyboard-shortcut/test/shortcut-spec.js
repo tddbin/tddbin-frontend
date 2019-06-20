@@ -93,7 +93,7 @@ describe('printable keys', function() {
     const shortcut = createShortcut(keys, someFunction, someString);
     const spy = this.sinon.stub().returns([]);
     shortcut.printableKeysFormatter = spy;
-    const _ = shortcut.printableKeys; // eslint-disable-line no-unused-vars
+    const _ = shortcut.printableKeys;
     assert.calledWith(spy, keys);
   });
 

@@ -1,9 +1,7 @@
 /* global Mocha */
-/* eslint-disable no-unused-vars */
 //import expect from 'referee/lib/expect';
 //import should from 'should';
 import assert from 'assert';
-/* eslint-enable no-unused-vars */
 import {transform} from '@babel/core'; // the es6 transpiler
 import 'babel-polyfill';
 import RuntimeError from '../runtime-error';
@@ -39,7 +37,7 @@ function runSpecs(specCode) {
   const es5Code = es6ToEs5Code(specCode);
   if (es5Code) {
     try {
-      eval(es5Code); // eslint-disable-line no-eval
+      eval(es5Code);
     } catch (e) {
       const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, es5Code)}`;
       document.getElementById('errorOutput').innerText = errorMessage;

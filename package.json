@@ -19,7 +19,7 @@
     "start": "npm run build && npm run start:server && npm run start:watch",
     "start:watch": "concurrently 'npm run _watch:app' 'npm run _watch:css' 'npm run _watch:spec-runners'",
     "start:server": "http-server dist -a ${TDDBIN_FRONTEND_DOMAIN:-$(ip)} -p ${TDDBIN_FRONTEND_PORT:-$(get-port)}",
-    "test": "npm run _lint && npm run _test:fast",
+    "test": "npm run _test:fast",
     "precoverage": "rm -Rf coverage",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --compilers js:babel-register src/**/**/*spec.js",
     "_test:fast": "mocha --require @babel/register src/**/**/*spec.js src/**/*spec.js",
@@ -32,8 +32,7 @@
     "_watch:mocha-spec-runners": "watch 'npm run _build:mocha-spec-runners' src/test-runner/mocha/",
     "_build:katas-spec-runners": "browserify src/test-runner/katas/spec-runner.js --outfile=dist/katas/spec-runner.js --transform=babelify",
     "_watch:katas-spec-runners": "watch 'npm run _build:katas-spec-runners' src/test-runner/katas/",
-    "_watch:spec-runners": "npm run _watch:mocha-spec-runners && npm run _watch:jasmine-spec-runners && npm run _watch:katas-spec-runners",
-    "_lint": "eslint src"
+    "_watch:spec-runners": "npm run _watch:mocha-spec-runners && npm run _watch:jasmine-spec-runners && npm run _watch:katas-spec-runners"
   },
   "browserify": {
     "extension": [],
@@ -51,7 +50,7 @@
   "bugs": {
     "url": "https://github.com/uxebu/tddbin-frontend/issues"
   },
-  "author": "uxebu",
+  "author": "Wolfram Kriesing",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.44",
@@ -63,8 +62,6 @@
     "browserify": "^16.1.1",
     "concurrently": "^4.1.0",
     "envify": "^4.1.0",
-    "eslint": "^3.10.0",
-    "eslint-plugin-react": "^7.0.1",
     "esprima-fb": "^15001.1.0-dev-harmony-fb",
     "get-port-cli": "^1.0.0",
     "hamjest": "^3.2.0",
@@ -77,7 +74,7 @@
     "reactify": "^1.1.1",
     "referee": "^1.1.1",
     "should": "^13.2.1",
-    "sinon": "^4.5.0",
+    "sinon": "^7.3.2",
     "to-do-list-checker": "^4.0.0",
     "uglifyjs": "^2.4.10",
     "watch": "^1.0.1"

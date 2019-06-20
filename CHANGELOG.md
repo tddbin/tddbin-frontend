@@ -1,5 +1,5 @@
 # Ideas
-- [ ] ...
+- [ ] maybe add prettier
 
 # version 3
 
@@ -7,7 +7,8 @@
   - [ ] replace all KATAS_SERVICE_DOMAIN with KATAS_SERVICE_URL which contains the protocol too
   - [ ] configure it properly for production
   - [ ] make it work so in dev i can work with a local URL (on HTTP, to make dev simpler)
-  - [x] use concurrently, to not have errors that parallelshell throws
+  - [x] housekeeping: use concurrently, to not have errors that parallelshell throws
+  - [x] housekeeping: remove eslint, just adds noise in the code
   
 
 # version 2
