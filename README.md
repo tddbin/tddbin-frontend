@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/tddbin/tddbin-frontend.svg)](https://travis-ci.org/tddbin/tddbin-frontend)
-[![bitHound Score](https://www.bithound.io/tddbin/tddbin-frontend/badges/score.svg)](https://www.bithound.io/tddbin/tddbin-frontend)
 [![Dependency Status](https://david-dm.org/tddbin/tddbin-frontend.svg)](https://david-dm.org/tddbin/tddbin-frontend)
 [![devDependency Status](https://david-dm.org/tddbin/tddbin-frontend/dev-status.svg)](https://david-dm.org/tddbin/tddbin-frontend#info=devDependencies)
 [![Codacy Badge](https://www.codacy.com/project/badge/52205d40abd9463b9f5dca236b12b997)](https://www.codacy.com/public/wk_2448/tddbin-frontend)
