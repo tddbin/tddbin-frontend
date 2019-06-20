@@ -16,7 +16,7 @@
     "build:ace": "mkdir -p dist/vendor/ace; cp -r vendor/ace/* dist/vendor/ace",
     "build:spec-runners": "npm run _build:mocha-spec-runners && npm run _build:jasmine-spec-runners && npm run _build:katas-spec-runners",
     "postbuild:app": "uglifyjs dist/index.js -m -c > dist/index.min.js && rm dist/index.js",
-    "start": "npm run build && npm run start:server && npm run start:watch",
+    "start": "npm run build && concurrently 'npm run start:server' 'npm run start:watch'",
     "start:watch": "concurrently 'npm run _watch:app' 'npm run _watch:css' 'npm run _watch:spec-runners'",
     "start:server": "http-server dist -a ${TDDBIN_FRONTEND_DOMAIN:-$(ip)} -p ${TDDBIN_FRONTEND_PORT:-$(get-port)}",
     "test": "npm run _test:fast",
