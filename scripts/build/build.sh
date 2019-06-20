@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -z "${KATAS_SERVICE_DOMAIN:+x}" ]; then
-  echo "Can not build. Environment variable 'KATAS_SERVICE_DOMAIN' must be set";
+if [ -z "${KATAS_SERVICE_URL:+x}" ]; then
+  echo "Can not build. Environment variable 'KATAS_SERVICE_URL' must be set";
   exit 1;
 fi;
 
@@ -23,11 +23,11 @@ mkdir -p $DIST_KATAS_DIR;
 
 # copy html assets
 cp $ORIGIN_ROOT/src/_html/index.html $DIST_ROOT;
-# replace place holder KATAS_SERVICE_DOMAIN with env var, so it can be different in dev/prod mode
+# replace place holder KATAS_SERVICE_URL with env var, so it can be different in dev/prod mode
 if [[ $OSTYPE == darwin* ]]; then
-  sed -i'' "s/\${KATAS_SERVICE_DOMAIN}/$KATAS_SERVICE_DOMAIN/g" $DIST_ROOT/index.html
+  sed -i'' "s/\${KATAS_SERVICE_URL}/$KATAS_SERVICE_URL/g" $DIST_ROOT/index.html
 else
-  sed -i "s/\${KATAS_SERVICE_DOMAIN}/$KATAS_SERVICE_DOMAIN/g" $DIST_ROOT/index.html
+  sed -i "s/\${KATAS_SERVICE_URL}/$KATAS_SERVICE_URL/g" $DIST_ROOT/index.html
 fi;
 
 cp $ORIGIN_ROOT/src/_html/favicon.ico $DIST_ROOT;
