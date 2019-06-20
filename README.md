@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/tddbin/tddbin-frontend.svg)](https://travis-ci.org/tddbin/tddbin-frontend)
-[![bitHound Score](https://www.bithound.io/tddbin/tddbin-frontend/badges/score.svg)](https://www.bithound.io/tddbin/tddbin-frontend)
 [![Dependency Status](https://david-dm.org/tddbin/tddbin-frontend.svg)](https://david-dm.org/tddbin/tddbin-frontend)
 [![devDependency Status](https://david-dm.org/tddbin/tddbin-frontend/dev-status.svg)](https://david-dm.org/tddbin/tddbin-frontend#info=devDependencies)
 [![Codacy Badge](https://www.codacy.com/project/badge/52205d40abd9463b9f5dca236b12b997)](https://www.codacy.com/public/wk_2448/tddbin-frontend)
@@ -24,7 +23,7 @@ Now, continue in the next chapter.
 ## The short version
 
 In your shell: 
-- `export KATAS_SERVICE_DOMAIN=katas.service.domain.local`, the domain where to find the katas locally 
+- `export KATAS_SERVICE_URL=https://katas.service.domain.local`, the domain where to find the katas locally 
   (is `katas.tddbin.com` when deployed)
 - `git clone git@github.com:tddbin/tddbin-frontend.git; cd tddbin-frontend; npm install; npm run build; npm start`  
 
@@ -39,7 +38,7 @@ and do the following:
 - `npm test` runs all the tests of the project
 
 Now you can 
-- `export KATAS_SERVICE_DOMAIN=katas.service.domain.local`, the domain where to find the katas locally 
+- `export KATAS_SERVICE_URL=http://katas.service.domain.local`, the domain where to find the katas locally 
   (live it has this value `katas.tddbin.com`)
 - `npm run build` for the first time and
 - `npm start` starts [watchify] which continuously updates the built files 
@@ -63,7 +62,7 @@ Other than that there is no real need to set up katas-service.
 
 You don't need the [katas-service] to run locally, tddbin works also fully-functional without it.  
 If you also want to use the [katas-service] locally, clone the repo and make it
-available so that the env variable `KATAS_SERVICE_DOMAIN` points to where to find the `proxy.html`
+available so that the env variable `KATAS_SERVICE_URL` points to where to find the `proxy.html`
 served by the built katas-service.
 
 ## Coding style

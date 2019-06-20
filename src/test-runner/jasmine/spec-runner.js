@@ -4,7 +4,7 @@ const env = jasmine.getEnv();
 function consumeMessage(messageData) {
   const specCode = messageData.data;
 
-  eval(specCode); // eslint-disable-line no-eval
+  eval(specCode);
   env.execute();
 }
 

@@ -1,2 +1,2 @@
-const react = global.React; // eslint-disable-line no-undef
+const react = global.React;
 export default react;

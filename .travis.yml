@@ -17,4 +17,4 @@ deploy:
     branch: master
 
 env:
-- KATAS_SERVICE_DOMAIN=katas.tddbin.com
+- KATAS_SERVICE_URL=https://katas.tddbin.com

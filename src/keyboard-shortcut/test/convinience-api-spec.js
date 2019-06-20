@@ -9,7 +9,7 @@ const noop = function() {};
 describe('registering multiple shortcuts', function() {
   it('shall work', function() {
     // TODO simplify the necessary mocking for every shortcut test
-    new KeyPressEmulation(); //eslint-disable-line no-new
+    new KeyPressEmulation();
     const processor = new ShortcutProcessor();
     sinon.spy(processor, 'registerShortcut');
 

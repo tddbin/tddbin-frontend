@@ -26,7 +26,7 @@ const withSourceCode = (sourceCode) => {
 };
 
 const kataName = 'libraries/mocha+assert/assert-api';
-export const DEFAULT_KATA_URL = `http://${process.env.KATAS_SERVICE_DOMAIN}/katas/${kataName}.js`;
+export const DEFAULT_KATA_URL = `${process.env.KATAS_SERVICE_URL}/katas/${kataName}.js`;
 var xhrGetDefaultKata = xhrGet.bind(null, DEFAULT_KATA_URL);
 
 const startUp = new StartUp(xhrGet, xhrGetDefaultKata);
@@ -39,5 +39,5 @@ function onSuccess(es6KataData) {
   main.showEs6KatasNavigation(es6KataData);
 }
 if (kataUrl.isEs6Kata) {
-  xhrGet(`http://${process.env.KATAS_SERVICE_DOMAIN}/katas/es6/language/__all__.json`, function() {}, onSuccess);
+  xhrGet(`${process.env.KATAS_SERVICE_URL}/katas/es6/language/__all__.json`, function() {}, onSuccess);
 }

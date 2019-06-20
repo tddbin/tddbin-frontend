@@ -1,10 +1,8 @@
 /* global Mocha require */
-/* eslint-disable no-unused-vars */
 const expect = require('referee').expect; // use require, so babel won't change names!
 const assert = require('assert'); // use require, so babel won't change names!
 import should from 'should';
 import * as hamjest from 'hamjest';
-/* eslint-enable no-unused-vars */
 
 import {transform} from '@babel/core'; // the es6 transpiler
 import babelPresetEnv from '@babel/preset-env';
@@ -73,7 +71,7 @@ const runSpecs = (state, deps = runSpecDefaultDeps) => {
   const codeToRun = state.transpileToEs5 === false ? state.sourceCode : deps.transpileToEs5Code(state.sourceCode);
   if (codeToRun) {
     try {
-      eval(codeToRun); // eslint-disable-line no-eval
+      eval(codeToRun);
     } catch (e) {
       const errorMessage = `Runtime error\n\n${e}\n\n${RuntimeError.prettyPrint(e.stack, codeToRun)}`;
       deps.fillErrorPaneWith(errorMessage);
