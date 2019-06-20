@@ -104957,8 +104957,6 @@ function _interopRequireDefault(obj) {
 }
 /* global Mocha require */
 
-/* eslint-disable no-unused-vars */
-
 
 var expect = require('referee').expect; // use require, so babel won't change names!
 
@@ -105042,7 +105040,7 @@ var runSpecs = function runSpecs(state) {
 
   if (codeToRun) {
     try {
-      eval(codeToRun); // eslint-disable-line no-eval
+      eval(codeToRun);
     } catch (e) {
       var errorMessage = "Runtime error\n\n".concat(e, "\n\n").concat(_runtimeError.default.prettyPrint(e.stack, codeToRun));
       deps.fillErrorPaneWith(errorMessage);
