@@ -2,13 +2,13 @@
 import assert from '../_test-helper/assert.js';
 import KataUrl from '../kata-url.js';
 
-process.env.KATAS_SERVICE_DOMAIN = 'katas.tddbin.test';
+process.env.KATAS_SERVICE_URL = 'https://katas.tddbin.test';
 
 describe('KataUrl', () => {
 
   it('create it out of the query string', () => {
     const kataUrlParam = 'kata=my/kata';
-    const expectedUrl = `https://${process.env.KATAS_SERVICE_DOMAIN}/katas/my/kata.js`;
+    const expectedUrl = `${process.env.KATAS_SERVICE_URL}/katas/my/kata.js`;
     assert.equal(KataUrl.fromQueryString(kataUrlParam), expectedUrl);
   });
 
