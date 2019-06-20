@@ -1,6 +1,14 @@
 # Ideas
 - [ ] ...
 
+# version 3
+
+- [ ] make HTTPS work (and HTTP locally for development)
+  - [ ] replace all KATAS_SERVICE_DOMAIN with KATAS_SERVICE_URL which contains the protocol too
+  - [ ] configure it properly for production
+  - [ ] make it work so in dev i can work with a local URL (on HTTP, to make dev simpler)
+  
+
 # version 2
 
 - [x] upgrade to node 11
