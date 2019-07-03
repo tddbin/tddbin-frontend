@@ -2,6 +2,7 @@ import React from 'react';
 
 const TWITTER_URL = 'http://twitter.com/tddbin';
 const GITHUB_URL = 'http://github.com/tddbin/tddbin-frontend';
+const PLAUSIBLE_URL = 'https://plausible.io/tddbin.com';
 
 const  transpileCheckbox = (transpileToEs5, transpileOnOff) => {
   const checkbox = <input
@@ -62,6 +63,7 @@ export default class NavigationBar extends React.Component {
         <span>
           <a href={TWITTER_URL} className="icon twitter" title="Get in touch."/>
           <a href={GITHUB_URL} className="icon github" title="Get (into) the code and contribute."/>
+          <a href={PLAUSIBLE_URL} className="icon plausible" title="Public traffic stats"></a>
         </span>
       </header>
     );
