@@ -75,7 +75,8 @@
 /*}*/
 
 .navigation-bar .icon.twitter,
-.navigation-bar .icon.github {
+.navigation-bar .icon.github,
+.navigation-bar .icon.plausible {
   background-size: 50%;
   background-position: center center;
   float: right;
@@ -87,6 +88,12 @@
 
 .navigation-bar .icon.twitter {
   background-image: url(./img/twitter_icon.svg);
+}
+
+.navigation-bar .icon.plausible {
+  width: 100px;
+  background-size: 75%;
+  background-image: url(./img/plausible_badge.svg);
 }
 
 .navigation-bar .transpileSwitch {
