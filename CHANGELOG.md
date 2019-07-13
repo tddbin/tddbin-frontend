@@ -1,6 +1,10 @@
 # Ideas
 - [ ] maybe add prettier
 
+# version 4
+
+- [x] by default DO NOT transpile (all modern browsers run modern JS)
+
 # version 3
 
 - [x] make HTTPS work (and HTTP locally for development)
