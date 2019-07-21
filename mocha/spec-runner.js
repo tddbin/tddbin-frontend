@@ -104994,7 +104994,7 @@ var resetMochaEnvironment = function resetMochaEnvironment() {
 
 var state = {
   sourceCode: '',
-  transpileToEs5: true
+  transpileToEs5: false
 };
 
 var consumeMessage = function consumeMessage(messageData) {
@@ -105008,10 +105008,9 @@ var consumeMessage = function consumeMessage(messageData) {
 
   if (receivedData.sourceCode) {
     state.sourceCode = receivedData.sourceCode;
-  } else if ('transpileToEs5' in receivedData) {
-    state.transpileToEs5 = receivedData.transpileToEs5;
   }
 
+  state.transpileToEs5 = receivedData.transpileToEs5 === true;
   var mocha = resetMochaEnvironment.call(_this);
   runSpecs(state);
   runMochaAndReportStats(mocha, sender);
