@@ -4,6 +4,7 @@
 # version 4
 
 - [x] by default DO NOT transpile (all modern browsers run modern JS)
+- [x] BUG: make turning off "Transpile to ES5" not transpile at all, didn't work on first load  
 
 # version 3
 
