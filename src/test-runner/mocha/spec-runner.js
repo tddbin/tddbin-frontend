@@ -33,7 +33,7 @@ const resetMochaEnvironment = () => {
 
 const state = {
   sourceCode: '',
-  transpileToEs5: true,
+  transpileToEs5: false,
 };
 const consumeMessage = (messageData) => {
   if (messageData.source === messageData.target) {
@@ -44,9 +44,8 @@ const consumeMessage = (messageData) => {
   const receivedData = messageData.data;
   if (receivedData.sourceCode) {
     state.sourceCode = receivedData.sourceCode;
-  } else if ('transpileToEs5' in receivedData) {
-    state.transpileToEs5 = receivedData.transpileToEs5;
   }
+  state.transpileToEs5 = receivedData.transpileToEs5 === true;
   const mocha = resetMochaEnvironment.call(this);
   runSpecs(state);
   runMochaAndReportStats(mocha, sender);
