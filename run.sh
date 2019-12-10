@@ -18,5 +18,4 @@ docker run --rm \
 	--publish 8080:${PORT} \
 	--volume $(pwd):/app \
 	--env "KATAS_SERVICE_URL=http://katas.tddbin.local/" \
-	--env "TDDBIN_FRONTEND_PORT=${PORT}" \
 	${IMAGE_NAME} $1
