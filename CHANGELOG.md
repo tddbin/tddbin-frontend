@@ -5,6 +5,7 @@
 
 - [x] by default DO NOT transpile (all modern browsers run modern JS)
 - [x] BUG: make turning off "Transpile to ES5" not transpile at all, didn't work on first load  
+- [ ] handles the comment inside a kata, such as `//** tddbin.options.transpileToEs5=true` so the import kata automatically sets this flag
 
 # version 3
 
