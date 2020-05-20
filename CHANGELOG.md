@@ -1,5 +1,7 @@
 # Ideas
 - [ ] maybe add prettier
+- [ ] implement to understand smtgh like `//** tddbin.options.transpileToEs5=true` in a katas file, since the import kata
+      e.g. does need that
 
 # version 4
 
