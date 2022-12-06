@@ -63,7 +63,7 @@
     "esprima-fb": "^15001.1.0-dev-harmony-fb",
     "get-port-cli": "^1.0.0",
     "hamjest": "^3.2.0",
-    "http-server": "^0.9.0",
+    "http-server": "^14.1.1",
     "ip-cli": "^1.0.5",
     "mocha": "^6.1.4",
     "react": "15.5.4",
